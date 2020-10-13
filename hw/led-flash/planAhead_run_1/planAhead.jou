@@ -1,0 +1,10 @@
+#-----------------------------------------------------------
+# PlanAhead v14.7 (64-bit)
+# Build 321239 by xbuild on Fri Sep 27 19:24:36 MDT 2013
+# Start of session at: Tue Oct 13 18:18:16 2020
+# Process ID: 5759
+# Log file: /mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/led-flash/planAhead_run_1/planAhead.log
+# Journal file: /mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/led-flash/planAhead_run_1/planAhead.jou
+#-----------------------------------------------------------
+start_gui
+source /mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/led-flash/pa.fromNetlist.tcl

@@ -1,0 +1,108 @@
+(edif led
+  (edifVersion 2 0 0)
+  (edifLevel 0)
+  (keywordMap (keywordLevel 0))
+  (status
+    (written
+      (timestamp 2020 10 13 18 18 30)
+      (program "Xilinx ngc2edif" (version "P.20131013"))
+      (author "Xilinx. Inc ")
+      (comment "This EDIF netlist is to be used within supported synthesis tools")
+      (comment "for determining resource/timing estimates of the design component")
+      (comment "represented by this netlist.")
+      (comment "Command line: -mdp2sp -w -secure led.ngc led.edif ")))
+  (external UNISIMS
+    (edifLevel 0)
+    (technology (numberDefinition))
+    (cell VCC
+      (cellType GENERIC)
+        (view view_1
+          (viewType NETLIST)
+          (interface
+            (port P
+              (direction OUTPUT)
+            )
+          )
+      )
+    )
+    (cell OBUF
+      (cellType GENERIC)
+        (view view_1
+          (viewType NETLIST)
+          (interface
+            (port I
+              (direction INPUT)
+            )
+            (port O
+              (direction OUTPUT)
+            )
+          )
+      )
+    )
+  )
+
+  (library led_lib
+    (edifLevel 0)
+    (technology (numberDefinition))
+    (cell led
+      (cellType GENERIC)
+        (view view_1
+          (viewType NETLIST)
+          (interface
+            (port LED1
+              (direction OUTPUT)
+            )
+            (port LED2
+              (direction OUTPUT)
+            )
+            (designator "xc3s500e-5-vq100")
+            (property TYPE (string "led") (owner "Xilinx"))
+            (property NLW_UNIQUE_ID (integer 0) (owner "Xilinx"))
+            (property NLW_MACRO_TAG (integer 0) (owner "Xilinx"))
+            (property NLW_MACRO_ALIAS (string "led_led") (owner "Xilinx"))
+          )
+          (contents
+            (instance XST_VCC
+              (viewRef view_1 (cellRef VCC (libraryRef UNISIMS)))
+              (property XSTLIB (boolean (true)) (owner "Xilinx"))
+            )
+            (instance LED1_OBUF
+              (viewRef view_1 (cellRef OBUF (libraryRef UNISIMS)))
+              (property XSTLIB (boolean (true)) (owner "Xilinx"))
+            )
+            (instance (rename LED2_OBUF_renamed_0 "LED2_OBUF")
+              (viewRef view_1 (cellRef OBUF (libraryRef UNISIMS)))
+              (property XSTLIB (boolean (true)) (owner "Xilinx"))
+            )
+            (net LED1
+              (joined
+                (portRef LED1)
+                (portRef O (instanceRef LED1_OBUF))
+              )
+            )
+            (net LED2
+              (joined
+                (portRef LED2)
+                (portRef O (instanceRef LED2_OBUF_renamed_0))
+              )
+            )
+            (net LED2_OBUF
+              (joined
+                (portRef P (instanceRef XST_VCC))
+                (portRef I (instanceRef LED1_OBUF))
+                (portRef I (instanceRef LED2_OBUF_renamed_0))
+              )
+            )
+          )
+      )
+    )
+  )
+
+  (design led
+    (cellRef led
+      (libraryRef led_lib)
+    )
+    (property PART (string "xc3s500e-5-vq100") (owner "Xilinx"))
+  )
+)
+
