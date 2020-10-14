@@ -21,7 +21,6 @@ int main () {
   }
 
   uint8_t* buffer = new uint8_t[BUFFER_SIZE];
-  memset(buffer, 0, BUFFER_SIZE);
   sockaddr s_addr;
   size_t s_addr_len = sizeof(s_addr);
 
