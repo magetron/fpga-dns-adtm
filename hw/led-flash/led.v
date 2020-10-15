@@ -19,9 +19,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module led(
+    input  SWITCH1,
     output LED1,
     output LED2
     );
-  assign LED1 = 1;
-  assign LED2 = 1;
+  assign LED1 = SWITCH1;
+  assign LED2 = !SWITCH1;
 endmodule

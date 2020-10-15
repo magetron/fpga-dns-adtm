@@ -1,2 +1,3 @@
+NET "SWITCH1" LOC = "L13";
 NET "LED1" LOC = "F12";
 NET "LED2" LOC = "E12";
