@@ -119,5 +119,7 @@ int main () {
     return -1;
   }
 
+  delete [] sendbuf;
+
   return 0;
 }
