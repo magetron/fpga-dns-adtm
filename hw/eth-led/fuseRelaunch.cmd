@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -o "/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/eth-led/sndtest_isim_beh.exe" -prj "/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/eth-led/sndtest_beh.prj" "work.sndtest" 

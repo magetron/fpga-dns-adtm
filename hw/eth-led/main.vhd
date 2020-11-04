@@ -16,198 +16,198 @@
 -- You should have received a copy of the GNU General Public License          --
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.      --
 --------------------------------------------------------------------------------
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-library work;
-use work.common.all;
+LIBRARY work;
+USE work.common.ALL;
 
-entity main is
-   port(
-      clk      : in  std_logic;
+ENTITY main IS
+  PORT (
+    clk : IN STD_LOGIC;
 
-      E_COL    : in  std_logic;                       -- Collision Detect.
-      E_CRS    : in  std_logic;                       -- Carrier Sense.
-      E_MDC    : out std_logic;
-      E_MDIO   : in  std_logic;
-      E_RX_CLK : in  std_logic;                       -- Receiver Clock.
-      E_RX_DV  : in  std_logic;                       -- Received Data Valid.
-      E_RXD    : in  std_logic_vector(3 downto 0);    -- Received Nibble.
-      E_RX_ER  : in  std_logic;                       -- Received Data Error.
-      E_TX_CLK : in  std_logic;                       -- Sender Clock.
-      E_TX_EN  : out std_logic;                       -- Sender Enable.
-      E_TXD    : out std_logic_vector(3 downto 0);    -- Sent Data.
-      E_TX_ER  : out std_logic;                       -- sent Data Error.
+    E_COL : IN STD_LOGIC; -- Collision Detect.
+    E_CRS : IN STD_LOGIC; -- Carrier Sense.
+    E_MDC : OUT STD_LOGIC;
+    E_MDIO : IN STD_LOGIC;
+    E_RX_CLK : IN STD_LOGIC; -- Receiver Clock.
+    E_RX_DV : IN STD_LOGIC; -- Received Data Valid.
+    E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
+    E_RX_ER : IN STD_LOGIC; -- Received Data Error.
+    E_TX_CLK : IN STD_LOGIC; -- Sender Clock.
+    E_TX_EN : OUT STD_LOGIC; -- Sender Enable.
+    E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Sent Data.
+    E_TX_ER : OUT STD_LOGIC; -- sent Data Error.
 
-      SPI_MISO : in  std_logic;                       -- Serial data in.
-      SPI_MOSI : out std_logic;                       -- Serial data out.
-      SPI_SCK  : out std_logic;                       -- Serial Interface clock.
-      DAC_CS   : out std_logic;                       -- D/A Converter chip sel.
-      DAC_CLR  : out std_logic;                       -- D/A Converter reset.
+    SPI_MISO : IN STD_LOGIC; -- Serial data in.
+    SPI_MOSI : OUT STD_LOGIC; -- Serial data out.
+    SPI_SCK : OUT STD_LOGIC; -- Serial Interface clock.
+    DAC_CS : OUT STD_LOGIC; -- D/A Converter chip sel.
+    DAC_CLR : OUT STD_LOGIC; -- D/A Converter reset.
 
-      SF_OE    : out std_logic;                       -- StrataFlash.
-      SF_CE    : out std_logic;
-      SF_WE    : out std_logic;
-      FPGA_INIT_B : out std_logic;
-      AD_CONV  : out std_logic;                       -- A/D Converter chip sel.
-      SPI_SS_B : out std_logic;
-      AMP_CS   : out std_logic;                       -- Pre-Amplifier chip sel.
+    SF_OE : OUT STD_LOGIC; -- StrataFlash.
+    SF_CE : OUT STD_LOGIC;
+    SF_WE : OUT STD_LOGIC;
+    FPGA_INIT_B : OUT STD_LOGIC;
+    AD_CONV : OUT STD_LOGIC; -- A/D Converter chip sel.
+    SPI_SS_B : OUT STD_LOGIC;
+    AMP_CS : OUT STD_LOGIC; -- Pre-Amplifier chip sel.
 
-      DI       : in  std_logic_vector(3 downto 0);    -- 6-pin header J1.
-      DO       : out std_logic_vector(3 downto 0);    -- 6-pin header J2.
-      SW       : in  std_logic_vector(3 downto 0);    -- SWITCHES.
-      BTN      : in  std_logic_vector(3 downto 0);    -- BUTTONS.
-      LED      : out std_logic_vector(7 downto 0)     -- LEDs.
-   );
-end main;
+    DI : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- 6-pin header J1.
+    DO : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- 6-pin header J2.
+    SW : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- SWITCHES.
+    BTN : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- BUTTONS.
+    LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0) -- LEDs.
+  );
+END main;
 
-architecture rtl of main is
+ARCHITECTURE rtl OF main IS
 
-   component clock
-      port(
-         clkin_in        : in  std_logic;
-         rst_in          : in  std_logic;
-         clkin_ibufg_out : out std_logic;
-         clk0_out        : out std_logic;
-         clk90_out       : out std_logic
-      );
-   end component;
+  COMPONENT clock
+    PORT (
+      clkin_in : IN STD_LOGIC;
+      rst_in : IN STD_LOGIC;
+      clkin_ibufg_out : OUT STD_LOGIC;
+      clk0_out : OUT STD_LOGIC;
+      clk90_out : OUT STD_LOGIC
+    );
+  END COMPONENT;
 
-   component mac_rcv is
-      port(
-         E_RX_CLK : in  std_logic;                     -- Receiver Clock.
-         E_RX_DV  : in  std_logic;                     -- Received Data Valid.
-         E_RXD    : in  std_logic_vector(3 downto 0);  -- Received Nibble.
-         el_chnl  : out std_logic_vector(7 downto 0);  -- Data channels.
-         el_data  : out data_t;                        -- Channel metadata.
-         el_dv    : out std_logic;                     -- Data valid.
-         el_ack   : in  std_logic                      -- Packet reception ACK.
-      );
-   end component;
+  COMPONENT mac_rcv IS
+    PORT (
+      E_RX_CLK : IN STD_LOGIC; -- Receiver Clock.
+      E_RX_DV : IN STD_LOGIC; -- Received Data Valid.
+      E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
+      el_chnl : OUT STD_LOGIC_VECTOR(7 DOWNTO 0); -- Data channels.
+      el_data : OUT data_t; -- Channel metadata.
+      el_dv : OUT STD_LOGIC; -- Data valid.
+      el_ack : IN STD_LOGIC -- Packet reception ACK.
+    );
+  END COMPONENT;
 
-	component mac_snd is
-		port(
-         E_TX_CLK : in  std_logic;                       -- Sender Clock.
-         E_TX_EN  : out std_logic;                       -- Sender Enable.
-         E_TXD    : out std_logic_vector(3 downto 0);    -- Sent Data.
-         E_TX_ER  : out std_logic;                       -- Sent Data Error.
-         el_chnl  : in  std_logic_vector(7 downto 0);    -- Data channels.
-         el_data  : in  data_t;                          -- Actual Data
-         en       : in  std_logic                        -- User Start Send.
-		);
-	end component;
+  COMPONENT mac_snd IS
+    PORT (
+      E_TX_CLK : IN STD_LOGIC; -- Sender Clock.
+      E_TX_EN : OUT STD_LOGIC; -- Sender Enable.
+      E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Sent Data.
+      E_TX_ER : OUT STD_LOGIC; -- Sent Data Error.
+      el_chnl : IN STD_LOGIC_VECTOR(7 DOWNTO 0); -- Data channels.
+      el_data : IN data_t; -- Actual Data
+      en : IN STD_LOGIC -- User Start Send.
+    );
+  END COMPONENT;
 
-   component io is
-      port(
-         clk         : in  std_logic;
-         clk90       : in  std_logic;
+  COMPONENT io IS
+    PORT (
+      clk : IN STD_LOGIC;
+      clk90 : IN STD_LOGIC;
       -- data received.
-         el_chnl     : in  std_logic_vector(7 downto 0);
-         el_data     : in  data_t;
-         el_dv       : in  std_logic;
-         el_ack      : out std_logic;
+      el_chnl : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+      el_data : IN data_t;
+      el_dv : IN STD_LOGIC;
+      el_ack : OUT STD_LOGIC;
       -- data to send.
-         el_snd_chnl : out std_logic_vector(7 downto 0);
-         el_snd_data : out data_t;
-         el_snd_en   : out std_logic;
+      el_snd_chnl : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+      el_snd_data : OUT data_t;
+      el_snd_en : OUT STD_LOGIC;
       -- DAC/ADC Connections.
-         SPI_MISO    : in  std_logic;
-         SPI_MOSI    : out std_logic;
-         SPI_SCK     : out std_logic;
-         DAC_CS      : out std_logic;
-         DAC_CLR     : out std_logic;
-         AD_CONV     : out std_logic;
-         AMP_CS      : out std_logic;
+      SPI_MISO : IN STD_LOGIC;
+      SPI_MOSI : OUT STD_LOGIC;
+      SPI_SCK : OUT STD_LOGIC;
+      DAC_CS : OUT STD_LOGIC;
+      DAC_CLR : OUT STD_LOGIC;
+      AD_CONV : OUT STD_LOGIC;
+      AMP_CS : OUT STD_LOGIC;
       -- Digital lines.
-         DI          : in  std_logic_vector(3 downto 0);
-         DO          : out std_logic_vector(3 downto 0);
+      DI : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+      DO : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
       -- SWITCHES.
-         SW          : in  std_logic_vector(3 downto 0);
+      SW : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
       -- BUTTONS.
-         BTN         : in  std_logic_vector(3 downto 0);
+      BTN : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
       -- LEDs.
-         LED         : out std_logic_vector(7 downto 0)
-      );
-   end component;
+      LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
+    );
+  END COMPONENT;
 
-   signal el_chnl : std_logic_vector(7 downto 0);     -- Data channels.
-   signal el_data : data_t;                           -- Actual data.
-   signal el_dv   : std_logic;                        -- Received data valid.
-   signal el_ack  : std_logic;                        -- Packet reception ACK.
+  SIGNAL el_chnl : STD_LOGIC_VECTOR(7 DOWNTO 0); -- Data channels.
+  SIGNAL el_data : data_t; -- Actual data.
+  SIGNAL el_dv : STD_LOGIC; -- Received data valid.
+  SIGNAL el_ack : STD_LOGIC; -- Packet reception ACK.
 
-   signal el_snd_chnl : std_logic_vector(7 downto 0); -- Send channels.
-   signal el_snd_data : data_t;                       -- Send data.
-   signal el_snd_en   : std_logic;                    -- Enable sending.
+  SIGNAL el_snd_chnl : STD_LOGIC_VECTOR(7 DOWNTO 0); -- Send channels.
+  SIGNAL el_snd_data : data_t; -- Send data.
+  SIGNAL el_snd_en : STD_LOGIC; -- Enable sending.
 
-   signal clk90   : std_logic;   -- Clock shiftet 90 degree.
-   signal clk0    : std_logic;
-begin
+  SIGNAL clk90 : STD_LOGIC; -- Clock shiftet 90 degree.
+  SIGNAL clk0 : STD_LOGIC;
+BEGIN
 
-   SF_OE       <= '1';        -- Turn off Strata Flash.
-   SF_WE       <= '1';
-   SF_CE       <= '1';
-   FPGA_INIT_B <= '1';        -- Turn off Platform Flash.
-   SPI_SS_B    <= '1';        -- Turn off Serial Flash.
+  SF_OE <= '1'; -- Turn off Strata Flash.
+  SF_WE <= '1';
+  SF_CE <= '1';
+  FPGA_INIT_B <= '1'; -- Turn off Platform Flash.
+  SPI_SS_B <= '1'; -- Turn off Serial Flash.
 
-   E_MDC <= '0';
+  E_MDC <= '0';
 
-   inst_clock: clock port map(
-      clkin_in        => clk,
-      rst_in          => '0',
-      clkin_ibufg_out => open,
-      clk0_out        => clk0,
-      clk90_out       => clk90
-   );
+  inst_clock : clock PORT MAP(
+    clkin_in => clk,
+    rst_in => '0',
+    clkin_ibufg_out => OPEN,
+    clk0_out => clk0,
+    clk90_out => clk90
+  );
 
-   mac_receive : mac_rcv port map(
-      E_RX_CLK => E_RX_CLK,
-      E_RX_DV  => E_RX_DV,
-      E_RXD    => E_RXD,
-      el_chnl  => el_chnl,
-      el_data  => el_data,
-      el_dv    => el_dv,
-      el_ack   => el_ack
-   );
+  mac_receive : mac_rcv PORT MAP(
+    E_RX_CLK => E_RX_CLK,
+    E_RX_DV => E_RX_DV,
+    E_RXD => E_RXD,
+    el_chnl => el_chnl,
+    el_data => el_data,
+    el_dv => el_dv,
+    el_ack => el_ack
+  );
 
-	mac_send : mac_snd port map(
-      E_TX_CLK => E_TX_CLK,
-      E_TX_EN  => E_TX_EN,
-      E_TXD    => E_TXD,
-      E_TX_ER  => E_TX_ER,
-      en       => el_snd_en,
-      el_chnl  => el_snd_chnl,
-      el_data  => el_snd_data
-   );
+  mac_send : mac_snd PORT MAP(
+    E_TX_CLK => E_TX_CLK,
+    E_TX_EN => E_TX_EN,
+    E_TXD => E_TXD,
+    E_TX_ER => E_TX_ER,
+    en => el_snd_en,
+    el_chnl => el_snd_chnl,
+    el_data => el_snd_data
+  );
 
-   ioio : io port map(
-      clk         => clk0,
-      clk90       => clk90,
-   -- Data received.
-      el_chnl     => el_chnl,
-      el_data     => el_data,
-      el_dv       => el_dv,
-      el_ack      => el_ack,
-   -- Data to send.
-      el_snd_chnl => el_snd_chnl,
-      el_snd_data => el_snd_data,
-      el_snd_en   => el_snd_en,
-   -- DAC/ADC Connections.
-      SPI_MISO    => SPI_MISO,
-      SPI_MOSI    => SPI_MOSI,
-      SPI_SCK     => SPI_SCK,
-      DAC_CS      => DAC_CS,
-      DAC_CLR     => DAC_CLR,
-      AD_CONV     => AD_CONV,
-      AMP_CS      => AMP_CS,
-   -- Digital lines.
-      DI          => DI,
-      DO          => DO,
-   -- SWITCHES.
-      SW          => SW,
-   -- BUTTONS.
-      BTN         => BTN,
-   -- LEDs.
-      LED         => LED
-   );
-end rtl;
+  ioio : io PORT MAP(
+    clk => clk0,
+    clk90 => clk90,
+    -- Data received.
+    el_chnl => el_chnl,
+    el_data => el_data,
+    el_dv => el_dv,
+    el_ack => el_ack,
+    -- Data to send.
+    el_snd_chnl => el_snd_chnl,
+    el_snd_data => el_snd_data,
+    el_snd_en => el_snd_en,
+    -- DAC/ADC Connections.
+    SPI_MISO => SPI_MISO,
+    SPI_MOSI => SPI_MOSI,
+    SPI_SCK => SPI_SCK,
+    DAC_CS => DAC_CS,
+    DAC_CLR => DAC_CLR,
+    AD_CONV => AD_CONV,
+    AMP_CS => AMP_CS,
+    -- Digital lines.
+    DI => DI,
+    DO => DO,
+    -- SWITCHES.
+    SW => SW,
+    -- BUTTONS.
+    BTN => BTN,
+    -- LEDs.
+    LED => LED
+  );
+END rtl;

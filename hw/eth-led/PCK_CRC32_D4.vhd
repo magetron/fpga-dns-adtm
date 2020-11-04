@@ -16,71 +16,71 @@
 -- Info : tools@easics.be
 --        http://www.easics.com
 --------------------------------------------------------------------------------
-library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
-package PCK_CRC32_D4 is
+PACKAGE PCK_CRC32_D4 IS
   -- polynomial: (0 1 2 4 5 7 8 10 11 12 16 22 23 26 32)
   -- data width: 4
   -- convention: the first serial bit is D[3]
-  function nextCRC32_D4
-    (Data: std_logic_vector(3 downto 0);
-     crc:  std_logic_vector(31 downto 0))
-    return std_logic_vector;
-end PCK_CRC32_D4;
-
-
-package body PCK_CRC32_D4 is
+  FUNCTION nextCRC32_D4
+  (
+    Data : STD_LOGIC_VECTOR(3 DOWNTO 0);
+    crc : STD_LOGIC_VECTOR(31 DOWNTO 0)
+  ) RETURN STD_LOGIC_VECTOR;
+END PCK_CRC32_D4;
+PACKAGE BODY PCK_CRC32_D4 IS
 
   -- polynomial: (0 1 2 4 5 7 8 10 11 12 16 22 23 26 32)
   -- data width: 4
   -- convention: the first serial bit is D[3]
-  function nextCRC32_D4
-    (Data: std_logic_vector(3 downto 0);
-     crc:  std_logic_vector(31 downto 0))
-    return std_logic_vector is
+  FUNCTION nextCRC32_D4
+  (
+    Data : STD_LOGIC_VECTOR(3 DOWNTO 0);
+    crc : STD_LOGIC_VECTOR(31 DOWNTO 0))
+    RETURN STD_LOGIC_VECTOR IS
 
-    variable d:      std_logic_vector(3 downto 0);
-    variable c:      std_logic_vector(31 downto 0);
-    variable newcrc: std_logic_vector(31 downto 0);
+    VARIABLE d : STD_LOGIC_VECTOR(3 DOWNTO 0);
+    VARIABLE c : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    VARIABLE newcrc : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-  begin
+  BEGIN
     d := Data;
     c := crc;
 
-    newcrc(0) := d(0) xor c(28);
-    newcrc(1) := d(1) xor d(0) xor c(28) xor c(29);
-    newcrc(2) := d(2) xor d(1) xor d(0) xor c(28) xor c(29) xor c(30);
-    newcrc(3) := d(3) xor d(2) xor d(1) xor c(29) xor c(30) xor c(31);
-    newcrc(4) := d(3) xor d(2) xor d(0) xor c(0) xor c(28) xor c(30) xor c(31);
-    newcrc(5) := d(3) xor d(1) xor d(0) xor c(1) xor c(28) xor c(29) xor c(31);
-    newcrc(6) := d(2) xor d(1) xor c(2) xor c(29) xor c(30);
-    newcrc(7) := d(3) xor d(2) xor d(0) xor c(3) xor c(28) xor c(30) xor c(31);
-    newcrc(8) := d(3) xor d(1) xor d(0) xor c(4) xor c(28) xor c(29) xor c(31);
-    newcrc(9) := d(2) xor d(1) xor c(5) xor c(29) xor c(30);
-    newcrc(10) := d(3) xor d(2) xor d(0) xor c(6) xor c(28) xor c(30) xor c(31);
-    newcrc(11) := d(3) xor d(1) xor d(0) xor c(7) xor c(28) xor c(29) xor c(31);
-    newcrc(12) := d(2) xor d(1) xor d(0) xor c(8) xor c(28) xor c(29) xor c(30);
-    newcrc(13) := d(3) xor d(2) xor d(1) xor c(9) xor c(29) xor c(30) xor c(31);
-    newcrc(14) := d(3) xor d(2) xor c(10) xor c(30) xor c(31);
-    newcrc(15) := d(3) xor c(11) xor c(31);
-    newcrc(16) := d(0) xor c(12) xor c(28);
-    newcrc(17) := d(1) xor c(13) xor c(29);
-    newcrc(18) := d(2) xor c(14) xor c(30);
-    newcrc(19) := d(3) xor c(15) xor c(31);
+    newcrc(0) := d(0) XOR c(28);
+    newcrc(1) := d(1) XOR d(0) XOR c(28) XOR c(29);
+    newcrc(2) := d(2) XOR d(1) XOR d(0) XOR c(28) XOR c(29) XOR c(30);
+    newcrc(3) := d(3) XOR d(2) XOR d(1) XOR c(29) XOR c(30) XOR c(31);
+    newcrc(4) := d(3) XOR d(2) XOR d(0) XOR c(0) XOR c(28) XOR c(30) XOR c(31);
+    newcrc(5) := d(3) XOR d(1) XOR d(0) XOR c(1) XOR c(28) XOR c(29) XOR c(31);
+    newcrc(6) := d(2) XOR d(1) XOR c(2) XOR c(29) XOR c(30);
+    newcrc(7) := d(3) XOR d(2) XOR d(0) XOR c(3) XOR c(28) XOR c(30) XOR c(31);
+    newcrc(8) := d(3) XOR d(1) XOR d(0) XOR c(4) XOR c(28) XOR c(29) XOR c(31);
+    newcrc(9) := d(2) XOR d(1) XOR c(5) XOR c(29) XOR c(30);
+    newcrc(10) := d(3) XOR d(2) XOR d(0) XOR c(6) XOR c(28) XOR c(30) XOR c(31);
+    newcrc(11) := d(3) XOR d(1) XOR d(0) XOR c(7) XOR c(28) XOR c(29) XOR c(31);
+    newcrc(12) := d(2) XOR d(1) XOR d(0) XOR c(8) XOR c(28) XOR c(29) XOR c(30);
+    newcrc(13) := d(3) XOR d(2) XOR d(1) XOR c(9) XOR c(29) XOR c(30) XOR c(31);
+    newcrc(14) := d(3) XOR d(2) XOR c(10) XOR c(30) XOR c(31);
+    newcrc(15) := d(3) XOR c(11) XOR c(31);
+    newcrc(16) := d(0) XOR c(12) XOR c(28);
+    newcrc(17) := d(1) XOR c(13) XOR c(29);
+    newcrc(18) := d(2) XOR c(14) XOR c(30);
+    newcrc(19) := d(3) XOR c(15) XOR c(31);
     newcrc(20) := c(16);
     newcrc(21) := c(17);
-    newcrc(22) := d(0) xor c(18) xor c(28);
-    newcrc(23) := d(1) xor d(0) xor c(19) xor c(28) xor c(29);
-    newcrc(24) := d(2) xor d(1) xor c(20) xor c(29) xor c(30);
-    newcrc(25) := d(3) xor d(2) xor c(21) xor c(30) xor c(31);
-    newcrc(26) := d(3) xor d(0) xor c(22) xor c(28) xor c(31);
-    newcrc(27) := d(1) xor c(23) xor c(29);
-    newcrc(28) := d(2) xor c(24) xor c(30);
-    newcrc(29) := d(3) xor c(25) xor c(31);
+    newcrc(22) := d(0) XOR c(18) XOR c(28);
+    newcrc(23) := d(1) XOR d(0) XOR c(19) XOR c(28) XOR c(29);
+    newcrc(24) := d(2) XOR d(1) XOR c(20) XOR c(29) XOR c(30);
+    newcrc(25) := d(3) XOR d(2) XOR c(21) XOR c(30) XOR c(31);
+    newcrc(26) := d(3) XOR d(0) XOR c(22) XOR c(28) XOR c(31);
+    newcrc(27) := d(1) XOR c(23) XOR c(29);
+    newcrc(28) := d(2) XOR c(24) XOR c(30);
+    newcrc(29) := d(3) XOR c(25) XOR c(31);
     newcrc(30) := c(26);
     newcrc(31) := c(27);
-    return newcrc;
-  end nextCRC32_D4;
+    RETURN newcrc;
+  END nextCRC32_D4;
 
-end PCK_CRC32_D4;
+END PCK_CRC32_D4;
