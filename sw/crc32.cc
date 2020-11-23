@@ -172,7 +172,7 @@ int32_t main(uint16_t argc, char *argv[]) {
 
     // If the frame has a 4 byte FCS value at the end,
     // exclude this from the CRC calculation:
-    int8_t has_crc = 1;
+    int8_t has_crc = 0;
     if (has_crc) max -= 4;
 
     uint8_t j;
