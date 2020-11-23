@@ -186,7 +186,7 @@ BEGIN
         E_TXD <= x"0";
         E_TX_EN <= '1';
         sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 55 THEN
+        IF s.c = 57 THEN
           sin.c <= 0;
           sin.s <= FrameCheck;
         ELSE
