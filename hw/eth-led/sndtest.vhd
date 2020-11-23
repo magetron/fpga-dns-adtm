@@ -154,13 +154,13 @@ BEGIN
     WAIT FOR clk_period * 10;
 
     -- insert stimulus here
-    BTN(0) <= '1';
-    BTN(1) <= '1';
+    -- BTN(0) <= '1';
+    -- BTN(1) <= '1';
 
-    WAIT FOR 1 sec;
+    -- WAIT FOR 1 sec;
 
-    BTN(1) <= '0';
-    BTN(0) <= '0';
+    -- BTN(1) <= '0';
+    -- BTN(0) <= '0';
 
     WAIT;
   END PROCESS;
