@@ -57,4 +57,5 @@ int main () {
   for (size_t i = 0; i < 8; i++)
     ethlab->data[i] = 0;
 
+  delete [] sendbuf;
 }

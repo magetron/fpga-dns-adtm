@@ -157,7 +157,7 @@ BEGIN
     -- BTN(0) <= '1';
     -- BTN(1) <= '1';
 
-    -- WAIT FOR 1 sec;
+    WAIT FOR 1 sec;
 
     -- BTN(1) <= '0';
     -- BTN(0) <= '0';
