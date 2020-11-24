@@ -81,9 +81,9 @@ ARCHITECTURE behavior OF sndtest IS
   SIGNAL LED : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
   -- Clock period definitions
-  CONSTANT clk_period : TIME := 10 ns;
-  CONSTANT E_RX_CLK_period : TIME := 10 ns;
-  CONSTANT E_TX_CLK_period : TIME := 10 ns;
+  CONSTANT clk_period : TIME := 20 ns;
+  CONSTANT E_RX_CLK_period : TIME := 40 ns;
+  CONSTANT E_TX_CLK_period : TIME := 40 ns;
 
 BEGIN
 
