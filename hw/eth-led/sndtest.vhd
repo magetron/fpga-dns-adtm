@@ -81,9 +81,9 @@ ARCHITECTURE behavior OF sndtest IS
   SIGNAL LED : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
   -- Clock period definitions
-  CONSTANT clk_period : TIME := 20 ns;
-  CONSTANT E_RX_CLK_period : TIME := 40 ns;
-  CONSTANT E_TX_CLK_period : TIME := 40 ns;
+  CONSTANT clk_period : TIME := 10 ns;
+  CONSTANT E_RX_CLK_period : TIME := 10 ns;
+  CONSTANT E_TX_CLK_period : TIME := 10 ns;
 
 BEGIN
 
@@ -154,13 +154,13 @@ BEGIN
     WAIT FOR clk_period * 10;
 
     -- insert stimulus here
-    -- BTN(0) <= '1';
-    -- BTN(1) <= '1';
+    BTN(0) <= '1';
+    BTN(1) <= '1';
 
     WAIT FOR 1 sec;
 
-    -- BTN(1) <= '0';
-    -- BTN(0) <= '0';
+    BTN(1) <= '0';
+    BTN(0) <= '0';
 
     WAIT;
   END PROCESS;
