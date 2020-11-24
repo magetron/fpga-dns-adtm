@@ -63,7 +63,6 @@ ARCHITECTURE rtl OF mac_snd IS
     Lower, -- Send lower Nibble.
     Channel, -- Send Data channel.
     DataU, DataL, -- Send Actual data.
-    Padding, -- Send Padding 28 00s
     FrameCheck, -- No Frame Check for now.
     InterframeGap -- Gap between two cosecutive frames (93 Bit).
   );
@@ -170,25 +169,11 @@ BEGIN
           sin.c <= 0;
           IF s.a = 7 THEN
             sin.a <= 0;
-            sin.s <= Padding;
+            sin.s <= FrameCheck;
           ELSE
             sin.a <= s.a + 1;
             sin.s <= DataU;
           END IF;
-        ELSE
-          sin.c <= s.c + 1;
-        END IF;
-
-        -----------------------------------------------------------------------
-        -- Ethernet II - Padding. 28 00s                                        --
-        -----------------------------------------------------------------------
-      WHEN Padding =>
-        E_TXD <= x"0";
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 57 THEN
-          sin.c <= 0;
-          sin.s <= FrameCheck;
         ELSE
           sin.c <= s.c + 1;
         END IF;
