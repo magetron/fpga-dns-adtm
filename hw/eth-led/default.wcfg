@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/eth-led/sndtest_isim_beh3.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="common" />
+            <top_module name="numeric_std" />
+            <top_module name="pck_crc32_d4" />
+            <top_module name="sndtest" />
+            <top_module name="std_logic_1164" />
+            <top_module name="textio" />
+            <top_module name="vcomponents" />
+            <top_module name="vital_primitives" />
+            <top_module name="vital_timing" />
+            <top_module name="vpkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="33" />
+   <wvobject fp_name="/sndtest/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_col" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">e_col</obj_property>
+      <obj_property name="ObjectShortName">e_col</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_crs" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">e_crs</obj_property>
+      <obj_property name="ObjectShortName">e_crs</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_mdio" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">e_mdio</obj_property>
+      <obj_property name="ObjectShortName">e_mdio</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_rx_clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">e_rx_clk</obj_property>
+      <obj_property name="ObjectShortName">e_rx_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_rx_dv" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">e_rx_dv</obj_property>
+      <obj_property name="ObjectShortName">e_rx_dv</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_rxd" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">e_rxd[3:0]</obj_property>
+      <obj_property name="ObjectShortName">e_rxd[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_rx_er" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">e_rx_er</obj_property>
+      <obj_property name="ObjectShortName">e_rx_er</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_tx_clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">e_tx_clk</obj_property>
+      <obj_property name="ObjectShortName">e_tx_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/spi_miso" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">spi_miso</obj_property>
+      <obj_property name="ObjectShortName">spi_miso</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/di" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">di[3:0]</obj_property>
+      <obj_property name="ObjectShortName">di[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/sw" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">sw[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sw[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/btn" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">btn[3:0]</obj_property>
+      <obj_property name="ObjectShortName">btn[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_mdc" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">e_mdc</obj_property>
+      <obj_property name="ObjectShortName">e_mdc</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_tx_en" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">e_tx_en</obj_property>
+      <obj_property name="ObjectShortName">e_tx_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_txd" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">e_txd[0:3]</obj_property>
+      <obj_property name="ObjectShortName">e_txd[0:3]</obj_property>
+      <obj_property name="Reversed">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_tx_er" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">e_tx_er</obj_property>
+      <obj_property name="ObjectShortName">e_tx_er</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/spi_mosi" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">spi_mosi</obj_property>
+      <obj_property name="ObjectShortName">spi_mosi</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/spi_sck" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">spi_sck</obj_property>
+      <obj_property name="ObjectShortName">spi_sck</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/dac_cs" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">dac_cs</obj_property>
+      <obj_property name="ObjectShortName">dac_cs</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/dac_clr" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">dac_clr</obj_property>
+      <obj_property name="ObjectShortName">dac_clr</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/sf_oe" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">sf_oe</obj_property>
+      <obj_property name="ObjectShortName">sf_oe</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/sf_ce" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">sf_ce</obj_property>
+      <obj_property name="ObjectShortName">sf_ce</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/sf_we" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">sf_we</obj_property>
+      <obj_property name="ObjectShortName">sf_we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/fpga_init_b" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">fpga_init_b</obj_property>
+      <obj_property name="ObjectShortName">fpga_init_b</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/ad_conv" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ad_conv</obj_property>
+      <obj_property name="ObjectShortName">ad_conv</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/spi_ss_b" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">spi_ss_b</obj_property>
+      <obj_property name="ObjectShortName">spi_ss_b</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/amp_cs" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">amp_cs</obj_property>
+      <obj_property name="ObjectShortName">amp_cs</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/do" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">do[3:0]</obj_property>
+      <obj_property name="ObjectShortName">do[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/led" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">led[7:0]</obj_property>
+      <obj_property name="ObjectShortName">led[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/clk_period" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">clk_period</obj_property>
+      <obj_property name="ObjectShortName">clk_period</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_rx_clk_period" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">e_rx_clk_period</obj_property>
+      <obj_property name="ObjectShortName">e_rx_clk_period</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sndtest/e_tx_clk_period" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">e_tx_clk_period</obj_property>
+      <obj_property name="ObjectShortName">e_tx_clk_period</obj_property>
+   </wvobject>
+</wave_config>

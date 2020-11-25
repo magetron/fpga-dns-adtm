@@ -70,3 +70,5 @@ webtalk_pn.xml
 **/_xmsgs/
 **/isim/
 **/planAhead*/
+
+*.wdb
