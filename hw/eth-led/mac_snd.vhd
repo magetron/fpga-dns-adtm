@@ -27,7 +27,7 @@ ARCHITECTURE rtl OF mac_snd IS
     -- Host PC MAC Address                                                  --
     --------------------------------------------------------------------------
     -- 0x0 - 0x5
-    x"00", x"0c", x"29", x"5f", x"29", x"ae",
+    x"ff", x"ff", x"ff", x"ff", x"ff", x"ff",
 
     --------------------------------------------------------------------------
     -- FPGA MAC Address (Xilinx OUI)                                        --
@@ -39,7 +39,7 @@ ARCHITECTURE rtl OF mac_snd IS
     -- EtherType Field: 0x0000                                              --
     --------------------------------------------------------------------------
     -- 0xc - 0xd
-    x"00", x"00",
+    x"00", x"2E",
 
     --------------------------------------------------------------------------
     -- Data Header                                                          --
@@ -63,6 +63,7 @@ ARCHITECTURE rtl OF mac_snd IS
     Lower, -- Send lower Nibble.
     Channel, -- Send Data channel.
     DataU, DataL, -- Send Actual data.
+    Padding, -- Padding 28 bytes.
     FrameCheck, -- No Frame Check for now.
     InterframeGap -- Gap between two cosecutive frames (93 Bit).
   );
@@ -169,11 +170,26 @@ BEGIN
           sin.c <= 0;
           IF s.a = 7 THEN
             sin.a <= 0;
-            sin.s <= FrameCheck;
+            sin.s <= Padding;
           ELSE
             sin.a <= s.a + 1;
             sin.s <= DataU;
           END IF;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+        -----------------------------------------------------------------------
+        -- Ethernet II - Padding 28 00s                                      --
+        -----------------------------------------------------------------------
+      WHEN Padding =>
+        E_TXD <= x"0";
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
+        IF s.c = 75 THEN
+          sin.c <= 0;
+          sin.s <= FrameCheck;
+          sin.crc <= 
         ELSE
           sin.c <= s.c + 1;
         END IF;

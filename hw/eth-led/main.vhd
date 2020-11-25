@@ -111,6 +111,8 @@ ARCHITECTURE rtl OF main IS
       el_snd_chnl : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
       el_snd_data : OUT data_t;
       el_snd_en : OUT STD_LOGIC;
+      E_CRS : IN STD_LOGIC;
+      E_COL : IN STD_LOGIC;
       -- DAC/ADC Connections.
       SPI_MISO : IN STD_LOGIC;
       SPI_MOSI : OUT STD_LOGIC;
@@ -192,6 +194,10 @@ BEGIN
     el_snd_chnl => el_snd_chnl,
     el_snd_data => el_snd_data,
     el_snd_en => el_snd_en,
+
+    E_COL => E_COL,
+    E_CRS => E_CRS,
+
     -- DAC/ADC Connections.
     SPI_MISO => SPI_MISO,
     SPI_MOSI => SPI_MOSI,
