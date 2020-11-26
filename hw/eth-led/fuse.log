@@ -13,8 +13,8 @@ Parsing VHDL file "/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Ye
 Parsing VHDL file "/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/eth-led/sndtest.vhd" into library work
 Starting static elaboration
 Completed static elaboration
-Fuse Memory Usage: 116552 KB
-Fuse CPU Usage: 1090 ms
+Fuse Memory Usage: 116560 KB
+Fuse CPU Usage: 1290 ms
 Compiling package standard
 Compiling package std_logic_1164
 Compiling package numeric_std
@@ -39,9 +39,8 @@ Compiling architecture rtl of entity io [io_default]
 Compiling architecture rtl of entity main [main_default]
 Compiling architecture behavior of entity sndtest
 Time Resolution for simulation is 1ps.
-Waiting for 1 sub-compilation(s) to finish...
 Compiled 35 VHDL Units
 Built simulation executable /mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/eth-led/sndtest_isim_beh.exe
-Fuse Memory Usage: 1229388 KB
-Fuse CPU Usage: 1470 ms
-GCC CPU Usage: 1750 ms
+Fuse Memory Usage: 1229400 KB
+Fuse CPU Usage: 1770 ms
+GCC CPU Usage: 2120 ms

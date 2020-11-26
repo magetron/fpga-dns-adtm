@@ -50,7 +50,7 @@ ARCHITECTURE rtl OF io IS
   --  + PULSE_WIDTH: Time between two EtherLab transmissions.                --
   -----------------------------------------------------------------------------
   CONSTANT FREQ : NATURAL := 50; -- [MHz] Frequency.
-  CONSTANT PULSE_WIDTH : NATURAL := 100; -- [msec] Time between two sends.
+  CONSTANT PULSE_WIDTH : NATURAL := 5000; -- [msec] Time between two sends.
 
   CONSTANT CYCLES_PER_MSEC : NATURAL := FREQ * 1000;
 
@@ -76,7 +76,6 @@ ARCHITECTURE rtl OF io IS
 
   SIGNAL r, rin : reg_t := reg_t'(Idle, x"00", x"00000", x"0", x"00", 0);
   SIGNAL s, sin : snd_t := snd_t'(Idle, (OTHERS => (OTHERS => '0')), 0, 0);
-  SIGNAL reg_e_crs : STD_LOGIC := '0';
   SIGNAL reg_e_col : STD_LOGIC := '0';
   SIGNAL reg_e_snd : STD_LOGIC := '0';
  BEGIN
@@ -278,7 +277,6 @@ ARCHITECTURE rtl OF io IS
     IF rising_edge(clk) THEN
       r <= rin;
       s <= sin;
-      reg_e_crs <= reg_e_crs OR E_CRS;
       reg_e_col <= reg_e_col OR E_COL;
       LED(0) <= E_CRS;
       LED(1) <= reg_e_col;

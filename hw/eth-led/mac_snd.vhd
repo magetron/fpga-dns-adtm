@@ -75,7 +75,7 @@ ARCHITECTURE rtl OF mac_snd IS
     a : NATURAL RANGE 0 TO 7;
   END RECORD;
 
-  SIGNAL s, sin : snd_t := snd_t'(Idle, "00001110101011101111000010010011", 0, 0);
+  SIGNAL s, sin : snd_t := snd_t'(Idle, "10110011001010000010110100101110", 0, 0);
 BEGIN
 
   snd_nsl : PROCESS (s, mem, en, el_chnl, el_data)
@@ -109,7 +109,7 @@ BEGIN
       WHEN StartOfFrame =>
         E_TXD <= x"d";
         E_TX_EN <= '1';
-        sin.crc <= "00001110101011101111000010010011";
+        sin.crc <= "10110011001010000010110100101110";
         sin.s <= Upper;
 
         -----------------------------------------------------------------------
@@ -186,7 +186,7 @@ BEGIN
         E_TXD <= x"0";
         E_TX_EN <= '1';
         --sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 75 THEN
+        IF s.c = 55 THEN
           sin.c <= 0;
           sin.s <= FrameCheck;
         ELSE
