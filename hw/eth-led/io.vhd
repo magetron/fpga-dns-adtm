@@ -52,7 +52,7 @@ ARCHITECTURE rtl OF io IS
   CONSTANT FREQ : NATURAL := 50; -- [MHz] Frequency.
   CONSTANT PULSE_WIDTH : NATURAL := 100; -- [msec] Time between two sends.
 
-  CONSTANT CYCLES_PER_MSEC : NATURAL := FREQ * 10000;
+  CONSTANT CYCLES_PER_MSEC : NATURAL := FREQ * 1000;
 
   TYPE state_t IS (Idle, Ready, AnalogOut, Send);
 

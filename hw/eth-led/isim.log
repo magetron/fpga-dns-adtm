@@ -1,14 +1,14 @@
 ISim log file
 Running: /mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/eth-led/sndtest_isim_beh.exe -intstyle ise -gui -tclbatch isim.cmd -wdb /mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/eth-led/sndtest_isim_beh.wdb 
+INFO: There is another simulation running in the same directory. Using database file name isim3.wdb.
 ISim P.20131013 (signature 0xfbc00daa)
-WARNING: A WEBPACK license was found.
-WARNING: Please use Xilinx License Configuration Manager to check out a full ISim license.
-WARNING: ISim will run in Lite mode. Please refer to the ISim documentation for more information on the differences between the Lite and the Full version.
-This is a Lite version of ISim.
+This is a Full version of ISim.
 Time resolution is 1 ps
 # onerror resume
 # wave add /
 # run 1000 ns
 Simulator is doing circuit initialization process.
 Finished circuit initialization process.
-# run 1 sec
+# run 100ms
+# run 101ms
+# exit 0
