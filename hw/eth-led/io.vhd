@@ -50,7 +50,7 @@ ARCHITECTURE rtl OF io IS
   --  + PULSE_WIDTH: Time between two EtherLab transmissions.                --
   -----------------------------------------------------------------------------
   CONSTANT FREQ : NATURAL := 50; -- [MHz] Frequency.
-  CONSTANT PULSE_WIDTH : NATURAL := 5000; -- [msec] Time between two sends.
+  CONSTANT PULSE_WIDTH : NATURAL := 1000; -- [msec] Time between two sends.
 
   CONSTANT CYCLES_PER_MSEC : NATURAL := FREQ * 1000;
 
