@@ -27,7 +27,7 @@ ARCHITECTURE rtl OF mac_snd IS
     -- Host PC MAC Address                                                  --
     --------------------------------------------------------------------------
     -- 0x0 - 0x5
-    x"00", x"0c", x"29", x"5f", x"29", x"ae",
+    x"00", x"e0", x"4c", x"6b", x"dc", x"98",
 
     --------------------------------------------------------------------------
     -- FPGA MAC Address (Xilinx OUI)                                        --
@@ -39,7 +39,7 @@ ARCHITECTURE rtl OF mac_snd IS
     -- EtherType Field: 0x0000                                              --
     --------------------------------------------------------------------------
     -- 0xc - 0xd
-    x"00", x"00",
+    x"08", x"00",
 
     --------------------------------------------------------------------------
     -- Data Header                                                          --
@@ -49,7 +49,7 @@ ARCHITECTURE rtl OF mac_snd IS
     -- packets sent by the host who captures in promiscuous mode only. This
     -- would cause the host to read it's own Version 1 packets as well.
     -- 0xe
-    x"02"
+    x"45"
   );
 
   ATTRIBUTE RAM_STYLE : STRING;
@@ -62,9 +62,10 @@ ARCHITECTURE rtl OF mac_snd IS
     Upper, -- Send upper Nibble.
     Lower, -- Send lower Nibble.
     Channel, -- Send Data channel.
-    DataU, DataL, -- Send Actual data.
-    FrameCheck, -- No Frame Check for now.
-    InterframeGap -- Gap between two cosecutive frames (93 Bit).
+    DataU, DataL, -- Send Actual data
+    Padding, -- Send Padding Data 28 00s
+    FrameCheck, -- CRC32
+    InterframeGap -- Gap between two cosecutive frames (24 Bit).
   );
 
   TYPE snd_t IS RECORD
@@ -169,11 +170,26 @@ BEGIN
           sin.c <= 0;
           IF s.a = 7 THEN
             sin.a <= 0;
-            sin.s <= FrameCheck;
+            sin.s <= Padding;
           ELSE
             sin.a <= s.a + 1;
             sin.s <= DataU;
           END IF;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+        -----------------------------------------------------------------------
+        -- Ethernet II - Padding 28 00s                                      --
+        -----------------------------------------------------------------------
+      WHEN Padding =>
+        E_TXD <= x"0";
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
+        IF s.c = 55 THEN
+          sin.c <= 0;
+          sin.a <= 0;
+          sin.s <= FrameCheck;
         ELSE
           sin.c <= s.c + 1;
         END IF;
