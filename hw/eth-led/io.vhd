@@ -19,8 +19,8 @@ ENTITY io IS
     el_snd_data : OUT data_t;
     el_snd_en : OUT STD_LOGIC;
 
-    E_CRS : IN STD_LOGIC;
-    E_COL : IN STD_LOGIC;
+    --E_CRS : IN STD_LOGIC;
+    --E_COL : IN STD_LOGIC;
 
     -- DAC/ADC Connections.
     SPI_MISO : IN STD_LOGIC;
@@ -80,7 +80,7 @@ ARCHITECTURE rtl OF io IS
   SIGNAL reg_e_snd : STD_LOGIC := '0';
  BEGIN
 
-  snd : PROCESS (s, SW, BTN, E_CRS)
+  snd : PROCESS (s, SW, BTN) --, E_CRS)
   BEGIN
 
     sin <= s;
@@ -270,17 +270,17 @@ ARCHITECTURE rtl OF io IS
   END PROCESS;
 
   DO <= r.do;
-  --LED <= r.led;
+  LED <= r.led;
 
-  reg : PROCESS (clk, E_CRS, E_COL)
+  reg : PROCESS (clk) --, E_CRS, E_COL)
   BEGIN
     IF rising_edge(clk) THEN
       r <= rin;
       s <= sin;
-      reg_e_col <= reg_e_col OR E_COL;
-      LED(0) <= E_CRS;
-      LED(1) <= reg_e_col;
-      LED(2) <= reg_e_snd;
+      --reg_e_col <= reg_e_col OR E_COL;
+      --LED(0) <= E_CRS;
+      --LED(1) <= reg_e_col;
+      --LED(2) <= reg_e_snd;
     END IF;
   END PROCESS;
 END rtl;

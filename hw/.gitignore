@@ -72,3 +72,6 @@ webtalk_pn.xml
 **/planAhead*/
 
 *.wdb
+*.log
+*.debug
+*.tcl

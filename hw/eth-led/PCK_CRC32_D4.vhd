@@ -10,7 +10,7 @@
 -- WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 --
 -- Purpose : synthesizable CRC function
---   * polynomial: (0 1 2 4 5 7 8 10 11 12 16 22 23 26 32)
+--   * polynomial: x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11 + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x^1 + 1
 --   * data width: 4
 --
 -- Info : tools@easics.be
@@ -20,29 +20,29 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 
 PACKAGE PCK_CRC32_D4 IS
-  -- polynomial: (0 1 2 4 5 7 8 10 11 12 16 22 23 26 32)
+  -- polynomial: x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11 + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x^1 + 1
   -- data width: 4
   -- convention: the first serial bit is D[3]
   FUNCTION nextCRC32_D4
   (
-    Data : STD_LOGIC_VECTOR(3 DOWNTO 0);
-    crc : STD_LOGIC_VECTOR(31 DOWNTO 0)
+    Data : STD_LOGIC_VECTOR(0 TO 3);
+    crc : STD_LOGIC_VECTOR(0 TO 31)
   ) RETURN STD_LOGIC_VECTOR;
 END PCK_CRC32_D4;
 PACKAGE BODY PCK_CRC32_D4 IS
 
-  -- polynomial: (0 1 2 4 5 7 8 10 11 12 16 22 23 26 32)
+  -- polynomial: x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11 + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x^1 + 1
   -- data width: 4
   -- convention: the first serial bit is D[3]
   FUNCTION nextCRC32_D4
   (
-    Data : STD_LOGIC_VECTOR(3 DOWNTO 0);
-    crc : STD_LOGIC_VECTOR(31 DOWNTO 0))
+    Data : STD_LOGIC_VECTOR(0 TO 3);
+    crc : STD_LOGIC_VECTOR(0 TO 31))
     RETURN STD_LOGIC_VECTOR IS
 
-    VARIABLE d : STD_LOGIC_VECTOR(3 DOWNTO 0);
-    VARIABLE c : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    VARIABLE newcrc : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    VARIABLE d : STD_LOGIC_VECTOR(0 TO 3);
+    VARIABLE c : STD_LOGIC_VECTOR(0 TO 31);
+    VARIABLE newcrc : STD_LOGIC_VECTOR(0 TO 31);
 
   BEGIN
     d := Data;

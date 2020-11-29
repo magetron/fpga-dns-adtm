@@ -27,7 +27,7 @@ ARCHITECTURE rtl OF mac_snd IS
     -- Host PC MAC Address                                                  --
     --------------------------------------------------------------------------
     -- 0x0 - 0x5
-    x"ff", x"ff", x"ff", x"ff", x"ff", x"ff",
+    x"00", x"e0", x"4c", x"6b", x"dc", x"98",
 
     --------------------------------------------------------------------------
     -- FPGA MAC Address (Xilinx OUI)                                        --
@@ -39,7 +39,7 @@ ARCHITECTURE rtl OF mac_snd IS
     -- EtherType Field: 0x0000                                              --
     --------------------------------------------------------------------------
     -- 0xc - 0xd
-    x"00", x"2E",
+    x"08", x"00",
 
     --------------------------------------------------------------------------
     -- Data Header                                                          --
@@ -49,7 +49,7 @@ ARCHITECTURE rtl OF mac_snd IS
     -- packets sent by the host who captures in promiscuous mode only. This
     -- would cause the host to read it's own Version 1 packets as well.
     -- 0xe
-    x"02"
+    x"45"
   );
 
   ATTRIBUTE RAM_STYLE : STRING;
@@ -65,7 +65,7 @@ ARCHITECTURE rtl OF mac_snd IS
     DataU, DataL, -- Send Actual data
     Padding, -- Send Padding Data 28 00s
     FrameCheck, -- CRC32
-    InterframeGap -- Gap between two cosecutive frames (93 Bit).
+    InterframeGap -- Gap between two cosecutive frames (24 Bit).
   );
 
   TYPE snd_t IS RECORD
@@ -75,7 +75,7 @@ ARCHITECTURE rtl OF mac_snd IS
     a : NATURAL RANGE 0 TO 7;
   END RECORD;
 
-  SIGNAL s, sin : snd_t := snd_t'(Idle, "10110011001010000010110100101110", 0, 0);
+  SIGNAL s, sin : snd_t := snd_t'(Idle, x"ffffffff", 0, 0);
 BEGIN
 
   snd_nsl : PROCESS (s, mem, en, el_chnl, el_data)
@@ -109,7 +109,7 @@ BEGIN
       WHEN StartOfFrame =>
         E_TXD <= x"d";
         E_TX_EN <= '1';
-        sin.crc <= "10110011001010000010110100101110";
+        sin.crc <= x"ffffffff";
         sin.s <= Upper;
 
         -----------------------------------------------------------------------
@@ -118,13 +118,13 @@ BEGIN
       WHEN Upper =>
         E_TXD <= mem(s.c)(3 DOWNTO 0);
         E_TX_EN <= '1';
-        --sin.crc <= nextCRC32_D4(mem(s.c)(3 DOWNTO 0), s.crc);
+        sin.crc <= nextCRC32_D4(mem(s.c)(3 DOWNTO 0), s.crc);
         sin.s <= Lower;
 
       WHEN Lower =>
         E_TXD <= mem(s.c)(7 DOWNTO 4);
         E_TX_EN <= '1';
-        --sin.crc <= nextCRC32_D4(mem(s.c)(7 DOWNTO 4), s.crc);
+        sin.crc <= nextCRC32_D4(mem(s.c)(7 DOWNTO 4), s.crc);
         IF s.c = 14 THEN
           sin.c <= 0;
           sin.s <= Channel;
@@ -139,7 +139,7 @@ BEGIN
       WHEN Channel =>
         E_TXD <= el_chnl(4 * s.c + 3 DOWNTO 4 * s.c);
         E_TX_EN <= '1';
-        --sin.crc <= nextCRC32_D4(el_chnl(4 * s.c + 3 DOWNTO 4 * s.c), s.crc);
+        sin.crc <= nextCRC32_D4(el_chnl(4 * s.c + 3 DOWNTO 4 * s.c), s.crc);
         IF s.c = 1 THEN
           sin.c <= 0;
           sin.a <= 0;
@@ -154,7 +154,7 @@ BEGIN
       WHEN DataU =>
         E_TXD <= el_data(s.a)(4 * s.c + 11 DOWNTO 4 * s.c + 8);
         E_TX_EN <= '1';
-        --sin.crc <= nextCRC32_D4(el_data(s.a)(4 * s.c + 11 DOWNTO 4 * s.c + 8), s.crc);
+        sin.crc <= nextCRC32_D4(el_data(s.a)(4 * s.c + 11 DOWNTO 4 * s.c + 8), s.crc);
         IF s.c = 1 THEN
           sin.c <= 0;
           sin.s <= DataL;
@@ -165,7 +165,7 @@ BEGIN
       WHEN DataL =>
         E_TXD <= el_data(s.a)(4 * s.c + 3 DOWNTO 4 * s.c);
         E_TX_EN <= '1';
-        --sin.crc <= nextCRC32_D4(el_data(s.a)(4 * s.c + 3 DOWNTO 4 * s.c), s.crc);
+        sin.crc <= nextCRC32_D4(el_data(s.a)(4 * s.c + 3 DOWNTO 4 * s.c), s.crc);
         IF s.c = 1 THEN
           sin.c <= 0;
           IF s.a = 7 THEN
@@ -185,20 +185,20 @@ BEGIN
       WHEN Padding =>
         E_TXD <= x"0";
         E_TX_EN <= '1';
-        --sin.crc <= nextCRC32_D4(x"0", s.crc);
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
         IF s.c = 55 THEN
           sin.c <= 0;
+          sin.a <= 0;
           sin.s <= FrameCheck;
         ELSE
           sin.c <= s.c + 1;
         END IF;
 
-
         -----------------------------------------------------------------------
         -- Ethernet II - Frame Check.                                        --
         -----------------------------------------------------------------------
       WHEN FrameCheck =>
-        E_TXD <= s.crc(4 * s.c + 3 DOWNTO 4 * s.c);
+        E_TXD <= NOT s.crc(4 * s.c + 3 DOWNTO 4 * s.c);
         E_TX_EN <= '1';
         IF s.c = 7 THEN
           sin.c <= 0;
