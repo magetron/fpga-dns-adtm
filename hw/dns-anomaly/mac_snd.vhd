@@ -12,7 +12,6 @@ ENTITY mac_snd IS
     E_TX_EN : OUT STD_LOGIC; -- Sender Enable.
     E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Sent Data.
     E_TX_ER : OUT STD_LOGIC; -- Sent Data Error.
-    el_chnl : IN STD_LOGIC_VECTOR(7 DOWNTO 0); -- Data channels.
     el_data : IN data_t; -- Actual data.
     en : IN STD_LOGIC -- User Start Send.
   );
