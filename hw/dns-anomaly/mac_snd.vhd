@@ -77,7 +77,7 @@ ARCHITECTURE rtl OF mac_snd IS
   SIGNAL s, sin : snd_t := snd_t'(Idle, x"ffffffff", 0, 0);
 BEGIN
 
-  snd_nsl : PROCESS (s, mem, en, el_chnl, el_data)
+  snd_nsl : PROCESS (s, mem, en, el_data)
   BEGIN
 
     sin <= s;
@@ -136,9 +136,9 @@ BEGIN
         -- Data - Channel Flags.                                             --
         -----------------------------------------------------------------------
       WHEN Channel =>
-        E_TXD <= el_chnl(4 * s.c + 3 DOWNTO 4 * s.c);
+        E_TXD <= x"0";
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(el_chnl(4 * s.c + 3 DOWNTO 4 * s.c), s.crc);
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
         IF s.c = 1 THEN
           sin.c <= 0;
           sin.a <= 0;
@@ -151,9 +151,9 @@ BEGIN
         --  Data. 8 channels  16 bit.                                        --
         -----------------------------------------------------------------------
       WHEN DataU =>
-        E_TXD <= el_data(s.a)(4 * s.c + 11 DOWNTO 4 * s.c + 8);
+        E_TXD <= x"0";
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(el_data(s.a)(4 * s.c + 11 DOWNTO 4 * s.c + 8), s.crc);
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
         IF s.c = 1 THEN
           sin.c <= 0;
           sin.s <= DataL;
@@ -162,9 +162,9 @@ BEGIN
         END IF;
 
       WHEN DataL =>
-        E_TXD <= el_data(s.a)(4 * s.c + 3 DOWNTO 4 * s.c);
+        E_TXD <= x"0";
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(el_data(s.a)(4 * s.c + 3 DOWNTO 4 * s.c), s.crc);
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
         IF s.c = 1 THEN
           sin.c <= 0;
           IF s.a = 7 THEN
