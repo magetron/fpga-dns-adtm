@@ -50,7 +50,16 @@ ARCHITECTURE rtl OF mac_rcv IS
   END RECORD;
 
   SIGNAL r, rin : rcv_t
-    := rcv_t'(Preamble, data_t'(x"0", x"0", x"0", x"0", x"0", x"0"), 0, 0);
+    := rcv_t'(
+      s => Preamble,
+      d => (
+        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'), ipLength => 0,
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0,
+        dns => (OTHERS => '0')
+      ),
+      c => 0
+    );
 
 BEGIN
 
@@ -78,23 +87,23 @@ BEGIN
 
         WHEN StartOfFrame =>
           IF E_RXD = x"d" THEN
-            rin.s <= EthernetMACDST;
+            rin.s <= EtherMACDST;
           ELSE
             rin.s <= Preamble;
           END IF;
 
         -- Ethernet II - MAC DST and MAC SRC
-        WHEN EthernetMACDST =>
-          rin.d.srcMAC((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD
+        WHEN EtherMACDST =>
+          rin.d.srcMAC((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
           IF r.c = 11 THEN
             rin.c <= 0;
-            rin.s <= EthernetMACSRC;
+            rin.s <= EtherMACSRC;
           ELSE
             rin.c <= r.c + 1;
           END IF;
 
-        WHEN EthernetMACSRC =>
-          rin.d.dstMAC((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD
+        WHEN EtherMACSRC =>
+          rin.d.dstMAC((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
           IF r.c = 11 THEN
             rin.c <= 0;
             rin.s <= EtherType;
@@ -103,7 +112,7 @@ BEGIN
           END IF;
 
         -- Ethernet II - Ethertype 0x0800
-        WHEN EtherTypeCheck =>
+        WHEN EtherType =>
           IF E_RXD = x"8" THEN
             IF r.c = 0 THEN
               rin.c <= r.c + 1;
@@ -144,7 +153,7 @@ BEGIN
           END IF;
 
         -- IP - DSCP ECN 0x00
-        WHEN IPIHL =>
+        WHEN IPDSCPECN =>
           IF E_RXD = x"0" THEN
             IF r.c = 1 THEN
               rin.c <= 0;
@@ -160,7 +169,7 @@ BEGIN
         -- IP - Length
         -- TODO: Ignore for now, could check
         WHEN IPLength =>
-          rin.d.ipLength <= r.d.ipLength * 16 + unsigned(E_RXD);
+          rin.d.ipLength <= r.d.ipLength * 16 + to_integer(unsigned(E_RXD));
           IF r.c = 15 THEN
             rin.c <= 0;
             rin.s <= IPID;
@@ -186,6 +195,10 @@ BEGIN
             ELSE
               rin.c <= r.c + 1;
             END IF;
+          ELSE
+            rin.c <= 0;
+            rin.s <= Preamble;
+          END IF;
 
         -- IP TTL
         WHEN IPTTL =>
@@ -262,10 +275,10 @@ BEGIN
 
         -- UDP payload length
         WHEN UDPLength =>
-          rin.d.dnsLength <= r.d.dnsLength * 16 + unsigned(E_RXD);
+          rin.d.dnsLength <= r.d.dnsLength * 16 + to_integer(unsigned(E_RXD));
           IF r.c = 3 THEN
             rin.c <= 0;
-            rin.d.dnsLength = r.d.dnsLength - 8; -- deduct UDP header 8
+            rin.d.dnsLength <= r.d.dnsLength - 8; -- deduct UDP header 8
             rin.s <= UDPChecksum;
           ELSE
             rin.c <= r.c + 1;

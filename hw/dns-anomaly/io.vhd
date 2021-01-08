@@ -45,11 +45,11 @@ ARCHITECTURE rtl OF io IS
 
   TYPE reg_t IS RECORD
     s : state_t;
-    chnl : STD_LOGIC_VECTOR(7 DOWNTO 0); -- Channel latch.
-    ao : STD_LOGIC_VECTOR(23 DOWNTO 4); -- Analog out register.
-    do : STD_LOGIC_VECTOR(3 DOWNTO 0); -- Digital out register.
+    --chnl : STD_LOGIC_VECTOR(7 DOWNTO 0); -- Channel latch.
+    --ao : STD_LOGIC_VECTOR(23 DOWNTO 4); -- Analog out register.
+    --do : STD_LOGIC_VECTOR(3 DOWNTO 0); -- Digital out register.
     led : STD_LOGIC_VECTOR(7 DOWNTO 0); -- LED register.
-    c : NATURAL RANGE 0 TO 23;
+    --c : NATURAL RANGE 0 TO 23;
   END RECORD;
 
   TYPE snd_state_t IS (
@@ -65,7 +65,7 @@ ARCHITECTURE rtl OF io IS
     p : NATURAL RANGE 0 TO PULSE_WIDTH - 1; -- Pulse counter.
   END RECORD;
 
-  SIGNAL r, rin : reg_t := reg_t'(Idle, x"00", x"00000", x"0", x"00", 0);
+  SIGNAL r, rin : reg_t := reg_t'(Idle, x"00");
   SIGNAL s, sin : snd_t := snd_t'(Idle, (OTHERS => (OTHERS => '0')), 0, 0);
   SIGNAL reg_e_col : STD_LOGIC := '0';
   SIGNAL reg_e_snd : STD_LOGIC := '0';
