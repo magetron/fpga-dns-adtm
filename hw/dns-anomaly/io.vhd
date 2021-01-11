@@ -39,15 +39,12 @@ ARCHITECTURE rtl OF io IS
   TYPE state_t IS (
     Idle,
     Ready,
-    AnalogOut,
     Send
   );
 
   TYPE reg_t IS RECORD
     s : state_t;
-    --chnl : STD_LOGIC_VECTOR(7 DOWNTO 0); -- Channel latch.
-    --ao : STD_LOGIC_VECTOR(23 DOWNTO 4); -- Analog out register.
-    --do : STD_LOGIC_VECTOR(3 DOWNTO 0); -- Digital out register.
+    d : data_t; -- Data struct
     led : STD_LOGIC_VECTOR(7 DOWNTO 0); -- LED register.
     --c : NATURAL RANGE 0 TO 23;
   END RECORD;
@@ -65,13 +62,34 @@ ARCHITECTURE rtl OF io IS
     p : NATURAL RANGE 0 TO PULSE_WIDTH - 1; -- Pulse counter.
   END RECORD;
 
-  SIGNAL r, rin : reg_t := reg_t'(Idle, x"00");
-  SIGNAL s, sin : snd_t := snd_t'(Idle, (OTHERS => (OTHERS => '0')), 0, 0);
-  SIGNAL reg_e_col : STD_LOGIC := '0';
-  SIGNAL reg_e_snd : STD_LOGIC := '0';
+  SIGNAL r, rin : reg_t
+    := reg_t'(
+      s => Idle,
+      d => (
+        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'), ipLength => 0,
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0,
+        dns => (OTHERS => '0')
+      ),
+      led => x"00"
+    );
+  SIGNAL s, sin : snd_t
+    := snd_t'(
+      s => Idle,
+      d => (
+        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'), ipLength => 0,
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0,
+        dns => (OTHERS => '0')
+      ),
+      q => 0,
+      p => 0
+    );
+  --SIGNAL reg_e_col : STD_LOGIC := '0';
+  --SIGNAL reg_e_snd : STD_LOGIC := '0';
  BEGIN
 
-  snd : PROCESS (s, SW, BTN) --, E_CRS)
+  snd : PROCESS (s) --, E_CRS)
   BEGIN
 
     sin <= s;
@@ -109,23 +127,25 @@ ARCHITECTURE rtl OF io IS
 
   el_snd_data <= s.d;
 
-  nsl : PROCESS (r, el_data, el_dv, clk90)
+  nsl : PROCESS (r, el_rcv_data, el_rcv_dv, clk90)
   BEGIN
 
+    rin <= r;
     el_rcv_ack <= '0'; -- Ethernet receiver data ready ACK.
 
     CASE r.s IS
       WHEN Idle =>
-        IF el_dv = '1' THEN
+        IF el_rcv_dv = '1' THEN
           rin.s <= Ready;
         END IF;
 
       WHEN Ready =>
-        rin.led(0) <= '0';
+        rin.led(0) <= '1';
         rin.s <= Send;
 
       WHEN Send =>
-        rin.led(7 DOWNTO 1) <= "000000";
+        rin.led(7 DOWNTO 1) <= "1111111";
+        rin.led(0) <= '0';
         rin.s <= Idle;
 
     END CASE;
