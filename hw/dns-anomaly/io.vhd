@@ -12,7 +12,7 @@ ENTITY io IS
     -- Data received.
     el_rcv_data : IN data_t;
     el_rcv_dv : IN STD_LOGIC;
-    el_rcv_ack : OUT STD_LOGIC;
+    --el_rcv_ack : OUT STD_LOGIC;
     -- Data to send.
     el_snd_data : OUT data_t;
     el_snd_en : OUT STD_LOGIC;
@@ -112,9 +112,7 @@ ARCHITECTURE rtl OF io IS
         END IF;
 
       WHEN Pulse =>
-        --sin.d(CHANNEL_E) <= x"000" & DI; -- Sample digital input.
-        --sin.d(CHANNEL_G) <= x"000" & BTN; -- Sample buttons.
-        --sin.d(CHANNEL_H) <= x"000" & SW; -- Sample switches.
+        sin.d <= s.d;
         sin.s <= Transmit;
 
       WHEN Transmit =>
@@ -131,7 +129,7 @@ ARCHITECTURE rtl OF io IS
   BEGIN
 
     rin <= r;
-    el_rcv_ack <= '0'; -- Ethernet receiver data ready ACK.
+    --el_rcv_ack <= '0'; -- Ethernet receiver data ready ACK.
 
     CASE r.s IS
       WHEN Idle =>

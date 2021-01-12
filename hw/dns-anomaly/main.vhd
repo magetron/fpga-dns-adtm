@@ -40,24 +40,6 @@ ENTITY main IS
     E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Sent Data.
     E_TX_ER : OUT STD_LOGIC; -- sent Data Error.
 
-    SPI_MISO : IN STD_LOGIC; -- Serial data in.
-    SPI_MOSI : OUT STD_LOGIC; -- Serial data out.
-    SPI_SCK : OUT STD_LOGIC; -- Serial Interface clock.
-    DAC_CS : OUT STD_LOGIC; -- D/A Converter chip sel.
-    DAC_CLR : OUT STD_LOGIC; -- D/A Converter reset.
-
-    SF_OE : OUT STD_LOGIC; -- StrataFlash.
-    SF_CE : OUT STD_LOGIC;
-    SF_WE : OUT STD_LOGIC;
-    FPGA_INIT_B : OUT STD_LOGIC;
-    AD_CONV : OUT STD_LOGIC; -- A/D Converter chip sel.
-    SPI_SS_B : OUT STD_LOGIC;
-    AMP_CS : OUT STD_LOGIC; -- Pre-Amplifier chip sel.
-
-    DI : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- 6-pin header J1.
-    DO : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- 6-pin header J2.
-    SW : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- SWITCHES.
-    BTN : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- BUTTONS.
     LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0) -- LEDs.
   );
 END main;
@@ -80,8 +62,8 @@ ARCHITECTURE rtl OF main IS
       E_RX_DV : IN STD_LOGIC; -- Received Data Valid.
       E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
       el_data : OUT data_t; -- Channel metadata.
-      el_dv : OUT STD_LOGIC; -- Data valid.
-      el_ack : IN STD_LOGIC -- Packet reception ACK.
+      el_dv : OUT STD_LOGIC -- Data valid.
+      --el_ack : IN STD_LOGIC -- Packet reception ACK.
     );
   END COMPONENT;
 
@@ -103,7 +85,7 @@ ARCHITECTURE rtl OF main IS
       -- data received.
       el_rcv_data : IN data_t;
       el_rcv_dv : IN STD_LOGIC;
-      el_rcv_ack : OUT STD_LOGIC;
+      --el_rcv_ack : OUT STD_LOGIC;
       -- data to send.
       el_snd_data : OUT data_t;
       el_snd_en : OUT STD_LOGIC;
@@ -118,7 +100,7 @@ ARCHITECTURE rtl OF main IS
 
   SIGNAL el_rcv_data : data_t; -- Actual data.
   SIGNAL el_rcv_dv : STD_LOGIC; -- Received data valid.
-  SIGNAL el_rcv_ack : STD_LOGIC; -- Packet reception ACK.
+  --SIGNAL el_rcv_ack : STD_LOGIC; -- Packet reception ACK.
 
   SIGNAL el_snd_data : data_t; -- Send data.
   SIGNAL el_snd_en : STD_LOGIC; -- Enable sending.
@@ -140,8 +122,8 @@ BEGIN
     E_RX_DV => E_RX_DV,
     E_RXD => E_RXD,
     el_data => el_rcv_data,
-    el_dv => el_rcv_dv,
-    el_ack => el_rcv_ack
+    el_dv => el_rcv_dv
+    --el_ack => el_rcv_ack
   );
 
   mac_send : mac_snd PORT MAP(
@@ -153,13 +135,13 @@ BEGIN
     el_data => el_snd_data
   );
 
-  ioio : io PORT MAP(
+  core : io PORT MAP(
     clk => clk0,
     clk90 => clk90,
     -- Data received.
-    el_rcv_data => el_data,
-    el_rcv_dv => el_dv,
-    el_rcv_ack => el_ack,
+    el_rcv_data => el_rcv_data,
+    el_rcv_dv => el_rcv_dv,
+    --el_rcv_ack => el_rcv_ack,
     -- Data to send.
     el_snd_data => el_snd_data,
     el_snd_en => el_snd_en,

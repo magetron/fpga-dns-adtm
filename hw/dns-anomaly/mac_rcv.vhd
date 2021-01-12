@@ -11,8 +11,8 @@ ENTITY mac_rcv IS
     E_RX_DV : IN STD_LOGIC; -- Received Data Valid.
     E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
     el_data : OUT data_t; -- Channel data.
-    el_dv : OUT STD_LOGIC; -- Data valid.
-    el_ack : IN STD_LOGIC -- Packet reception ACK.
+    el_dv : OUT STD_LOGIC -- Data valid.
+    --el_ack : IN STD_LOGIC -- Packet reception ACK.
   );
 END mac_rcv;
 
@@ -63,7 +63,7 @@ ARCHITECTURE rtl OF mac_rcv IS
 
 BEGIN
 
-  rcv_nsl : PROCESS (r, E_RX_DV, E_RXD, el_ack)
+  rcv_nsl : PROCESS (r, E_RX_DV, E_RXD) --, el_ack)
   BEGIN
 
     rin <= r;
@@ -302,7 +302,7 @@ BEGIN
             rin.c <= 0;
             rin.s <= Notify;
           ELSE
-            rin.c <= rin.c + 1;
+            rin.c <= r.c + 1;
           END IF;
 
         -- Notification                                                   --
