@@ -38,7 +38,7 @@ ARCHITECTURE rtl OF io IS
 
   TYPE state_t IS (
     Idle,
-    Ready,
+    Work,
     Send
   );
 
@@ -136,16 +136,15 @@ ARCHITECTURE rtl OF io IS
     CASE r.s IS
       WHEN Idle =>
         IF el_rcv_dv = '1' THEN
-          rin.s <= Ready;
+          rin.s <= Work;
         END IF;
 
-      WHEN Ready =>
-        rin.led(0) <= '1';
+      WHEN Work =>
+        rin.d <= el_rcv_data;
+        rin.led <= STD_LOGIC_VECTOR(to_unsigned(el_rcv_data.dnsLength, r.led'length));
         rin.s <= Send;
 
       WHEN Send =>
-        rin.led(3 DOWNTO 1) <= "111";
-        rin.led(0) <= '0';
         rin.s <= Idle;
 
     END CASE;
