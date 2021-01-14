@@ -71,7 +71,8 @@ ARCHITECTURE rtl OF io IS
     );
   SIGNAL s, sin : snd_t
     := snd_t'(
-      s => Idle,
+      -- TO BE Idle
+      s => Transmit,
       d => (
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
         srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),

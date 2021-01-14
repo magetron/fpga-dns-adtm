@@ -119,6 +119,11 @@ BEGIN
       WHEN StartOfFrame =>
         E_TXD <= x"d";
         E_TX_EN <= '1';
+
+        -- TO BE REMOVED
+        sin.d.srcMAC <= (x"000000350a00");
+        sin.d.dstMAC <= (x"98dc6b4ce000");
+
         sin.crc <= x"ffffffff";
         sin.s <= EtherMACDST;
 
