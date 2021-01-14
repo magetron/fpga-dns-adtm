@@ -67,10 +67,11 @@ ARCHITECTURE rtl OF io IS
       s => Idle,
       d => (
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'), ipLength => 0,
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0,
-        dns => (OTHERS => '0')
-      ),
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
+        ipHeaderLength => 0, ipLength => 0,
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
+        --dns => (OTHERS => '0')
+      )
       led => x"00"
     );
   SIGNAL s, sin : snd_t
@@ -78,9 +79,10 @@ ARCHITECTURE rtl OF io IS
       s => Idle,
       d => (
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'), ipLength => 0,
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0,
-        dns => (OTHERS => '0')
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
+        ipHeaderLength => 0, ipLength => 0,
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
+        --dns => (OTHERS => '0')
       ),
       q => 0,
       p => 0
@@ -142,7 +144,7 @@ ARCHITECTURE rtl OF io IS
         rin.s <= Send;
 
       WHEN Send =>
-        rin.led(7 DOWNTO 1) <= "1111111";
+        rin.led(3 DOWNTO 1) <= "111";
         rin.led(0) <= '0';
         rin.s <= Idle;
 

@@ -1,21 +1,3 @@
---------------------------------------------------------------------------------
--- ETHERLAB - FPGA To C# To LABVIEW Bridge                                    --
---------------------------------------------------------------------------------
--- Copyright (C)2012  Mathias H�rtnagl <mathias.hoertnagl@gmail.com>          --
---                                                                            --
--- This program is free software: you can redistribute it and/or modify       --
--- it under the terms of the GNU General Public License as published by       --
--- the Free Software Foundation, either version 3 of the License, or          --
--- (at your option) any later version.                                        --
---                                                                            --
--- This program is distributed in the hope that it will be useful,            --
--- but WITHOUT ANY WARRANTY; without even the implied warranty of             --
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              --
--- GNU General Public License for more details.                               --
---                                                                            --
--- You should have received a copy of the GNU General Public License          --
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.      --
---------------------------------------------------------------------------------
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
@@ -63,6 +45,7 @@ ARCHITECTURE rtl OF main IS
       E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
       el_data : OUT data_t; -- Channel metadata.
       el_dv : OUT STD_LOGIC -- Data valid.
+      --LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
       --el_ack : IN STD_LOGIC -- Packet reception ACK.
     );
   END COMPONENT;
@@ -122,7 +105,8 @@ BEGIN
     E_RX_DV => E_RX_DV,
     E_RXD => E_RXD,
     el_data => el_rcv_data,
-    el_dv => el_rcv_dv
+    el_dv => el_rcv_dv,
+    --LED => LED
     --el_ack => el_rcv_ack
   );
 

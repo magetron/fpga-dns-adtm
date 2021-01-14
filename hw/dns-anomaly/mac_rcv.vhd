@@ -11,7 +11,8 @@ ENTITY mac_rcv IS
     E_RX_DV : IN STD_LOGIC; -- Received Data Valid.
     E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
     el_data : OUT data_t; -- Channel data.
-    el_dv : OUT STD_LOGIC -- Data valid.
+    el_dv : OUT STD_LOGIC; -- Data valid.
+    --LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
     --el_ack : IN STD_LOGIC -- Packet reception ACK.
   );
 END mac_rcv;
@@ -25,7 +26,7 @@ ARCHITECTURE rtl OF mac_rcv IS
     EtherType, -- Next Protocol 0x0800
     IPVersion, -- 4 bits IP Version 0x4
     IPIHL, -- 4 bits IP IHL 0x5
-    IPDSCPECN, -- 1 byte DSCP 6 bits + ECN 2 bits 0x00
+    IPDSCPECN, -- 1 byte DSCP 6 bits + ECN 2 bits 0x?0
     IPLength, -- 2 byte IP Length
     IPID, -- 2 byte IPID
     IPFlagsFragment, -- 2 byte Flags 3 bits + Fragment Offset 13 bits 0x00
@@ -34,6 +35,7 @@ ARCHITECTURE rtl OF mac_rcv IS
     IPChecksum, -- 2 byte
     IPAddrSRC, -- 4 byte IP Addr SRC
     IPAddrDST, -- 4 byte IP Addr DST
+    IPOptions, -- dependent on IPIHL size > 5
     UDPPortSRC, -- 2 byte UDP Port SRC
     UDPPortDST, -- 2 byte UDP Port DST
     UDPLength,  -- 2 byte UDP Length
@@ -46,6 +48,7 @@ ARCHITECTURE rtl OF mac_rcv IS
     s : state_t; -- Receiver Parse State
     d : data_t;  -- Parse Data
     c : NATURAL RANGE 0 TO 367; -- Counter : MAX 1472/8 - 1
+    led : STD_LOGIC_VECTOR(7 DOWNTO 0);
     --a : NATURAL RANGE 0 TO 7;  -- Array Counter
   END RECORD;
 
@@ -54,11 +57,13 @@ ARCHITECTURE rtl OF mac_rcv IS
       s => Preamble,
       d => (
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'), ipLength => 0,
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0,
-        dns => (OTHERS => '0')
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
+        ipHeaderLength => 0, ipLength => 0,
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
+        --dns => (OTHERS => '0')
       ),
-      c => 0
+      c => 0,
+      led => x"00"
     );
 
 BEGIN
@@ -78,6 +83,7 @@ BEGIN
             IF r.c = 14 THEN
               rin.c <= 0;
               rin.s <= StartOfFrame;
+              rin.led <= x"00";
             ELSE
               rin.c <= r.c + 1;
             END IF;
@@ -123,20 +129,13 @@ BEGIN
           ELSIF E_RXD = x"0" THEN
             IF r.c = 3 THEN
               rin.c <= 0;
-              rin.s <= IPVersion;
+              rin.s <= IPIHL;
+            ELSIF r.c = 0 THEN
+              rin.c <= 0;
+              rin.s <= Preamble;
             ELSE
               rin.c <= r.c + 1;
             END IF;
-          ELSE
-            rin.c <= 0;
-            rin.s <= Preamble;
-          END IF;
-
-        -- IP - Version 0x4                                                 --
-        WHEN IPVersion =>
-          IF E_RXD = x"4" THEN
-            rin.c <= 0;
-            rin.s <= IPIHL;
           ELSE
             rin.c <= 0;
             rin.s <= Preamble;
@@ -144,7 +143,19 @@ BEGIN
 
         -- IP - IHL 0x5
         WHEN IPIHL =>
-          IF E_RXD = x"5" THEN
+          rin.d.ipHeaderLength <= to_integer(unsigned(E_RXD));
+          IF (E_RXD >= x"5") THEN
+            rin.c <= 0;
+            rin.s <= IPVersion;
+          ELSE
+            rin.c <= 0;
+            rin.d.ipHeaderLength <= 0;
+            rin.s <= Preamble;
+          END IF;
+
+        -- IP - Version 0x4                                                 --
+        WHEN IPVersion =>
+          IF E_RXD = x"4" THEN
             rin.c <= 0;
             rin.s <= IPDSCPECN;
           ELSE
@@ -152,25 +163,20 @@ BEGIN
             rin.s <= Preamble;
           END IF;
 
-        -- IP - DSCP ECN 0x00
+        -- IP - DSCP ECN 0x?0
         WHEN IPDSCPECN =>
-          IF E_RXD = x"0" THEN
-            IF r.c = 1 THEN
-              rin.c <= 0;
-              rin.s <= IPLength;
-            ELSE
-              rin.c <= r.c + 1;
-            END IF;
-          ELSE
+          IF r.c = 1 THEN
             rin.c <= 0;
-            rin.s <= Preamble;
+            rin.s <= IPLength;
+          ELSE
+            rin.c <= r.c + 1;
           END IF;
 
         -- IP - Length
         -- TODO: Ignore for now, could check
         WHEN IPLength =>
           rin.d.ipLength <= r.d.ipLength * 16 + to_integer(unsigned(E_RXD));
-          IF r.c = 15 THEN
+          IF r.c = 3 THEN
             rin.c <= 0;
             rin.s <= IPID;
           ELSE
@@ -179,7 +185,7 @@ BEGIN
 
         -- IP - ID
         WHEN IPID =>
-          IF r.c = 15 THEN
+          IF r.c = 3 THEN
             rin.c <= 0;
             rin.s <= IPFlagsFragment;
           ELSE
@@ -189,7 +195,7 @@ BEGIN
         -- IP Flags Fragment Offset 0x00
         WHEN IPFlagsFragment =>
           IF E_RXD = x"0" THEN
-            IF r.c = 15 THEN
+            IF r.c = 3 THEN
               rin.c <= 0;
               rin.s <= IPTTL;
             ELSE
@@ -248,6 +254,19 @@ BEGIN
           rin.d.dstIP((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
           IF r.c = 7 THEN
             rin.c <= 0;
+            IF r.d.ipHeaderLength = 5 THEN
+              rin.s <= UDPPortSRC;
+            ELSE
+              rin.s <= IPOptions;
+            END IF;
+          ELSE
+            rin.c <= r.c + 1;
+          END IF;
+
+        -- IP Options, dependent on IPIHL > 5
+        WHEN IPOptions =>
+          IF (r.c = (r.d.ipHeaderLength - 5) * 8 - 1) THEN
+            rin.c <= 0;
             rin.s <= UDPPortSRC;
           ELSE
             rin.c <= r.c + 1;
@@ -297,7 +316,7 @@ BEGIN
         -- DNS Msg
         -- TODO: If possible, Parsing on the fly
         WHEN DNSMsg =>
-          rin.d.dns((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
+          --rin.d.dns((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
           IF r.c = (r.d.dnsLength * 2 - 1) THEN
             rin.c <= 0;
             rin.s <= Notify;
