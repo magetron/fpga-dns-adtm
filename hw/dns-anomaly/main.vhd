@@ -57,7 +57,7 @@ ARCHITECTURE rtl OF main IS
       E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Sent Data.
       E_TX_ER : OUT STD_LOGIC; -- Sent Data Error.
       el_data : IN data_t; -- Actual Data
-      en : IN STD_LOGIC -- User Start Send.
+      el_snd_en : IN STD_LOGIC -- User Start Send.
     );
   END COMPONENT;
 
@@ -88,7 +88,7 @@ ARCHITECTURE rtl OF main IS
   SIGNAL el_snd_data : data_t; -- Send data.
   SIGNAL el_snd_en : STD_LOGIC; -- Enable sending.
 
-  SIGNAL clk90 : STD_LOGIC; -- Clock shiftet 90 degree.
+  SIGNAL clk90 : STD_LOGIC; -- Clock shift right 90 degree.
   SIGNAL clk0 : STD_LOGIC;
 BEGIN
 
@@ -115,7 +115,7 @@ BEGIN
     E_TX_EN => E_TX_EN,
     E_TXD => E_TXD,
     E_TX_ER => E_TX_ER,
-    en => el_snd_en,
+    el_snd_en => el_snd_en,
     el_data => el_snd_data
   );
 

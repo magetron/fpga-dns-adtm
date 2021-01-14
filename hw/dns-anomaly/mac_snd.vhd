@@ -13,7 +13,7 @@ ENTITY mac_snd IS
     E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Sent Data.
     E_TX_ER : OUT STD_LOGIC; -- Sent Data Error.
     el_data : IN data_t; -- Actual data.
-    en : IN STD_LOGIC -- User Start Send.
+    el_snd_en : IN STD_LOGIC -- User Start Send.
   );
 END mac_snd;
 
@@ -21,33 +21,18 @@ ARCHITECTURE rtl OF mac_snd IS
 
   TYPE mem_t IS ARRAY(0 TO 14) OF STD_LOGIC_VECTOR(7 DOWNTO 0);
 
+  -- TO BE REMOVED
   SIGNAL mem : mem_t := (
-    --------------------------------------------------------------------------
-    -- Host PC MAC Address                                                  --
-    --------------------------------------------------------------------------
-    -- 0x0 - 0x5
+    -- DST MAC Address
     x"00", x"e0", x"4c", x"6b", x"dc", x"98",
 
-    --------------------------------------------------------------------------
     -- FPGA MAC Address (Xilinx OUI)                                        --
-    --------------------------------------------------------------------------
-    -- 0x6 - 0xb
     x"00", x"0a", x"35", x"00", x"00", x"00",
 
-    --------------------------------------------------------------------------
     -- EtherType Field: 0x0000                                              --
-    --------------------------------------------------------------------------
-    -- 0xc - 0xd
     x"08", x"00",
 
-    --------------------------------------------------------------------------
     -- Data Header                                                          --
-    --------------------------------------------------------------------------
-    -- Data Version.
-    -- Hardware returns Version 2 packets to distinguish them from Version 1
-    -- packets sent by the host who captures in promiscuous mode only. This
-    -- would cause the host to read it's own Version 1 packets as well.
-    -- 0xe
     x"45"
   );
 
@@ -60,38 +45,66 @@ ARCHITECTURE rtl OF mac_snd IS
     StartOfFrame, -- d
     EtherMACDST, -- 6 Byte MAC address DST
     EtherMACSRC, -- 6 Byte MAC address SRC
+    EtherType, -- 0x0800
+    IPVersion, -- 0x4
+    IPIHL, -- 0x5
+    IPDSCPECN, -- 0x00
+    IPLength, -- ipLength
+    -- IPID, -- 0x00
+    -- IPFlagsFragment, -- 0x00
+    -- IPTTL, -- 0x40
+    -- IPProtocol, -- 0x11
+    -- IPChecksum, -- Checksum
+    -- IPAddrSRC, -- IPAddr SRC
+    -- IPAddrDST, -- IPAddr DST
+    -- UDPPortSRC, -- 2 byte UDP SRC
+    -- UDPPortDST, -- 2 byte UDP DST
+    -- UDPChecksum, -- Checksum,
+    -- DNSMsg, -- 1472 Max bytes
     FrameCheck, -- CRC32
     InterframeGap -- Gap between two cosecutive frames (24 Bit).
   );
 
   TYPE snd_t IS RECORD
     s : state_t;
+    d : data_t;
     crc : STD_LOGIC_VECTOR(31 DOWNTO 0); -- CRC32 latch.
-    c : NATURAL RANGE 0 TO 63;
-    a : NATURAL RANGE 0 TO 7;
+    c : NATURAL RANGE 0 TO 367;
   END RECORD;
 
-  SIGNAL s, sin : snd_t := snd_t'(Idle, x"ffffffff", 0, 0);
+  SIGNAL s, sin : snd_t
+    := snd_t'(
+      s => Idle,
+      d => (
+        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
+        ipHeaderLength => 0, ipLength => 0,
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
+        --dns => (OTHERS => '0')
+      ),
+      crc => x"ffffffff",
+      c => 0
+    );
+
 BEGIN
 
-  snd_nsl : PROCESS (s, mem, en, el_data)
+  snd_nsl : PROCESS (s, mem, el_snd_en, el_data)
   BEGIN
 
     sin <= s;
+    sin.d <= el_data;
     E_TX_EN <= '0';
     E_TXD <= x"0";
     E_TX_ER <= '0';
 
     CASE s.s IS
       WHEN Idle =>
-        IF en = '1' THEN
+        IF el_snd_en = '1' THEN
           sin.c <= 0;
           sin.s <= Preamble;
         END IF;
 
-        -----------------------------------------------------------------------
-        -- Ethernet II - Preamble and Start Of Frame.                        --
-        -----------------------------------------------------------------------
+      -- Preamble, 15 5s (including nibble for start of frame)
       WHEN Preamble =>
         E_TXD <= x"5";
         E_TX_EN <= '1';
@@ -102,97 +115,97 @@ BEGIN
           sin.c <= s.c + 1;
         END IF;
 
+      -- start of frame (0xd)
       WHEN StartOfFrame =>
         E_TXD <= x"d";
         E_TX_EN <= '1';
         sin.crc <= x"ffffffff";
-        sin.s <= Upper;
+        sin.s <= EtherMACDST;
 
-        -----------------------------------------------------------------------
-        -- Custom Protocol Transmit.                                         --
-        -----------------------------------------------------------------------
-      WHEN Upper =>
-        E_TXD <= mem(s.c)(3 DOWNTO 0);
+      -- Ethernet DST MAC
+      WHEN EtherMACDST =>
+        E_TXD <= s.d.dstMAC((s.c * 4 + 3) DOWNTO (s.c * 4));
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(mem(s.c)(3 DOWNTO 0), s.crc);
-        sin.s <= Lower;
-
-      WHEN Lower =>
-        E_TXD <= mem(s.c)(7 DOWNTO 4);
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(mem(s.c)(7 DOWNTO 4), s.crc);
-        IF s.c = 14 THEN
+        sin.crc <= nextCRC32_D4(s.d.dstMAC((s.c * 4 + 3) DOWNTO (s.c * 4)), s.crc);
+        IF s.c = 11 THEN
           sin.c <= 0;
-          sin.s <= Channel;
-        ELSE
-          sin.c <= s.c + 1;
-          sin.s <= Upper;
-        END IF;
-
-        -----------------------------------------------------------------------
-        -- Data - Channel Flags.                                             --
-        -----------------------------------------------------------------------
-      WHEN Channel =>
-        E_TXD <= x"0";
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 1 THEN
-          sin.c <= 0;
-          sin.a <= 0;
-          sin.s <= DataU;
+          sin.s <= EtherMACSRC;
         ELSE
           sin.c <= s.c + 1;
         END IF;
 
-        -----------------------------------------------------------------------
-        --  Data. 8 channels  16 bit.                                        --
-        -----------------------------------------------------------------------
-      WHEN DataU =>
-        E_TXD <= x"0";
+      -- Ethernet SRC MAC
+      WHEN EtherMACSRC =>
+        E_TXD <= s.d.srcMAC((s.c * 4 + 3) DOWNTO (s.c * 4));
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 1 THEN
+        sin.crc <= nextCRC32_D4(s.d.srcMAC((s.c * 4 + 3) DOWNTO (s.c * 4)), s.crc);
+        IF s.c = 11 THEN
           sin.c <= 0;
-          sin.s <= DataL;
+          sin.s <= EtherType;
         ELSE
           sin.c <= s.c + 1;
         END IF;
 
-      WHEN DataL =>
-        E_TXD <= x"0";
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 1 THEN
-          sin.c <= 0;
-          IF s.a = 7 THEN
-            sin.a <= 0;
-            sin.s <= Padding;
+      -- Ethertype 0x0800
+      WHEN EtherType =>
+        IF s.c = 0 THEN
+          E_TXD <= x"8";
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(x"8", s.crc);
+          sin.c <= s.c + 1;
+        ELSE
+          E_TXD <= x"0";
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(x"0", s.crc);
+          IF s.c = 3 THEN
+            sin.c <= 0;
+            sin.s <= IPIHL;
           ELSE
-            sin.a <= s.a + 1;
-            sin.s <= DataU;
+            sin.c <= s.c + 1;
           END IF;
-        ELSE
-          sin.c <= s.c + 1;
         END IF;
 
-        -----------------------------------------------------------------------
-        -- Ethernet II - Padding 28 00s                                      --
-        -----------------------------------------------------------------------
-      WHEN Padding =>
+      -- IP IHL 5
+      WHEN IPIHL =>
+        E_TXD <= x"5";
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(x"5", s.crc);
+        sin.c <= 0;
+        sin.s <= IPVersion;
+
+      -- IP Version 4
+      WHEN IPVersion =>
+        E_TXD <= x"4";
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(x"4", s.crc);
+        sin.c <= 0;
+        sin.s <= IPDSCPECN;
+
+      -- IP DSCP ECN 0x00
+      WHEN IPDSCPECN =>
         E_TXD <= x"0";
         E_TX_EN <= '1';
         sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 55 THEN
+        IF s.c = 1 THEN
           sin.c <= 0;
-          sin.a <= 0;
-          sin.s <= FrameCheck;
+          sin.s <= IPLength;
         ELSE
           sin.c <= s.c + 1;
         END IF;
 
-        -----------------------------------------------------------------------
-        -- Ethernet II - Frame Check.                                        --
-        -----------------------------------------------------------------------
+      WHEN IPLength =>
+        -- TODO: FIX THIS
+        E_TXD <= x"0";
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
+        IF s.c = 50 THEN
+          sin.c <= 0;
+          sin.s <= IPLength;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- Ethernet Frame Check Sequence
       WHEN FrameCheck =>
         E_TXD <= NOT s.crc(4 * s.c + 3 DOWNTO 4 * s.c);
         E_TX_EN <= '1';
@@ -203,9 +216,7 @@ BEGIN
           sin.c <= s.c + 1;
         END IF;
 
-        -----------------------------------------------------------------------
-        -- Ethernet II - Interframe Gap.                                     --
-        -----------------------------------------------------------------------
+      -- Ethernet Interframe Gap
       WHEN InterframeGap =>
         IF s.c = 23 THEN
           sin.c <= 0;
