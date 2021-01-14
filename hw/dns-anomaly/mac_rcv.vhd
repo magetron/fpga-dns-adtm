@@ -21,8 +21,8 @@ ARCHITECTURE rtl OF mac_rcv IS
 
   TYPE state_t IS (
     Preamble, StartOfFrame, -- 7 Bytes 0x55, 1 Byte 0x5d.
-    EtherMACDST, -- 6 Byte MAC addresses DST
-    EtherMACSRC, -- 6 Byte MAC addresses SRC
+    EtherMACDST, -- 6 Byte MAC address DST
+    EtherMACSRC, -- 6 Byte MAC address SRC
     EtherType, -- Next Protocol 0x0800
     IPVersion, -- 4 bits IP Version 0x4
     IPIHL, -- 4 bits IP IHL 0x5

@@ -58,11 +58,8 @@ ARCHITECTURE rtl OF mac_snd IS
     Idle, -- Wait for signal en.
     Preamble, -- 55 55 55 55 55 55 55 5
     StartOfFrame, -- d
-    Upper, -- Send upper Nibble.
-    Lower, -- Send lower Nibble.
-    Channel, -- Send Data channel.
-    DataU, DataL, -- Send Actual data
-    Padding, -- Send Padding Data 28 00s
+    EtherMACDST, -- 6 Byte MAC address DST
+    EtherMACSRC, -- 6 Byte MAC address SRC
     FrameCheck, -- CRC32
     InterframeGap -- Gap between two cosecutive frames (24 Bit).
   );
