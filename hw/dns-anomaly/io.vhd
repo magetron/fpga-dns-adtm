@@ -71,7 +71,7 @@ ARCHITECTURE rtl OF io IS
         ipHeaderLength => 0, ipLength => 0,
         srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
         --dns => (OTHERS => '0')
-      )
+      ),
       led => x"00"
     );
   SIGNAL s, sin : snd_t

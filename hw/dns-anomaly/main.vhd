@@ -105,7 +105,7 @@ BEGIN
     E_RX_DV => E_RX_DV,
     E_RXD => E_RXD,
     el_data => el_rcv_data,
-    el_dv => el_rcv_dv,
+    el_dv => el_rcv_dv
     --LED => LED
     --el_ack => el_rcv_ack
   );
