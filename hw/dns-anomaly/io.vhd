@@ -121,8 +121,8 @@ ARCHITECTURE rtl OF io IS
       WHEN Work =>
         rin.d <= el_rcv_data;
         rin.led <= STD_LOGIC_VECTOR(to_unsigned(el_rcv_data.dnsLength, r.led'length));
-        rin.d.srcMAC <= (x"000000350a00");
-        rin.d.dstMAC <= (x"98dc6b4ce000");
+        rin.d.srcMAC <= x"000000350a00";
+        rin.d.dstMAC <= x"98dc6b4ce000";
         rin.s <= Send;
 
       WHEN Send =>

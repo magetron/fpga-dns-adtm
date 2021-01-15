@@ -92,6 +92,8 @@ ARCHITECTURE rtl OF main IS
   SIGNAL clk0 : STD_LOGIC;
 BEGIN
 
+  E_MDC <= '0';
+
   inst_clock : clock PORT MAP(
     clkin_in => clk,
     rst_in => '0',

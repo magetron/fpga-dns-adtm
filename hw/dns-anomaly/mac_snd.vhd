@@ -43,8 +43,10 @@ ARCHITECTURE rtl OF mac_snd IS
     Idle, -- Wait for signal en.
     Preamble, -- 55 55 55 55 55 55 55 5
     StartOfFrame, -- d
-    EtherMACDST, -- 6 Byte MAC address DST
-    EtherMACSRC, -- 6 Byte MAC address SRC
+    --EtherUpper, -- 6 Byte MAC address Upper nibble
+    --EtherLower, -- 6 Byte MAC address Lower nibble
+    EtherMACDST, -- 6 Byte MAC DST address
+    EtherMACSRC, -- 6 Byte MAC SRC address
     EtherType, -- 0x0800
     IPVersion, -- 0x4
     IPIHL, -- 0x5
@@ -92,7 +94,6 @@ BEGIN
   BEGIN
 
     sin <= s;
-    sin.d <= el_data;
     E_TX_EN <= '0';
     E_TXD <= x"0";
     E_TX_ER <= '0';
@@ -102,6 +103,7 @@ BEGIN
         IF el_snd_en = '1' THEN
           sin.c <= 0;
           sin.s <= Preamble;
+          sin.d <= el_data;
         END IF;
 
       -- Preamble, 15 5s (including nibble for start of frame)
@@ -121,11 +123,30 @@ BEGIN
         E_TX_EN <= '1';
 
         -- TO BE REMOVED
-        sin.d.srcMAC <= (x"000000350a00");
-        sin.d.dstMAC <= (x"98dc6b4ce000");
+        sin.d.srcMAC <= x"000000350a00";
+        sin.d.dstMAC <= x"98dc6b4ce000";
 
         sin.crc <= x"ffffffff";
         sin.s <= EtherMACDST;
+
+      -- WHEN EtherUpper =>
+      --   E_TXD <= mem(s.c)(3 DOWNTO 0);
+      --   E_TX_EN <= '1';
+      --   sin.crc <= nextCRC32_D4(mem(s.c)(3 DOWNTO 0), s.crc);
+      --   sin.s <= EtherLower;
+
+      -- WHEN EtherLower =>
+      --   E_TXD <= mem(s.c)(7 DOWNTO 4);
+      --   E_TX_EN <= '1';
+      --   sin.crc <= nextCRC32_D4(mem(s.c)(7 DOWNTO 4), s.crc);
+      --   IF s.c = 14 THEN
+      --     sin.c <= 0;
+      --     -- TODO: change this
+      --     sin.s <= IPLength;
+      --   ELSE
+      --     sin.c <= s.c + 1;
+      --     sin.s <= EtherUpper;
+      --   END IF;
 
       -- Ethernet DST MAC
       WHEN EtherMACDST =>
@@ -188,24 +209,24 @@ BEGIN
 
       -- IP DSCP ECN 0x00
       WHEN IPDSCPECN =>
-        E_TXD <= x"0";
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 1 THEN
-          sin.c <= 0;
-          sin.s <= IPLength;
-        ELSE
-          sin.c <= s.c + 1;
-        END IF;
+       E_TXD <= x"0";
+       E_TX_EN <= '1';
+       sin.crc <= nextCRC32_D4(x"0", s.crc);
+       IF s.c = 1 THEN
+         sin.c <= 0;
+         sin.s <= IPLength;
+       ELSE
+         sin.c <= s.c + 1;
+       END IF;
 
       WHEN IPLength =>
-        -- TODO: FIX THIS
-        E_TXD <= x"0";
+        -- TODO: IMPL this
+        E_TXD <= x"C";
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 50 THEN
+        sin.crc <= nextCRC32_D4(x"C", s.crc);
+        IF s.c = 365 THEN
           sin.c <= 0;
-          sin.s <= IPLength;
+          sin.s <= FrameCheck;
         ELSE
           sin.c <= s.c + 1;
         END IF;
