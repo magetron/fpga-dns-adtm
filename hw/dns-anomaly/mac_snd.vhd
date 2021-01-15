@@ -59,9 +59,10 @@ ARCHITECTURE rtl OF mac_snd IS
     IPChecksum, -- Checksum
     IPAddrSRC, -- IPAddr SRC
     IPAddrDST, -- IPAddr DST
-    -- UDPPortSRC, -- 2 byte UDP SRC
-    -- UDPPortDST, -- 2 byte UDP DST
-    -- UDPChecksum, -- Checksum,
+    UDPPortSRC, -- 2 byte UDP SRC
+    UDPPortDST, -- 2 byte UDP dst
+    UDPLength, -- 2 byte UDP Length
+    UDPChecksum, -- Checksum,
     DNSMsg, -- 1472 Max bytes
     FrameCheck, -- CRC32
     InterframeGap -- Gap between two cosecutive frames (24 Bit).
@@ -90,6 +91,7 @@ ARCHITECTURE rtl OF mac_snd IS
 
 BEGIN
 
+  -- POSSIBLE solution: try prepare 4 bits clk before sending
   snd_nsl : PROCESS (s, el_snd_en, el_data) -- mem
   BEGIN
 
@@ -123,6 +125,7 @@ BEGIN
         E_TX_EN <= '1';
 
         sin.crc <= x"ffffffff";
+        sin.c <= 0;
         sin.s <= EtherMACDST;
 
       -- Ethernet DST MAC
@@ -196,7 +199,7 @@ BEGIN
          sin.c <= s.c + 1;
        END IF;
 
-      -- IPLength
+      -- IPLength, WRONG byte order! FIX ME!
       WHEN IPLength =>
         E_TXD <= STD_LOGIC_VECTOR(to_unsigned(s.d.ipLength, E_TXD'length));
         E_TX_EN <= '1';
@@ -294,12 +297,59 @@ BEGIN
         IF s.c = 7 THEN
           sin.c <= 0;
           -- Update ME
-          sin.s <= DNSMsg;
+          sin.s <= UDPPortSRC;
         ELSE
           sin.c <= s.c + 1;
         END IF;
 
-      -- UDP Port
+      -- UDP Port SRC
+      WHEN UDPPortSRC =>
+        E_TXD <= s.d.srcPort((s.c * 4) DOWNTO (s.c * 4));
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(s.d.srcPort((s.c * 4) DOWNTO (s.c * 4)), s.crc);
+        IF s.c = 3 THEN
+          sin.c <= 0;
+          sin.s <= UDPPortDST;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- UDP Port DST
+      WHEN UDPPortDST =>
+        E_TXD <= s.d.dstPort((s.c * 4) DOWNTO (s.c * 4));
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(s.d.dstPort((s.c * 4) DOWNTO (s.c * 4)), s.crc);
+        IF s.c = 3 THEN
+          sin.c <= 0;
+          sin.s <= UDPLength;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- UDP Length, ALSO WRONG BYTE ORDER!
+      WHEN UDPLength =>
+        E_TXD <= STD_LOGIC_VECTOR(to_unsigned(s.d.dnsLength, E_TXD'length));
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(STD_LOGIC_VECTOR(to_unsigned(s.d.dnsLength, E_TXD'length)), s.crc);
+        sin.d.dnsLength <= s.d.dnsLength / 16;
+        IF s.c = 3 THEN
+          sin.c <= 0;
+          sin.s <= UDPChecksum;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- UDP checksum
+      WHEN UDPChecksum =>
+        E_TXD <= x"0";
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
+        IF s.c = 3 THEN
+          sin.c <= 0;
+          sin.s <= DNSMsg;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
 
       -- DNS Message
       WHEN DNSMsg =>

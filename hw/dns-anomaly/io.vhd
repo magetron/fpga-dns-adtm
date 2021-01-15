@@ -80,10 +80,14 @@ ARCHITECTURE rtl OF io IS
 
       WHEN Work =>
         -- DO Processing
-        sin.d.srcMAC <= x"000000350a00";
+        --sin.d.srcMAC <= x"000000350a00";
+        --sin.d.dstMAC <= x"98dc6b4ce000";
+        sin.d.srcMAC <= s.d.dstMAC;
         sin.d.dstMAC <= x"98dc6b4ce000";
         sin.d.srcIP <= s.d.dstIP;
         sin.d.dstIP <= s.d.srcIP;
+        sin.d.srcPort <= s.d.dstPort;
+        sin.d.dstPort <= s.d.srcPort;
         sin.s <= Send;
 
       WHEN Send =>
