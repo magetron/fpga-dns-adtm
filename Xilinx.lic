@@ -1,0 +1,731 @@
+# ----- REMOVE LINES ABOVE HERE --------------------------
+#
+# This license is valid from Mon Jan 11 20:37:49 UTC 2021.
+#
+# This is license NODELOCKED to HOSTID=000c293f7c38;
+# there is no need to run lmgrd for this license.
+#
+#
+#  This license is valid for evaluation ( 30 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT VIVADO_HLS xilinxd 2022.01 11-feb-2021 uncounted \
+F5C2362EF5E0 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,VIVADO_HLS,software,evaluation,_212057335_0_0_848 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_osd xilinxd 2022.01 13-mar-2021 uncounted 74D9DAD3C240 \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_osd,ip,evaluation,_212057335_0_0_700 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+# Licenses for v_osd
+FEATURE v_osd xilinxd 1.0 13-mar-2021 uncounted 860DE801CAB3 \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+# Licenses for v_osd_v1_0
+FEATURE v_osd_v1_0 xilinxd 1.0 13-mar-2021 uncounted 1D6F5695C34D \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_rgb2ycrcd xilinxd 2022.01 13-mar-2021 uncounted \
+718D53F03FFF \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_rgb2ycrcd,ip,evaluation,_212057335_0_0_048 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+# Licenses for v_rgb2ycrcb
+FEATURE v_rgb2ycrcb xilinxd 1.0 13-mar-2021 uncounted 2BAD2525189F \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+# Licenses for v_rgb2ycrcb_v2
+FEATURE v_rgb2ycrcb_v2 xilinxd 1.0 13-mar-2021 uncounted 969BCB9EF890 \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_ycrcb2rgb xilinxd 2022.01 13-mar-2021 uncounted \
+BA1E6FCAC622 \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_ycrcb2rgb,ip,evaluation,_212057335_0_0_444 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+# Licenses for v_ycrcb2rgb
+FEATURE v_ycrcb2rgb xilinxd 1.0 13-mar-2021 uncounted B2C38D50DE5B \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+# Licenses for v_ycrcb2rgb_v2
+FEATURE v_ycrcb2rgb_v2 xilinxd 1.0 13-mar-2021 uncounted 6705194B4CD2 \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_tc xilinxd 2022.01 13-mar-2021 uncounted 1A8CAD7A9226 \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_tc,ip,evaluation,_212057335_0_0_602 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+# Licenses for v_tc
+FEATURE v_tc xilinxd 1.0 13-mar-2021 uncounted D432034A2887 \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_cresample xilinxd 2022.01 13-mar-2021 uncounted \
+D84421A675E5 \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_cresample,ip,evaluation,_212057335_0_0_401 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+# Licenses for v_cresample
+FEATURE v_cresample xilinxd 1.0 13-mar-2021 uncounted 0F3646662A0E \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_tpg xilinxd 2022.01 13-mar-2021 uncounted 1C4ABCE7D634 \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_tpg,ip,evaluation,_212057335_0_0_526 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+# Licenses for v_tpg
+FEATURE v_tpg xilinxd 1.0 13-mar-2021 uncounted A92222467139 \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT ap_cc xilinxd 2022.01 13-mar-2021 uncounted 52C2199AA0D0 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,ap_cc,software,evaluation,_212057335_0_0_427 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_ycrcb2rgb_v2 xilinxd 2022.01 13-mar-2021 uncounted \
+7E71C698CAF6 \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_ycrcb2rgb_v2,ip,evaluation,_212057335_0_0_502 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT SDSoC_Tools xilinxd 2022.01 13-mar-2021 uncounted \
+98C951961BD0 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,SDSoC_Tools,software,evaluation,_212057335_0_0_625 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu3eg-es1 xilinxd 2022.01 13-mar-2021 uncounted \
+D4ECC31DDE77 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu3eg-es1,software,evaluation,_212057335_0_0_548 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu9eg-es1 xilinxd 2022.01 13-mar-2021 uncounted \
+C0B9748AAC23 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu9eg-es1,software,evaluation,_212057335_0_0_844 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT ap_sdsoc xilinxd 2022.01 13-mar-2021 uncounted CAAA3955B890 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,ap_sdsoc,software,evaluation,_212057335_0_0_303 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_rgb2ycrcb_v2 xilinxd 2022.01 13-mar-2021 uncounted \
+B28C01C029FA \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_rgb2ycrcb_v2,ip,evaluation,_212057335_0_0_427 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_hdmi xilinxd 2022.01 13-mar-2021 uncounted 4874F7D7BF2D \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_hdmi,ip,evaluation,_212057335_0_0_744 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+# Licenses for v_hdmi
+FEATURE v_hdmi xilinxd 1.0 13-mar-2021 uncounted ADC4148684A6 \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_proc_ss xilinxd 2022.01 13-mar-2021 uncounted \
+66823FDC2FCA \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_proc_ss,ip,evaluation,_212057335_0_0_662 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+# Licenses for v_proc_ss
+FEATURE v_proc_ss xilinxd 1.0 13-mar-2021 uncounted 3C709FBDD288 \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU2EG-EVAL xilinxd 2022.01 13-mar-2021 uncounted \
+424BDAFD2E67 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU2EG-EVAL,software,evaluation,_212057335_0_0_401 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU6EG-EVAL xilinxd 2022.01 13-mar-2021 uncounted \
+BB0C49659F6D \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU6EG-EVAL,software,evaluation,_212057335_0_0_160 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT mipi_csi2_rx_ctrl xilinxd 2022.01 13-mar-2021 uncounted \
+43760EA57704 \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,mipi_csi2_rx_ctrl,ip,evaluation,_212057335_0_0_863 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+# Licenses for mipi_csi2_rx_ctrl
+FEATURE mipi_csi2_rx_ctrl xilinxd 1.0 13-mar-2021 uncounted \
+4BD2C52651E4 VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU9EG-ES1_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+F99DA886FFBC \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU9EG-ES1_bitgen,software,evaluation,_212057335_0_0_105 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT v_mix xilinxd 2022.01 13-mar-2021 uncounted CB7803845776 \
+VENDOR_STRING=License_Type:Hardware_Evaluation;patrick.wu.17@ucl.ac.uk,v_mix,ip,evaluation,_212057335_0_0_603 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" NOTICE="The license \
+for this core was generated for patrick.wu.17@ucl.ac.uk on \
+01/12/2021It is the responsibility of the Licensee of this \
+core to adhere to all terms and conditions of the applicable \
+license agreement when using this core." START=11-Jan-2021 \
+TS_OK
+#
+# Licenses for v_mix
+FEATURE v_mix xilinxd 1.0 13-mar-2021 uncounted 7A9A04475685 \
+VENDOR_STRING=License_Type:Hardware_Evaluation \
+HOSTID=000c293f7c38 ISSUER=Xilinx NOTICE="The license for this \
+core was generated for patrick.wu.17@ucl.ac.uk on 01/12/2021It \
+is the responsibility of the Licensee of this core to adhere \
+to all terms and conditions of the applicable license \
+agreement when using this core." TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU3EG-ES1_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+8B2458685979 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU3EG-ES1_bitgen,software,evaluation,_212057335_0_0_246 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU15EG-ES1 xilinxd 2022.01 13-mar-2021 uncounted \
+AFB89423CCAB \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU15EG-ES1,software,evaluation,_212057335_0_0_343 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU15EG-ES1_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+D060D80CCB95 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU15EG-ES1_bitgen,software,evaluation,_212057335_0_0_043 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU4EV-EVAL xilinxd 2022.01 13-mar-2021 uncounted \
+56864CCCE558 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU4EV-EVAL,software,evaluation,_212057335_0_0_165 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU5EV-EVAL xilinxd 2022.01 13-mar-2021 uncounted \
+038C666E2F62 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU5EV-EVAL,software,evaluation,_212057335_0_0_803 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU11EG-EVAL xilinxd 2022.01 13-mar-2021 uncounted \
+3ADD8670ACBE \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU11EG-EVAL,software,evaluation,_212057335_0_0_826 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU17EG-EVAL xilinxd 2022.01 13-mar-2021 uncounted \
+23C1382C2E18 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU17EG-EVAL,software,evaluation,_212057335_0_0_600 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU9EG-ES2_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+DF8D3CBB21D5 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU9EG-ES2_bitgen,software,evaluation,_212057335_0_0_341 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU19EG-ES2 xilinxd 2022.01 13-mar-2021 uncounted \
+0C05AA9ABC70 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU19EG-ES2,software,evaluation,_212057335_0_0_847 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU19EG-ES2_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+1038900DE426 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU19EG-ES2_bitgen,software,evaluation,_212057335_0_0_126 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU9EG-ES2 xilinxd 2022.01 13-mar-2021 uncounted \
+009EAF602101 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU9EG-ES2,software,evaluation,_212057335_0_0_003 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU19EG xilinxd 2022.01 13-mar-2021 uncounted 399ACE55E54D \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU19EG,software,evaluation,_212057335_0_0_607 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT XCZU9EG xilinxd 2022.01 13-mar-2021 uncounted 95026B65F32F \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,XCZU9EG,software,evaluation,_212057335_0_0_506 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu4ev xilinxd 2022.01 13-mar-2021 uncounted A1143A306BBB \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu4ev,software,evaluation,_212057335_0_0_320 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu5ev xilinxd 2022.01 13-mar-2021 uncounted 5F311A144EF1 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu5ev,software,evaluation,_212057335_0_0_307 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu7ev xilinxd 2022.01 13-mar-2021 uncounted E4C26A0AD6E7 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu7ev,software,evaluation,_212057335_0_0_503 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu7ev_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+D7F1F8464DF0 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu7ev_bitgen,software,evaluation,_212057335_0_0_164 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xazu2eg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+2F26FB796A2A \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xazu2eg_bitgen,software,evaluation,_212057335_0_0_742 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu2cg xilinxd 2022.01 13-mar-2021 uncounted 566E21DDCC43 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu2cg,software,evaluation,_212057335_0_0_529 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu2cg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+76713A4E78DD \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu2cg_bitgen,software,evaluation,_212057335_0_0_446 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu3cg xilinxd 2022.01 13-mar-2021 uncounted CF6C4E24BB33 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu3cg,software,evaluation,_212057335_0_0_848 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu3cg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+FBA31F3FE7E8 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu3cg_bitgen,software,evaluation,_212057335_0_0_245 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu4ev_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+81F5B7DBCCCB \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu4ev_bitgen,software,evaluation,_212057335_0_0_501 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu2eg xilinxd 2022.01 13-mar-2021 uncounted 2014372C0D9E \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu2eg,software,evaluation,_212057335_0_0_668 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu2eg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+C3962E8AE2B2 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu2eg_bitgen,software,evaluation,_212057335_0_0_167 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu3eg xilinxd 2022.01 13-mar-2021 uncounted 0191A22D1A4E \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu3eg,software,evaluation,_212057335_0_0_161 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu3eg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+27B2A8D42700 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu3eg_bitgen,software,evaluation,_212057335_0_0_226 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu4eg xilinxd 2022.01 13-mar-2021 uncounted D8F7702323E6 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu4eg,software,evaluation,_212057335_0_0_928 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu4eg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+6AA88E2A6C9B \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu4eg_bitgen,software,evaluation,_212057335_0_0_002 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu4cg xilinxd 2022.01 13-mar-2021 uncounted 5A50D202243D \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu4cg,software,evaluation,_212057335_0_0_623 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu4cg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+B48A73C31C7A \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu4cg_bitgen,software,evaluation,_212057335_0_0_746 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu5eg xilinxd 2022.01 13-mar-2021 uncounted 9F6F1CB576C8 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu5eg,software,evaluation,_212057335_0_0_521 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu5eg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+609F111FCBE3 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu5eg_bitgen,software,evaluation,_212057335_0_0_944 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu5cg xilinxd 2022.01 13-mar-2021 uncounted E4A5871CA858 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu5cg,software,evaluation,_212057335_0_0_865 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu5cg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+78691B0B51FF \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu5cg_bitgen,software,evaluation,_212057335_0_0_122 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu7eg xilinxd 2022.01 13-mar-2021 uncounted 55E56F3C2C36 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu7eg,software,evaluation,_212057335_0_0_243 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu7eg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+753A85FD5DD0 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu7eg_bitgen,software,evaluation,_212057335_0_0_247 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu7cg xilinxd 2022.01 13-mar-2021 uncounted 2669EF9E5042 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu7cg,software,evaluation,_212057335_0_0_269 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu7cg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+02C3E0D22932 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu7cg_bitgen,software,evaluation,_212057335_0_0_440 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu6eg xilinxd 2022.01 13-mar-2021 uncounted 87B32C0EACC5 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu6eg,software,evaluation,_212057335_0_0_267 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu6eg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+1186B0DAEE31 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu6eg_bitgen,software,evaluation,_212057335_0_0_024 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu6cg xilinxd 2022.01 13-mar-2021 uncounted B03D41F1520F \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu6cg,software,evaluation,_212057335_0_0_749 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu6cg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+097AC155B282 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu6cg_bitgen,software,evaluation,_212057335_0_0_102 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu9cg xilinxd 2022.01 13-mar-2021 uncounted 308435858B43 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu9cg,software,evaluation,_212057335_0_0_364 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu9cg_bitgen xilinxd 2022.01 13-mar-2021 uncounted \
+6A1E59FFBDB9 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu9cg_bitgen,software,evaluation,_212057335_0_0_302 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu11eg xilinxd 2022.01 13-mar-2021 uncounted A98AE1715211 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu11eg,software,evaluation,_212057335_0_0_168 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu15eg xilinxd 2022.01 13-mar-2021 uncounted BDD85D5358AC \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu15eg,software,evaluation,_212057335_0_0_161 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 60 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT xczu17eg xilinxd 2022.01 13-mar-2021 uncounted 30406A0545C2 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,xczu17eg,software,evaluation,_212057335_0_0_828 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 30 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT SDAccel xilinxd 2022.01 11-feb-2021 uncounted 8D76D2C59384 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,SDAccel,software,evaluation,_212057335_0_0_348 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+# This is a permanent license generated on Mon Jan 11 20:37:49 UTC 2021
+INCREMENT ISE_Embedded_Edition xilinxd 2022.01 permanent uncounted \
+0F3B22DC1616 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,ISE_Embedded_Edition,software,permanent,_212057335_0_0_743 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 365 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT PetaLinux_NoSuport_Eval xilinxd 2022.01 12-jan-2022 \
+uncounted FA78806CA28B \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,PetaLinux_NoSuport_Eval,software,evaluation,_212057335_0_0_524 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 30 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT Vivado_System_Edition xilinxd 2022.01 11-feb-2021 uncounted \
+935FD947986F \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,Vivado_System_Edition,software,evaluation,_212057335_0_0_409 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 30 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT ISE_System_Edition xilinxd 2022.01 11-feb-2021 uncounted \
+0F06ABAB8690 \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,ISE_System_Edition,software,evaluation,_212057335_0_0_628 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#  This license is valid for evaluation ( 90 days ) from Mon Jan 11 20:37:49 UTC 2021
+INCREMENT ModelComposer xilinxd 2022.01 12-apr-2021 uncounted \
+947A47C89D9A \
+VENDOR_STRING=patrick.wu.17@ucl.ac.uk,ModelComposer,software,evaluation,_212057335_0_0_065 \
+HOSTID=000c293f7c38 ISSUER="Xilinx Inc" START=11-Jan-2021 \
+TS_OK
+#
+#
+# ----------------------------------------------------------------------
+#  The following PACKAGE definition is a REQUIRED part of this license:
+#
+PACKAGE SDSoC_Tools xilinxd 2022.01 5AD6931DA1E8 COMPONENTS="SDK \
+XC7Z010 XC7Z030 XC7Z045 Simulation Analyzer XC7Z020 ap_cc \
+XC7Z100 ap_sdsoc xc7z015 xc7z035" OPTIONS=SUITE
+#
+# ------------------------------------------------------------------------------
+#
+#
+# ----------------------------------------------------------------------
+#  The following PACKAGE definition is a REQUIRED part of this license:
+#
+PACKAGE SDAccel xilinxd 2022.01 5242E54D64BD \
+COMPONENTS="PartialReconfiguration Simulation Implementation \
+Analyzer HLS Synthesis ap_opencl" OPTIONS=SUITE
+#
+# ------------------------------------------------------------------------------
+#
+#
+# ----------------------------------------------------------------------
+#  The following PACKAGE definition is a REQUIRED part of this license:
+#
+PACKAGE ISE_Embedded_Edition xilinxd 2022.01 A4FDA472094B \
+COMPONENTS="SDK ChipScopePro_SIOTK ChipscopePro ISE XPS ISIM \
+PlanAhead" OPTIONS=SUITE
+#
+# ------------------------------------------------------------------------------
+#
+#
+# ----------------------------------------------------------------------
+#  The following PACKAGE definition is a REQUIRED part of this license:
+#
+PACKAGE PetaLinux_NoSuport_Eval xilinxd 2022.01 B33F9EBD777A \
+COMPONENTS="petalinux_arch_microblaze petalinux_arch_ppc \
+petalinux_arch_zynq" OPTIONS=SUITE
+#
+# ------------------------------------------------------------------------------
+#
+#
+# ----------------------------------------------------------------------
+#  The following PACKAGE definition is a REQUIRED part of this license:
+#
+PACKAGE Vivado_System_Edition xilinxd 2022.01 66370E080347 \
+COMPONENTS="SDK SysGen PartialReconfiguration Simulation \
+Implementation Analyzer HLS Synthesis ModelComposer" \
+OPTIONS=SUITE
+#
+# ------------------------------------------------------------------------------
+#
+#
+# ----------------------------------------------------------------------
+#  The following PACKAGE definition is a REQUIRED part of this license:
+#
+PACKAGE ISE_System_Edition xilinxd 2022.01 8668009E3BB0 \
+COMPONENTS="ChipScopePro_SIOTK ChipscopePro ISE SysGen XPS HLS \
+ISIM PlanAhead" OPTIONS=SUITE
+#
+# ------------------------------------------------------------------------------
+#
+# ----- REMOVE LINES BELOW HERE --------------------------

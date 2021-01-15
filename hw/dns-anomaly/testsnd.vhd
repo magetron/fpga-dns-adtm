@@ -5,10 +5,10 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
 
-ENTITY sndtest IS
-END sndtest;
+ENTITY testsnd IS
+END testsnd;
 
-ARCHITECTURE behavior OF sndtest IS
+ARCHITECTURE behavior OF testsnd IS
 
   -- Component Declaration for the Unit Under Test (UUT)
 
@@ -27,22 +27,6 @@ ARCHITECTURE behavior OF sndtest IS
       E_TX_EN : OUT STD_LOGIC;
       E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
       E_TX_ER : OUT STD_LOGIC;
-      SPI_MISO : IN STD_LOGIC;
-      SPI_MOSI : OUT STD_LOGIC;
-      SPI_SCK : OUT STD_LOGIC;
-      DAC_CS : OUT STD_LOGIC;
-      DAC_CLR : OUT STD_LOGIC;
-      SF_OE : OUT STD_LOGIC;
-      SF_CE : OUT STD_LOGIC;
-      SF_WE : OUT STD_LOGIC;
-      FPGA_INIT_B : OUT STD_LOGIC;
-      AD_CONV : OUT STD_LOGIC;
-      SPI_SS_B : OUT STD_LOGIC;
-      AMP_CS : OUT STD_LOGIC;
-      DI : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
-      DO : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-      SW : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
-      BTN : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
       LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
     );
   END COMPONENT;
@@ -56,34 +40,18 @@ ARCHITECTURE behavior OF sndtest IS
   SIGNAL E_RXD : STD_LOGIC_VECTOR(3 DOWNTO 0) := (OTHERS => '0');
   SIGNAL E_RX_ER : STD_LOGIC := '0';
   SIGNAL E_TX_CLK : STD_LOGIC := '0';
-  SIGNAL SPI_MISO : STD_LOGIC := '0';
-  SIGNAL DI : STD_LOGIC_VECTOR(3 DOWNTO 0) := (OTHERS => '0');
-  SIGNAL SW : STD_LOGIC_VECTOR(3 DOWNTO 0) := (OTHERS => '0');
-  SIGNAL BTN : STD_LOGIC_VECTOR(3 DOWNTO 0) := (OTHERS => '0');
 
   --Outputs
   SIGNAL E_MDC : STD_LOGIC;
   SIGNAL E_TX_EN : STD_LOGIC;
   SIGNAL E_TXD : STD_LOGIC_VECTOR(3 DOWNTO 0);
   SIGNAL E_TX_ER : STD_LOGIC;
-  SIGNAL SPI_MOSI : STD_LOGIC;
-  SIGNAL SPI_SCK : STD_LOGIC;
-  SIGNAL DAC_CS : STD_LOGIC;
-  SIGNAL DAC_CLR : STD_LOGIC;
-  SIGNAL SF_OE : STD_LOGIC;
-  SIGNAL SF_CE : STD_LOGIC;
-  SIGNAL SF_WE : STD_LOGIC;
-  SIGNAL FPGA_INIT_B : STD_LOGIC;
-  SIGNAL AD_CONV : STD_LOGIC;
-  SIGNAL SPI_SS_B : STD_LOGIC;
-  SIGNAL AMP_CS : STD_LOGIC;
-  SIGNAL DO : STD_LOGIC_VECTOR(3 DOWNTO 0);
   SIGNAL LED : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
   -- Clock period definitions
-  CONSTANT clk_period : TIME := 20 ns;
-  CONSTANT E_RX_CLK_period : TIME := 40 ns;
-  CONSTANT E_TX_CLK_period : TIME := 40 ns;
+  CONSTANT clk_period : TIME := 10 ns;
+  CONSTANT E_RX_CLK_period : TIME := 10 ns;
+  CONSTANT E_TX_CLK_period : TIME := 10 ns;
 
 BEGIN
 
@@ -102,22 +70,6 @@ BEGIN
     E_TX_EN => E_TX_EN,
     E_TXD => E_TXD,
     E_TX_ER => E_TX_ER,
-    SPI_MISO => SPI_MISO,
-    SPI_MOSI => SPI_MOSI,
-    SPI_SCK => SPI_SCK,
-    DAC_CS => DAC_CS,
-    DAC_CLR => DAC_CLR,
-    SF_OE => SF_OE,
-    SF_CE => SF_CE,
-    SF_WE => SF_WE,
-    FPGA_INIT_B => FPGA_INIT_B,
-    AD_CONV => AD_CONV,
-    SPI_SS_B => SPI_SS_B,
-    AMP_CS => AMP_CS,
-    DI => DI,
-    DO => DO,
-    SW => SW,
-    BTN => BTN,
     LED => LED
   );
 
@@ -152,15 +104,7 @@ BEGIN
     WAIT FOR 100 ns;
 
     WAIT FOR clk_period * 10;
-
-    -- insert stimulus here
-    --BTN(0) <= '1';
-    --BTN(1) <= '1';
-
-    WAIT FOR 1 sec;
-
-    --BTN(1) <= '0';
-    --BTN(0) <= '0';
+    WAIT FOR 100 ns;
 
     WAIT;
   END PROCESS;
