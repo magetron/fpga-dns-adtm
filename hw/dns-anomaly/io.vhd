@@ -40,25 +40,15 @@ ARCHITECTURE rtl OF io IS
     Send
   );
 
-  TYPE reg_t IS RECORD
+  TYPE iostate_t IS RECORD
     s : state_t;
     d : data_t; -- Data struct
     led : STD_LOGIC_VECTOR(7 DOWNTO 0); -- LED register.
-    --c : NATURAL RANGE 0 TO 23;
+    c : NATURAL RANGE 0 TO 255;
   END RECORD;
 
-  TYPE snd_state_t IS (
-    Idle,
-    Transmit
-  );
-
-  TYPE snd_t IS RECORD
-    s : snd_state_t;
-    d : data_t; -- Data struct.
-  END RECORD;
-
-  SIGNAL r, rin : reg_t
-    := reg_t'(
+  SIGNAL s, sin : iostate_t
+    := iostate_t'(
       s => Idle,
       d => (
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
@@ -67,82 +57,51 @@ ARCHITECTURE rtl OF io IS
         srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
         --dns => (OTHERS => '0')
       ),
-      led => x"00"
-    );
-  SIGNAL s, sin : snd_t
-    := snd_t'(
-      -- TO BE Idle
-      s => Transmit,
-      d => (
-        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
-        ipHeaderLength => 0, ipLength => 0,
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
-        --dns => (OTHERS => '0')
-      )
+      led => x"00",
+      c => 0
     );
   --SIGNAL reg_e_col : STD_LOGIC := '0';
   --SIGNAL reg_e_snd : STD_LOGIC := '0';
  BEGIN
 
-  snd : PROCESS (s) --, E_CRS)
+  rcvsnd : PROCESS (s, el_rcv_data, el_rcv_dv, clk90)
   BEGIN
 
     sin <= s;
-
-    el_snd_en <= '0'; -- Turn off Ethernet packet sending.
-
-    CASE s.s IS
-
-      WHEN Idle =>
-        sin.s <= Idle;
-
-      WHEN Transmit =>
-        el_snd_data <= s.d;
-        el_snd_en <= '1'; -- Send Ethernet packet.
-        sin.s <= Idle;
-        --reg_e_snd <= '1';
-
-    END CASE;
-  END PROCESS;
-
-  nsl : PROCESS (r, el_rcv_data, el_rcv_dv, clk90)
-  BEGIN
-
-    rin <= r;
+    el_snd_en <= '0';
     --el_rcv_ack <= '0'; -- Ethernet receiver data ready ACK.
 
-    CASE r.s IS
+    CASE s.s IS
       WHEN Idle =>
         IF el_rcv_dv = '1' THEN
-          rin.s <= Work;
+          sin.d <= el_rcv_data;
+          sin.s <= Work;
         END IF;
 
       WHEN Work =>
-        rin.d <= el_rcv_data;
-        rin.led <= STD_LOGIC_VECTOR(to_unsigned(el_rcv_data.dnsLength, r.led'length));
-        rin.d.srcMAC <= x"000000350a00";
-        rin.d.dstMAC <= x"98dc6b4ce000";
-        rin.s <= Send;
+        -- DO Processing
+        sin.d.srcMAC <= x"000000350a00";
+        sin.d.dstMAC <= x"98dc6b4ce000";
+        sin.d.srcIP <= s.d.dstIP;
+        sin.d.dstIP <= s.d.srcIP;
+        sin.s <= Send;
 
       WHEN Send =>
-        rin.s <= Idle;
+        el_snd_en <= '1'; -- Send Ethernet packet.
+        sin.c <= s.c + 1;
+        sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.c + 1, sin.led'length));
+        sin.s <= Idle;
 
     END CASE;
   END PROCESS;
 
-  LED <= r.led;
+  LED <= s.led;
+  el_snd_data <= s.d;
 
   reg : PROCESS (clk) --, E_CRS, E_COL)
   BEGIN
     IF rising_edge(clk) THEN
-      r <= rin;
-      IF rin.s = Send THEN
-        s.s <= Transmit;
-        s.d <= r.d;
-      ELSE
-        s <= sin;
-      END IF;
+      s <= sin;
     END IF;
   END PROCESS;
 END rtl;

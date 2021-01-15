@@ -48,7 +48,6 @@ ARCHITECTURE rtl OF mac_rcv IS
     s : state_t; -- Receiver Parse State
     d : data_t;  -- Parse Data
     c : NATURAL RANGE 0 TO 367; -- Counter : MAX 1472/8 - 1
-    led : STD_LOGIC_VECTOR(7 DOWNTO 0);
     --a : NATURAL RANGE 0 TO 7;  -- Array Counter
   END RECORD;
 
@@ -62,8 +61,7 @@ ARCHITECTURE rtl OF mac_rcv IS
         srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
         --dns => (OTHERS => '0')
       ),
-      c => 0,
-      led => x"00"
+      c => 0
     );
 
 BEGIN
@@ -83,7 +81,6 @@ BEGIN
             IF r.c = 14 THEN
               rin.c <= 0;
               rin.s <= StartOfFrame;
-              rin.led <= x"00";
             ELSE
               rin.c <= r.c + 1;
             END IF;
@@ -100,7 +97,7 @@ BEGIN
 
         -- Ethernet II - MAC DST and MAC SRC
         WHEN EtherMACDST =>
-          rin.d.srcMAC((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
+          rin.d.dstMAC((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
           IF r.c = 11 THEN
             rin.c <= 0;
             rin.s <= EtherMACSRC;
@@ -109,7 +106,7 @@ BEGIN
           END IF;
 
         WHEN EtherMACSRC =>
-          rin.d.dstMAC((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
+          rin.d.srcMAC((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
           IF r.c = 11 THEN
             rin.c <= 0;
             rin.s <= EtherType;

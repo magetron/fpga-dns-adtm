@@ -21,23 +21,23 @@ ARCHITECTURE rtl OF mac_snd IS
 
   TYPE mem_t IS ARRAY(0 TO 14) OF STD_LOGIC_VECTOR(7 DOWNTO 0);
 
-  -- TO BE REMOVED
-  SIGNAL mem : mem_t := (
-    -- DST MAC Address
-    x"00", x"e0", x"4c", x"6b", x"dc", x"98",
+  -- -- TO BE REMOVED
+  -- SIGNAL mem : mem_t := (
+  --   -- DST MAC Address
+  --   x"00", x"e0", x"4c", x"6b", x"dc", x"98",
 
-    -- FPGA MAC Address (Xilinx OUI)                                        --
-    x"00", x"0a", x"35", x"00", x"00", x"00",
+  --   -- FPGA MAC Address (Xilinx OUI)                                        --
+  --   x"00", x"0a", x"35", x"00", x"00", x"00",
 
-    -- EtherType Field: 0x0000                                              --
-    x"08", x"00",
+  --   -- EtherType Field: 0x0000                                              --
+  --   x"08", x"00",
 
-    -- Data Header                                                          --
-    x"45"
-  );
+  --   -- Data Header                                                          --
+  --   x"45"
+  -- );
 
-  ATTRIBUTE RAM_STYLE : STRING;
-  ATTRIBUTE RAM_STYLE OF mem : SIGNAL IS "BLOCK";
+  --ATTRIBUTE RAM_STYLE : STRING;
+  --ATTRIBUTE RAM_STYLE OF mem : SIGNAL IS "BLOCK";
 
   TYPE state_t IS (
     Idle, -- Wait for signal en.
@@ -52,17 +52,17 @@ ARCHITECTURE rtl OF mac_snd IS
     IPIHL, -- 0x5
     IPDSCPECN, -- 0x00
     IPLength, -- ipLength
-    -- IPID, -- 0x00
-    -- IPFlagsFragment, -- 0x00
-    -- IPTTL, -- 0x40
-    -- IPProtocol, -- 0x11
-    -- IPChecksum, -- Checksum
-    -- IPAddrSRC, -- IPAddr SRC
-    -- IPAddrDST, -- IPAddr DST
+    IPID, -- 0x00
+    IPFlagsFragment, -- 0x00
+    IPTTL, -- 0x40
+    IPProtocol, -- 0x11
+    IPChecksum, -- Checksum
+    IPAddrSRC, -- IPAddr SRC
+    IPAddrDST, -- IPAddr DST
     -- UDPPortSRC, -- 2 byte UDP SRC
     -- UDPPortDST, -- 2 byte UDP DST
     -- UDPChecksum, -- Checksum,
-    -- DNSMsg, -- 1472 Max bytes
+    DNSMsg, -- 1472 Max bytes
     FrameCheck, -- CRC32
     InterframeGap -- Gap between two cosecutive frames (24 Bit).
   );
@@ -90,7 +90,7 @@ ARCHITECTURE rtl OF mac_snd IS
 
 BEGIN
 
-  snd_nsl : PROCESS (s, mem, el_snd_en, el_data)
+  snd_nsl : PROCESS (s, el_snd_en, el_data) -- mem
   BEGIN
 
     sin <= s;
@@ -122,31 +122,8 @@ BEGIN
         E_TXD <= x"d";
         E_TX_EN <= '1';
 
-        -- TO BE REMOVED
-        sin.d.srcMAC <= x"000000350a00";
-        sin.d.dstMAC <= x"98dc6b4ce000";
-
         sin.crc <= x"ffffffff";
         sin.s <= EtherMACDST;
-
-      -- WHEN EtherUpper =>
-      --   E_TXD <= mem(s.c)(3 DOWNTO 0);
-      --   E_TX_EN <= '1';
-      --   sin.crc <= nextCRC32_D4(mem(s.c)(3 DOWNTO 0), s.crc);
-      --   sin.s <= EtherLower;
-
-      -- WHEN EtherLower =>
-      --   E_TXD <= mem(s.c)(7 DOWNTO 4);
-      --   E_TX_EN <= '1';
-      --   sin.crc <= nextCRC32_D4(mem(s.c)(7 DOWNTO 4), s.crc);
-      --   IF s.c = 14 THEN
-      --     sin.c <= 0;
-      --     -- TODO: change this
-      --     sin.s <= IPLength;
-      --   ELSE
-      --     sin.c <= s.c + 1;
-      --     sin.s <= EtherUpper;
-      --   END IF;
 
       -- Ethernet DST MAC
       WHEN EtherMACDST =>
@@ -219,8 +196,113 @@ BEGIN
          sin.c <= s.c + 1;
        END IF;
 
+      -- IPLength
       WHEN IPLength =>
-        -- TODO: IMPL this
+        E_TXD <= STD_LOGIC_VECTOR(to_unsigned(s.d.ipLength, E_TXD'length));
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(STD_LOGIC_VECTOR(to_unsigned(s.d.ipLength, E_TXD'length)), s.crc);
+        sin.d.ipLength <= s.d.ipLength / 16;
+        IF s.c = 3 THEN
+          sin.c <= 0;
+          sin.s <= IPID;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- IP - ID 0x00
+      WHEN IPID =>
+        E_TXD <= x"0";
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
+        IF s.c = 3 THEN
+          sin.c <= 0;
+          sin.s <= IPFlagsFragment;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- IP Flags Fragment Offset 0x00
+      WHEN IPFlagsFragment =>
+        E_TXD <= x"0";
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
+        IF s.c = 3 THEN
+          sin.c <= 0;
+          sin.s <= IPTTL;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- IP TTL
+      WHEN IPTTL =>
+        E_TX_EN <= '1';
+        IF s.c = 0 THEN
+          E_TXD <= x"0";
+          sin.crc <= nextCRC32_D4(x"0", s.crc);
+        ELSE
+          E_TXD <= x"4";
+          sin.crc <= nextCRC32_D4(x"4", s.crc);
+        END IF;
+        IF s.c = 1 THEN
+          sin.c <= 0;
+          sin.s <= IPProtocol;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- IP Protocol
+      WHEN IPProtocol =>
+        E_TXD <= x"1";
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(x"1", s.crc);
+        IF s.c = 1 THEN
+          sin.c <= 0;
+          sin.s <= IPChecksum;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- IPChecksum
+      WHEN IPChecksum =>
+        E_TXD <= x"0";
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
+        IF s.c = 3 THEN
+          sin.c <= 0;
+          sin.s <= IPAddrSRC;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- IP Addr SRC
+      WHEN IPAddrSRC =>
+        E_TXD <= s.d.srcIP((s.c * 4 + 3) DOWNTO (s.c * 4));
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(s.d.srcIP((s.c * 4 + 3) DOWNTO (s.c * 4)), s.crc);
+        IF s.c = 7 THEN
+          sin.c <= 0;
+          sin.s <= IPAddrDST;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- IP Addr DST
+      WHEN IPAddrDST =>
+        E_TXD <= s.d.dstIP((s.c * 4 + 3) DOWNTO (s.c * 4));
+        E_TX_EN <= '1';
+        sin.crc <= nextCRC32_D4(s.d.dstIP((s.c * 4 + 3) DOWNTO (s.c * 4)), s.crc);
+        IF s.c = 7 THEN
+          sin.c <= 0;
+          -- Update ME
+          sin.s <= DNSMsg;
+        ELSE
+          sin.c <= s.c + 1;
+        END IF;
+
+      -- UDP Port
+
+      -- DNS Message
+      WHEN DNSMsg =>
         E_TXD <= x"C";
         E_TX_EN <= '1';
         sin.crc <= nextCRC32_D4(x"C", s.crc);

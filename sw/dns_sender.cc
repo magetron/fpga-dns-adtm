@@ -87,10 +87,11 @@ int main () {
   payload[2] = 's';
   payload[3] = 't';
   payload[4] = '1';
-  payload[5] = '\0';
+  payload[5] = '2';
+  payload[6] = '\0';
 
-  udp->len = htons(6 + sizeof(udphdr));
-  ip->tot_len = htons(6 + sizeof(udphdr) + sizeof(iphdr));
+  udp->len = htons(7 + sizeof(udphdr));
+  ip->tot_len = htons(7 + sizeof(udphdr) + sizeof(iphdr));
   ip->check = htons(checksum( reinterpret_cast<uint16_t*>(ip), (sizeof(iphdr)/2) ));
 
   sockaddr_ll sadr_ll;
@@ -103,7 +104,7 @@ int main () {
   sadr_ll.sll_addr[0] = 0x00;
   sadr_ll.sll_addr[0] = 0x00;
 
-  int32_t send_len = sendto(sock_raw, sendbuf, 6 + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
+  int32_t send_len = sendto(sock_raw, sendbuf, 7 + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
                             reinterpret_cast<const sockaddr*>(&sadr_ll), sizeof(sockaddr_ll));
   if (send_len < 0) {
     printf("ERROR in sending, sendlen=%d, errno=%d\n", send_len, errno);
