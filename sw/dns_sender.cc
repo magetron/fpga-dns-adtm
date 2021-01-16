@@ -94,22 +94,26 @@ int main () {
   ip->tot_len = htons(7 + sizeof(udphdr) + sizeof(iphdr));
   ip->check = htons(checksum( reinterpret_cast<uint16_t*>(ip), (sizeof(iphdr)/2) ));
 
-  sockaddr_ll sadr_ll;
-  sadr_ll.sll_ifindex = ifreq_i.ifr_ifindex;
-  sadr_ll.sll_halen = ETH_ALEN;
-  sadr_ll.sll_addr[0] = 0x00;
-  sadr_ll.sll_addr[0] = 0x0A;
-  sadr_ll.sll_addr[0] = 0x35;
-  sadr_ll.sll_addr[0] = 0x00;
-  sadr_ll.sll_addr[0] = 0x00;
-  sadr_ll.sll_addr[0] = 0x00;
+  while (true) {
+    sockaddr_ll sadr_ll;
+    sadr_ll.sll_ifindex = ifreq_i.ifr_ifindex;
+    sadr_ll.sll_halen = ETH_ALEN;
+    sadr_ll.sll_addr[0] = 0x00;
+    sadr_ll.sll_addr[0] = 0x0A;
+    sadr_ll.sll_addr[0] = 0x35;
+    sadr_ll.sll_addr[0] = 0x00;
+    sadr_ll.sll_addr[0] = 0x00;
+    sadr_ll.sll_addr[0] = 0x00;
 
-  int32_t send_len = sendto(sock_raw, sendbuf, 7 + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
-                            reinterpret_cast<const sockaddr*>(&sadr_ll), sizeof(sockaddr_ll));
-  if (send_len < 0) {
-    printf("ERROR in sending, sendlen=%d, errno=%d\n", send_len, errno);
-    perror("Socket:");
-    return -1;
+    int32_t send_len = sendto(sock_raw, sendbuf, 7 + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
+                              reinterpret_cast<const sockaddr*>(&sadr_ll), sizeof(sockaddr_ll));
+    if (send_len < 0) {
+      printf("ERROR in sending, sendlen=%d, errno=%d\n", send_len, errno);
+      perror("Socket:");
+      return -1;
+    }
+  
+    usleep(1e6);
   }
 
   delete [] sendbuf;
