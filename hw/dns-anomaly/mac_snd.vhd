@@ -82,8 +82,9 @@ ARCHITECTURE rtl OF mac_snd IS
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
         srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
         ipHeaderLength => 0, ipLength => 0,
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
-        --dns => (OTHERS => '0')
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
+        dnsLength => 0,
+        dns => (OTHERS => '0')
       ),
       crc => x"ffffffff",
       c => 0
@@ -96,8 +97,8 @@ BEGIN
   BEGIN
 
     sin <= s;
-    E_TX_EN <= '0';
     E_TXD <= x"0";
+    E_TX_EN <= '0';
     E_TX_ER <= '0';
 
     CASE s.s IS
@@ -304,9 +305,9 @@ BEGIN
 
       -- UDP Port SRC
       WHEN UDPPortSRC =>
-        E_TXD <= s.d.srcPort((s.c * 4) DOWNTO (s.c * 4));
+        E_TXD <= s.d.srcPort((s.c * 4 + 3) DOWNTO (s.c * 4));
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.srcPort((s.c * 4) DOWNTO (s.c * 4)), s.crc);
+        sin.crc <= nextCRC32_D4(s.d.srcPort((s.c * 4 + 3) DOWNTO (s.c * 4)), s.crc);
         IF s.c = 3 THEN
           sin.c <= 0;
           sin.s <= UDPPortDST;
@@ -316,9 +317,9 @@ BEGIN
 
       -- UDP Port DST
       WHEN UDPPortDST =>
-        E_TXD <= s.d.dstPort((s.c * 4) DOWNTO (s.c * 4));
+        E_TXD <= s.d.dstPort((s.c * 4 + 3) DOWNTO (s.c * 4));
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.dstPort((s.c * 4) DOWNTO (s.c * 4)), s.crc);
+        sin.crc <= nextCRC32_D4(s.d.dstPort((s.c * 4 + 3) DOWNTO (s.c * 4)), s.crc);
         IF s.c = 3 THEN
           sin.c <= 0;
           sin.s <= UDPLength;
@@ -353,10 +354,10 @@ BEGIN
 
       -- DNS Message
       WHEN DNSMsg =>
-        E_TXD <= x"C";
+        E_TXD <= s.d.dns((s.c * 4 + 3) DOWNTO (s.c * 4));
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"C", s.crc);
-        IF s.c = 365 THEN
+        sin.crc <= nextCRC32_D4(s.d.dns((s.c * 4 + 3) DOWNTO (s.c * 4)), s.crc);
+        IF s.c = 127 THEN
           sin.c <= 0;
           sin.s <= FrameCheck;
         ELSE

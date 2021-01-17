@@ -26,14 +26,6 @@ END io;
 
 ARCHITECTURE rtl OF io IS
 
-  -----------------------------------------------------------------------------
-  -- SETTING:                                                                --
-  --  + FREQ: Clock frequency. Usually 50 MHz.                               --
-  -----------------------------------------------------------------------------
-  CONSTANT FREQ : NATURAL := 50; -- [MHz] Frequency.
-  --CONSTANT PULSE_WIDTH : NATURAL := 1000; -- [msec] Time between two sends
-  CONSTANT CYCLES_PER_MSEC : NATURAL := FREQ * 1000;
-
   TYPE state_t IS (
     Idle,
     Work,
@@ -54,8 +46,9 @@ ARCHITECTURE rtl OF io IS
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
         srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
         ipHeaderLength => 0, ipLength => 0,
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
-        --dns => (OTHERS => '0')
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
+        dnsLength => 0,
+        dns => (OTHERS => '0')
       ),
       led => x"00",
       c => 0
@@ -81,16 +74,19 @@ ARCHITECTURE rtl OF io IS
       WHEN Work =>
         -- DO Processing
         --sin.d.srcMAC <= x"000000350a00";
-        --sin.d.dstMAC <= x"98dc6b4ce000";
-        sin.d.srcMAC <= s.d.dstMAC;
-        sin.d.dstMAC <= x"98dc6b4ce000";
         sin.d.srcIP <= s.d.dstIP;
         sin.d.dstIP <= s.d.srcIP;
         sin.d.srcPort <= s.d.dstPort;
         sin.d.dstPort <= s.d.srcPort;
+        sin.d.srcMAC <= s.d.dstMAC;
+        sin.d.dstMAC <= x"98dc6b4ce000";
+
+        sin.d.ipLength <= (s.d.ipLength / 4096) + (s.d.ipLength / 256 mod 16) * 16 + (s.d.ipLength / 16 mod 16) * 256 + (s.d.ipLength mod 16) * 4096;
+        sin.d.dnsLength <= ((s.d.dnsLength + 8) / 4096) + ((s.d.dnsLength + 8) / 256 mod 16) * 16 + ((s.d.dnsLength + 8) / 16 mod 16) * 256 + ((s.d.dnsLength + 8) mod 16) * 4096;
         sin.s <= Send;
 
       WHEN Send =>
+
         el_snd_en <= '1'; -- Send Ethernet packet.
         sin.c <= s.c + 1;
         sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.c + 1, sin.led'length));

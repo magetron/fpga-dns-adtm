@@ -47,8 +47,7 @@ ARCHITECTURE rtl OF mac_rcv IS
   TYPE rcv_t IS RECORD
     s : state_t; -- Receiver Parse State
     d : data_t;  -- Parse Data
-    c : NATURAL RANGE 0 TO 367; -- Counter : MAX 1472/8 - 1
-    --a : NATURAL RANGE 0 TO 7;  -- Array Counter
+    c : NATURAL RANGE 0 TO 16383; -- Counter MAX 65535
   END RECORD;
 
   SIGNAL r, rin : rcv_t
@@ -58,8 +57,9 @@ ARCHITECTURE rtl OF mac_rcv IS
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
         srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
         ipHeaderLength => 0, ipLength => 0,
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'), dnsLength => 0
-        --dns => (OTHERS => '0')
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
+        dnsLength => 0,
+        dns => (OTHERS => '0')
       ),
       c => 0
     );
@@ -84,6 +84,10 @@ BEGIN
             ELSE
               rin.c <= r.c + 1;
             END IF;
+          ELSIF E_RXD = x"d" AND r.c >= 12 THEN
+            -- could we miss the first few signals?
+            rin.c <= 0;
+            rin.s <= EtherMACDST;
           ELSE
             rin.c <= 0;
           END IF;
@@ -127,6 +131,7 @@ BEGIN
             IF r.c = 3 THEN
               rin.c <= 0;
               rin.s <= IPIHL;
+              rin.d.ipHeaderLength <= 0;
             ELSIF r.c = 0 THEN
               rin.c <= 0;
               rin.s <= Preamble;
@@ -165,6 +170,7 @@ BEGIN
           IF r.c = 1 THEN
             rin.c <= 0;
             rin.s <= IPLength;
+            rin.d.ipLength <= 0;
           ELSE
             rin.c <= r.c + 1;
           END IF;
@@ -285,6 +291,7 @@ BEGIN
           IF r.c = 3 THEN
             rin.c <= 0;
             rin.s <= UDPLength;
+            rin.d.dnsLength <= 0;
           ELSE
             rin.c <= r.c + 1;
           END IF;
@@ -313,7 +320,9 @@ BEGIN
         -- DNS Msg
         -- TODO: If possible, Parsing on the fly
         WHEN DNSMsg =>
-          --rin.d.dns((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
+          IF r.c <= 127 THEN
+            rin.d.dns((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
+          END IF;
           IF r.c = (r.d.dnsLength * 2 - 1) THEN
             rin.c <= 0;
             rin.s <= Notify;
@@ -325,10 +334,13 @@ BEGIN
         WHEN Notify =>
           el_dv <= '1';
           rin.s <= Preamble;
+          rin.c <= 0;
 
       END CASE;
     END IF;
   END PROCESS;
+
+  el_data <= r.d;
 
   snd_reg : PROCESS (E_RX_CLK)
   BEGIN
@@ -336,7 +348,5 @@ BEGIN
       r <= rin;
     END IF;
   END PROCESS;
-
-  el_data <= r.d;
 
 END rtl;

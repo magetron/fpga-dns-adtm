@@ -9,11 +9,11 @@ PACKAGE common IS
     srcIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
     dstIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
     ipHeaderLength: NATURAL RANGE 0 TO 15;
-    ipLength : NATURAL RANGE 0 TO 1500;
+    ipLength : NATURAL RANGE 0 TO 65535; -- MAX 576, 65535 for intake pkt
     srcPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
-    dnsLength : NATURAL RANGE 0 TO 1500; -- MAX 1472
-    --dns : STD_LOGIC_VECTOR(1471 DOWNTO 0);
+    dnsLength : NATURAL RANGE 0 TO 65535; -- MAX 508, 65535 for intake pkt
+    dns : STD_LOGIC_VECTOR(511 DOWNTO 0); -- only store 512 bits for the moment
   END RECORD;
 END common;
 
