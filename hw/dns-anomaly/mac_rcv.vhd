@@ -313,6 +313,7 @@ BEGIN
           IF r.c = 3 THEN
             rin.c <= 0;
             rin.s <= DNSMsg;
+            rin.d.dns <= (OTHERS => '0');
           ELSE
             rin.c <= r.c + 1;
           END IF;

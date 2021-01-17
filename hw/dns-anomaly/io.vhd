@@ -29,6 +29,7 @@ ARCHITECTURE rtl OF io IS
   TYPE state_t IS (
     Idle,
     Work,
+    PostWork,
     Send
   );
 
@@ -73,16 +74,24 @@ ARCHITECTURE rtl OF io IS
 
       WHEN Work =>
         -- DO Processing
+        --sin.d.srcIP <= s.d.dstIP;
+        --sin.d.dstIP <= s.d.srcIP;
+        --sin.d.srcPort <= s.d.dstPort;
+        --sin.d.dstPort <= s.d.srcPort;
+
         --sin.d.srcMAC <= x"000000350a00";
-        sin.d.srcIP <= s.d.dstIP;
-        sin.d.dstIP <= s.d.srcIP;
-        sin.d.srcPort <= s.d.dstPort;
-        sin.d.dstPort <= s.d.srcPort;
         sin.d.srcMAC <= s.d.dstMAC;
+
+        -- resume UDP Length
+        --sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.d.dnsLength, sin.led'length));
+        sin.d.dnsLength <= s.d.dnsLength + 8;
+        sin.s <= PostWork;
+
+      WHEN PostWork =>
         sin.d.dstMAC <= x"98dc6b4ce000";
 
         sin.d.ipLength <= (s.d.ipLength / 4096) + (s.d.ipLength / 256 mod 16) * 16 + (s.d.ipLength / 16 mod 16) * 256 + (s.d.ipLength mod 16) * 4096;
-        sin.d.dnsLength <= ((s.d.dnsLength + 8) / 4096) + ((s.d.dnsLength + 8) / 256 mod 16) * 16 + ((s.d.dnsLength + 8) / 16 mod 16) * 256 + ((s.d.dnsLength + 8) mod 16) * 4096;
+        sin.d.dnsLength <= (s.d.dnsLength / 256) + (s.d.dnsLength mod 256) * 256;
         sin.s <= Send;
 
       WHEN Send =>
