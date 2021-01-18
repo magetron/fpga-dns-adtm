@@ -1,4 +1,0 @@
-Clock Sync
-Guarantees over the latency - Profinet / Profibus Industrial Control
-
-Core goal: research component

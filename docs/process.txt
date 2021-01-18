@@ -1,0 +1,31 @@
+Stages
+
+* Ethernet rcv with FPGA
+  - First major milestone with multiple attempts at using the Ethernet chip RXD
+
+* Ethernet snd with FPGA
+  - Issues to pay attention to
+    - FCS
+    - Payload length > minimum Ethernet II required length
+    - correct endianess
+
+* Major changes to core module to support forwarding instead of (read / display / output)
+  - Finite State Machine Cycle
+
+* upgrade rcv to support UDP
+  - Lots and lots of parsing states coming in
+
+* upgrade snd to support UDP
+  - Same as above, increasing logic levels from FSM to final snd.
+
+* Timing Issues! with more complicated parsing of pkts
+  - Attempted different Place and Route strategies
+  - Fixed with optimisations to reduce logic levels, store variables to utilise the slices
+  - TX -> PAD , PAD -> RX timing constraints
+  - Clock dedicated path
+  - Now it's not perfect, but it doesn't crash any more
+
+TODO:
+
+Fix issues where certain pkts don't get responded, but shows responded on LED FPGA
+Checksum IP / UDP
