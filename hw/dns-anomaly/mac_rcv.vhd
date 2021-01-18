@@ -67,6 +67,7 @@ ARCHITECTURE rtl OF mac_rcv IS
 BEGIN
 
   rcv_nsl : PROCESS (r, E_RX_DV, E_RXD) --, el_ack)
+  VARIABLE udpPayloadLength : NATURAL RANGE 0 TO 65535 := 0;
   BEGIN
 
     rin <= r;
@@ -312,6 +313,7 @@ BEGIN
         WHEN UDPChecksum =>
           IF r.c = 3 THEN
             rin.c <= 0;
+            udpPayloadLength := r.d.dnsLength * 8 - 4;
             rin.s <= DNSMsg;
             rin.d.dns <= (OTHERS => '0');
           ELSE
@@ -324,7 +326,7 @@ BEGIN
           IF r.c <= 508 THEN
             rin.d.dns((r.c + 3) DOWNTO (r.c)) <= E_RXD;
           END IF;
-          IF r.c = (r.d.dnsLength * 8 - 4) THEN
+          IF r.c = udpPayloadLength THEN
             rin.c <= 0;
             rin.s <= Notify;
           ELSE
