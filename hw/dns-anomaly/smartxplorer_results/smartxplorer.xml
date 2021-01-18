@@ -2,7 +2,7 @@
 <smartXplorerReport>
     <command>smartxplorer -p xc3s500e-fg320-4 -b -wd smartxplorer_results main.ngd -to "-v 3 -s 4 -n 3 -fastpaths -xml main.twx -ucf spartan3e-fg320.ucf" -max_runs 7 -ra
     </command>
-    <programStatus>Running
+    <programStatus>Done
     </programStatus>
     <programPID>17986
     </programPID>
@@ -18,19 +18,19 @@
         </host>
         <runIndex>run1
         </runIndex>
-        <status>Mapping
+        <status>Done
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>None
+        <timingScore>13975
         </timingScore>
-        <WorstCaseSlack>None
+        <WorstCaseSlack>-3.838ns
         </WorstCaseSlack>
-        <Luts>None
+        <Luts>2,131 (22%)
 	</Luts>
-	<SliceRegisters>None
+	<SliceRegisters>644 (6%)
 	</SliceRegisters>
-	<runTime>0h 0m 14s
+	<runTime>0h 4m 35s
         </runTime>
     </strategy>
     <strategy name="MapPhysSynthesis">
@@ -38,25 +38,25 @@
         </strategyData>
         <xdsFile>mapphyssynthesis.xds
         </xdsFile>
-        <host name="None">
-            <hostData>None
+        <host name="localhost.localdomain">
+            <hostData>Linux, x86_64, 8-processor, 16G RAM
             </hostData>
         </host>
-        <runIndex>None
+        <runIndex>run2
         </runIndex>
-        <status>None
+        <status>Done
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>None
+        <timingScore>11731
         </timingScore>
-        <WorstCaseSlack>None
+        <WorstCaseSlack>-3.195ns
         </WorstCaseSlack>
-        <Luts>None
+        <Luts>2,133 (22%)
 	</Luts>
-	<SliceRegisters>None
+	<SliceRegisters>742 (7%)
 	</SliceRegisters>
-	<runTime>None
+	<runTime>0h 3m 25s
         </runTime>
     </strategy>
     <strategy name="ParHighEffort1">
@@ -64,25 +64,25 @@
         </strategyData>
         <xdsFile>parhigheffort1.xds
         </xdsFile>
-        <host name="None">
-            <hostData>None
+        <host name="localhost.localdomain">
+            <hostData>Linux, x86_64, 8-processor, 16G RAM
             </hostData>
         </host>
-        <runIndex>None
+        <runIndex>run3
         </runIndex>
-        <status>None
+        <status>Done
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>None
+        <timingScore>15746
         </timingScore>
-        <WorstCaseSlack>None
+        <WorstCaseSlack>-4.511ns
         </WorstCaseSlack>
-        <Luts>None
+        <Luts>2,131 (22%)
 	</Luts>
-	<SliceRegisters>None
+	<SliceRegisters>644 (6%)
 	</SliceRegisters>
-	<runTime>None
+	<runTime>0h 4m 50s
         </runTime>
     </strategy>
     <strategy name="ParHighEffort2">
@@ -90,25 +90,25 @@
         </strategyData>
         <xdsFile>parhigheffort2.xds
         </xdsFile>
-        <host name="None">
-            <hostData>None
+        <host name="localhost.localdomain">
+            <hostData>Linux, x86_64, 8-processor, 16G RAM
             </hostData>
         </host>
-        <runIndex>None
+        <runIndex>run4
         </runIndex>
-        <status>None
+        <status>Done
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>None
+        <timingScore>14734
         </timingScore>
-        <WorstCaseSlack>None
+        <WorstCaseSlack>-4.491ns
         </WorstCaseSlack>
-        <Luts>None
+        <Luts>2,131 (22%)
 	</Luts>
-	<SliceRegisters>None
+	<SliceRegisters>644 (6%)
 	</SliceRegisters>
-	<runTime>None
+	<runTime>0h 3m 20s
         </runTime>
     </strategy>
     <strategy name="MapTiming1">
@@ -116,25 +116,25 @@
         </strategyData>
         <xdsFile>maptiming1.xds
         </xdsFile>
-        <host name="None">
-            <hostData>None
+        <host name="localhost.localdomain">
+            <hostData>Linux, x86_64, 8-processor, 16G RAM
             </hostData>
         </host>
-        <runIndex>None
+        <runIndex>run5
         </runIndex>
-        <status>None
+        <status>Done
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>None
+        <timingScore>18925
         </timingScore>
-        <WorstCaseSlack>None
+        <WorstCaseSlack>-3.694ns
         </WorstCaseSlack>
-        <Luts>None
+        <Luts>2,131 (22%)
 	</Luts>
-	<SliceRegisters>None
+	<SliceRegisters>644 (6%)
 	</SliceRegisters>
-	<runTime>None
+	<runTime>0h 4m 35s
         </runTime>
     </strategy>
     <strategy name="MapTiming2">
@@ -142,25 +142,25 @@
         </strategyData>
         <xdsFile>maptiming2.xds
         </xdsFile>
-        <host name="None">
-            <hostData>None
+        <host name="localhost.localdomain">
+            <hostData>Linux, x86_64, 8-processor, 16G RAM
             </hostData>
         </host>
-        <runIndex>None
+        <runIndex>run6
         </runIndex>
-        <status>None
+        <status>Done
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>None
+        <timingScore>13288
         </timingScore>
-        <WorstCaseSlack>None
+        <WorstCaseSlack>-3.450ns
         </WorstCaseSlack>
-        <Luts>None
+        <Luts>2,131 (22%)
 	</Luts>
-	<SliceRegisters>None
+	<SliceRegisters>644 (6%)
 	</SliceRegisters>
-	<runTime>None
+	<runTime>0h 5m 20s
         </runTime>
     </strategy>
     <strategy name="MapUseIOReg">
@@ -168,28 +168,28 @@
         </strategyData>
         <xdsFile>mapuseioreg.xds
         </xdsFile>
-        <host name="None">
-            <hostData>None
+        <host name="localhost.localdomain">
+            <hostData>Linux, x86_64, 8-processor, 16G RAM
             </hostData>
         </host>
-        <runIndex>None
+        <runIndex>run7
         </runIndex>
-        <status>None
+        <status>Done
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>None
+        <timingScore>15075
         </timingScore>
-        <WorstCaseSlack>None
+        <WorstCaseSlack>-4.319ns
         </WorstCaseSlack>
-        <Luts>None
+        <Luts>2,131 (22%)
 	</Luts>
-	<SliceRegisters>None
+	<SliceRegisters>636 (6%)
 	</SliceRegisters>
-	<runTime>None
+	<runTime>0h 4m 35s
         </runTime>
     </strategy>
-    <bestStrategy>None
+    <bestStrategy>MapPhysSynthesis
     </bestStrategy>
     <envVariables>
         <env name="PATH"  value="/opt/Xilinx/14.7/ISE_DS/ISE//bin/lin64:/opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64:/opt/Xilinx/14.7/ISE_DS/ISE/sysgen/util:/opt/Xilinx/14.7/ISE_DS/ISE/sysgen/bin:/opt/Xilinx/14.7/ISE_DS/ISE/../../../DocNav:/opt/Xilinx/14.7/ISE_DS/PlanAhead/bin:/opt/Xilinx/14.7/ISE_DS/EDK/bin/lin64:/opt/Xilinx/14.7/ISE_DS/EDK/gnu/microblaze/lin/bin:/opt/Xilinx/14.7/ISE_DS/EDK/gnu/powerpc-eabi/lin/bin:/opt/Xilinx/14.7/ISE_DS/EDK/gnu/arm/lin/bin:/opt/Xilinx/14.7/ISE_DS/EDK/gnu/microblaze/linux_toolchain/lin64_be/bin:/opt/Xilinx/14.7/ISE_DS/EDK/gnu/microblaze/linux_toolchain/lin64_le/bin:/opt/Xilinx/14.7/ISE_DS/common/bin/lin64:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/ise/bin"/>
@@ -200,4 +200,6 @@
         <env name="XILINX"  value="/opt/Xilinx/14.7/ISE_DS/ISE/"/>
         
     </envVariables>
+    <copyResult>MapPhysSynthesis
+    </copyResult>
 </smartXplorerReport>
