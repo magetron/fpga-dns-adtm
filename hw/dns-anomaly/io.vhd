@@ -79,7 +79,8 @@ ARCHITECTURE rtl OF io IS
         IF el_rcv_dv = '1' THEN
           sin.rd <= el_rcv_data;
           sin.sd.ipLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.ipLength, sin.sd.ipLength'length));
-          sin.sd.udpLength <= STD_LOGIC_VECTOR(to_unsigned((s.rd.dnsLength + 8), sin.sd.udpLength'length));
+          -- TODO: shall dnsLength + 8
+          sin.sd.udpLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.dnsLength, sin.sd.udpLength'length));
           sin.s <= Work;
         END IF;
 
@@ -97,6 +98,10 @@ ARCHITECTURE rtl OF io IS
         sin.sd.srcPort <= s.rd.dstPort;
         sin.sd.dstPort <= s.rd.srcPort;
         sin.sd.ipTTL <= x"40";
+        sin.sd.ipLength(3 DOWNTO 0) <= s.sd.ipLength(15 DOWNTO 12);
+        sin.sd.ipLength(7 DOWNTO 4) <= s.sd.ipLength(11 DOWNTO 8);
+        sin.sd.ipLength(11 DOWNTO 8) <= s.sd.ipLength(7 DOWNTO 4);
+        sin.sd.ipLength(15 DOWNTO 12) <= s.sd.ipLength(3 DOWNTO 0);
         sin.s <= Send;
 
       WHEN Send =>

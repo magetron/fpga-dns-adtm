@@ -1,111 +1,106 @@
 START:Strategy:1:MapTimingExtraEffort
-REMOTE_PID:17993
-RUNNING:17993:17997:MapTimingExtraEffort:map:main.ngd: -timing -ol high -xe n  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.pcf
-STATUS:MapTimingExtraEffort:map:Score:None:lut:None:slice_reg:644 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapTimingExtraEffort:map:Score:None:lut:2,072 (22%):slice_reg:644 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapTimingExtraEffort:map:Score:None:lut:2,072 (22%):slice_reg:644 (6%):slice:1,432 (30%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapTimingExtraEffort:map:Score:None:lut:2,131 (22%):slice_reg:644 (6%):slice:1,432 (30%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
+REMOTE_PID:20926
+RUNNING:20926:20930:MapTimingExtraEffort:map:main.ngd: -timing -ol high -xe n  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.pcf
+STATUS:MapTimingExtraEffort:map:Score:None:lut:None:slice_reg:2,694 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.11 secs 
+STATUS:MapTimingExtraEffort:map:Score:None:lut:6,111 (65%):slice_reg:2,694 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.11 secs 
+STATUS:MapTimingExtraEffort:map:Score:None:lut:6,111 (65%):slice_reg:2,694 (28%):slice:3,847 (82%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.11 secs 
+STATUS:MapTimingExtraEffort:map:Score:None:lut:6,175 (66%):slice_reg:2,694 (28%):slice:3,847 (82%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.11 secs 
 DONE:map:0
-RUNNING:17993:18031:MapTimingExtraEffort:par:main_map.ncd: -ol high  -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.pcf
-STATUS:MapTimingExtraEffort:par:Score:14007:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:40.13 secs 
-STATUS:MapTimingExtraEffort:par:Score:13975:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:190.29 secs 
-STATUS:MapTimingExtraEffort:par:Score:13975:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-3.838ns:Time:265.37 secs 
+RUNNING:20926:20966:MapTimingExtraEffort:par:main_map.ncd: -ol high  -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.pcf
+STATUS:MapTimingExtraEffort:par:Score:1425035:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:130.19 secs 
+STATUS:MapTimingExtraEffort:par:Score:1425035:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-14.575ns:Time:135.20 secs 
 DONE:par:0
-RUNNING:17993:18081:MapTimingExtraEffort:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run1/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.twr
-STATUS:MapTimingExtraEffort:trce:Score:13975:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:270.39 secs 
+RUNNING:20926:21001:MapTimingExtraEffort:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run1/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.twr
+STATUS:MapTimingExtraEffort:trce:Score:1425035:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:140.22 secs 
 DONE:trce:0
 START:Strategy:2:MapPhysSynthesis
-REMOTE_PID:18082
-RUNNING:18082:18086:MapPhysSynthesis:map:main.ngd: -timing -ol high -xe n -register_duplication on -logic_opt on  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun2:slmain.pcf
-STATUS:MapPhysSynthesis:map:Score:None:lut:None:slice_reg:742 (7%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:30.08 secs 
-STATUS:MapPhysSynthesis:map:Score:None:lut:2,074 (22%):slice_reg:742 (7%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:30.08 secs 
-STATUS:MapPhysSynthesis:map:Score:None:lut:2,074 (22%):slice_reg:742 (7%):slice:1,450 (31%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:30.08 secs 
-STATUS:MapPhysSynthesis:map:Score:None:lut:2,133 (22%):slice_reg:742 (7%):slice:1,450 (31%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:30.08 secs 
+REMOTE_PID:21005
+RUNNING:21005:21009:MapPhysSynthesis:map:main.ngd: -timing -ol high -xe n -register_duplication on -logic_opt on  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun2:slmain.pcf
+STATUS:MapPhysSynthesis:map:Score:None:lut:None:slice_reg:2,985 (32%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:165.23 secs 
+STATUS:MapPhysSynthesis:map:Score:None:lut:6,467 (69%):slice_reg:2,985 (32%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:165.23 secs 
+STATUS:MapPhysSynthesis:map:Score:None:lut:6,467 (69%):slice_reg:2,985 (32%):slice:3,914 (84%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:165.23 secs 
+STATUS:MapPhysSynthesis:map:Score:None:lut:6,531 (70%):slice_reg:2,985 (32%):slice:3,914 (84%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:165.23 secs 
 DONE:map:0
-RUNNING:18082:18120:MapPhysSynthesis:par:main_map.ncd: -ol high  -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun2:slmain.pcf
-STATUS:MapPhysSynthesis:par:Score:11731:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:45.11 secs 
-STATUS:MapPhysSynthesis:par:Score:11731:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-3.195ns:Time:195.26 secs 
+RUNNING:21005:21049:MapPhysSynthesis:par:main_map.ncd: -ol high  -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun2:slmain.pcf
+STATUS:MapPhysSynthesis:par:Score:541505:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:320.40 secs 
+STATUS:MapPhysSynthesis:par:Score:541505:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-9.825ns:Time:325.41 secs 
 DONE:par:0
-RUNNING:18082:18161:MapPhysSynthesis:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run2/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun2:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun2:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun2:slmain.twr
-STATUS:MapPhysSynthesis:trce:Score:11731:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:200.29 secs 
+RUNNING:21005:21086:MapPhysSynthesis:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run2/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun2:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun2:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun2:slmain.twr
+STATUS:MapPhysSynthesis:trce:Score:541505:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:335.43 secs 
 DONE:trce:0
 START:Strategy:3:ParHighEffort1
-REMOTE_PID:18162
-RUNNING:18162:18166:ParHighEffort1:map:main.ngd: -cm area  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun3:slmain.pcf
-STATUS:ParHighEffort1:map:Score:None:lut:None:slice_reg:644 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:5.08 secs 
-STATUS:ParHighEffort1:map:Score:None:lut:2,072 (22%):slice_reg:644 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:5.08 secs 
-STATUS:ParHighEffort1:map:Score:None:lut:2,072 (22%):slice_reg:644 (6%):slice:1,295 (27%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:5.08 secs 
-STATUS:ParHighEffort1:map:Score:None:lut:2,131 (22%):slice_reg:644 (6%):slice:1,295 (27%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:5.08 secs 
+REMOTE_PID:21087
+RUNNING:21087:21091:ParHighEffort1:map:main.ngd: -cm area  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun3:slmain.pcf
+STATUS:ParHighEffort1:map:Score:None:lut:None:slice_reg:2,694 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:10.06 secs 
+STATUS:ParHighEffort1:map:Score:None:lut:6,111 (65%):slice_reg:2,694 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:10.06 secs 
+STATUS:ParHighEffort1:map:Score:None:lut:6,111 (65%):slice_reg:2,694 (28%):slice:4,198 (90%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:10.06 secs 
+STATUS:ParHighEffort1:map:Score:None:lut:6,175 (66%):slice_reg:2,694 (28%):slice:4,198 (90%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:10.06 secs 
 DONE:map:0
-RUNNING:18162:18200:ParHighEffort1:par:main_map.ncd: -ol high  -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun3:slmain.pcf
-STATUS:ParHighEffort1:par:Score:15746:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:35.12 secs 
-STATUS:ParHighEffort1:par:Score:15746:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-4.511ns:Time:280.40 secs 
+RUNNING:21087:21125:ParHighEffort1:par:main_map.ncd: -ol high  -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun3:slmain.pcf
+STATUS:ParHighEffort1:par:Score:1958374:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:95.15 secs 
+STATUS:ParHighEffort1:par:Score:1958374:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-11.604ns:Time:100.16 secs 
 DONE:par:0
-RUNNING:18162:18244:ParHighEffort1:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run3/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun3:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun3:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun3:slmain.twr
-STATUS:ParHighEffort1:trce:Score:15746:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:285.42 secs 
+RUNNING:21087:21161:ParHighEffort1:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run3/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun3:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun3:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun3:slmain.twr
+STATUS:ParHighEffort1:trce:Score:1958374:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:105.18 secs 
 DONE:trce:0
 START:Strategy:4:ParHighEffort2
-REMOTE_PID:18245
-RUNNING:18245:18249:ParHighEffort2:map:main.ngd: -cm area -t 2 -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun4:slmain.pcf
-STATUS:ParHighEffort2:map:Score:None:lut:None:slice_reg:644 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:5.06 secs 
-STATUS:ParHighEffort2:map:Score:None:lut:2,072 (22%):slice_reg:644 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:5.06 secs 
-STATUS:ParHighEffort2:map:Score:None:lut:2,072 (22%):slice_reg:644 (6%):slice:1,295 (27%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:5.06 secs 
-STATUS:ParHighEffort2:map:Score:None:lut:2,131 (22%):slice_reg:644 (6%):slice:1,295 (27%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:5.06 secs 
+REMOTE_PID:21164
+RUNNING:21164:21168:ParHighEffort2:map:main.ngd: -cm area -t 2 -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun4:slmain.pcf
+STATUS:ParHighEffort2:map:Score:None:lut:None:slice_reg:2,694 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:10.07 secs 
+STATUS:ParHighEffort2:map:Score:None:lut:6,111 (65%):slice_reg:2,694 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:10.07 secs 
+STATUS:ParHighEffort2:map:Score:None:lut:6,111 (65%):slice_reg:2,694 (28%):slice:4,198 (90%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:10.07 secs 
+STATUS:ParHighEffort2:map:Score:None:lut:6,175 (66%):slice_reg:2,694 (28%):slice:4,198 (90%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:10.07 secs 
 DONE:map:0
-RUNNING:18245:18283:ParHighEffort2:par:main_map.ncd: -ol high -t 2 -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun4:slmain.pcf
-STATUS:ParHighEffort2:par:Score:15201:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:30.09 secs 
-STATUS:ParHighEffort2:par:Score:14734:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:140.21 secs 
-STATUS:ParHighEffort2:par:Score:14734:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-4.491ns:Time:190.25 secs 
+RUNNING:21164:21202:ParHighEffort2:par:main_map.ncd: -ol high -t 2 -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun4:slmain.pcf
+STATUS:ParHighEffort2:par:Score:2107560:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:95.18 secs 
+STATUS:ParHighEffort2:par:Score:2107560:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-12.659ns:Time:100.19 secs 
 DONE:par:0
-RUNNING:18245:18326:ParHighEffort2:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run4/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun4:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun4:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun4:slmain.twr
-STATUS:ParHighEffort2:trce:Score:14734:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:195.27 secs 
+RUNNING:21164:21238:ParHighEffort2:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run4/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun4:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun4:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun4:slmain.twr
+STATUS:ParHighEffort2:trce:Score:2107560:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:105.21 secs 
 DONE:trce:0
 START:Strategy:5:MapTiming1
-REMOTE_PID:18327
-RUNNING:18327:18331:MapTiming1:map:main.ngd: -timing -ol high  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun5:slmain.pcf
-STATUS:MapTiming1:map:Score:None:lut:None:slice_reg:644 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapTiming1:map:Score:None:lut:2,072 (22%):slice_reg:644 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapTiming1:map:Score:None:lut:2,072 (22%):slice_reg:644 (6%):slice:1,441 (30%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapTiming1:map:Score:None:lut:2,131 (22%):slice_reg:644 (6%):slice:1,441 (30%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
+REMOTE_PID:21242
+RUNNING:21242:21246:MapTiming1:map:main.ngd: -timing -ol high  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun5:slmain.pcf
+STATUS:MapTiming1:map:Score:None:lut:None:slice_reg:2,694 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.14 secs 
+STATUS:MapTiming1:map:Score:None:lut:6,111 (65%):slice_reg:2,694 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.14 secs 
+STATUS:MapTiming1:map:Score:None:lut:6,111 (65%):slice_reg:2,694 (28%):slice:3,855 (82%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.14 secs 
+STATUS:MapTiming1:map:Score:None:lut:6,175 (66%):slice_reg:2,694 (28%):slice:3,855 (82%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.14 secs 
 DONE:map:0
-RUNNING:18327:18365:MapTiming1:par:main_map.ncd: -ol high  -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun5:slmain.pcf
-STATUS:MapTiming1:par:Score:26710:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:40.11 secs 
-STATUS:MapTiming1:par:Score:18925:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:170.23 secs 
-STATUS:MapTiming1:par:Score:18925:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-3.694ns:Time:265.33 secs 
+RUNNING:21242:21294:MapTiming1:par:main_map.ncd: -ol high  -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun5:slmain.pcf
+STATUS:MapTiming1:par:Score:1640224:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:130.22 secs 
+STATUS:MapTiming1:par:Score:1640224:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-14.352ns:Time:135.23 secs 
 DONE:par:0
-RUNNING:18327:18404:MapTiming1:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run5/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun5:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun5:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun5:slmain.twr
-STATUS:MapTiming1:trce:Score:18925:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:270.36 secs 
+RUNNING:21242:21331:MapTiming1:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run5/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun5:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun5:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun5:slmain.twr
+STATUS:MapTiming1:trce:Score:1640224:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:150.25 secs 
 DONE:trce:0
 START:Strategy:6:MapTiming2
-REMOTE_PID:18407
-RUNNING:18407:18411:MapTiming2:map:main.ngd: -timing -ol high -t 9 -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun6:slmain.pcf
-STATUS:MapTiming2:map:Score:None:lut:None:slice_reg:644 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapTiming2:map:Score:None:lut:2,072 (22%):slice_reg:644 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapTiming2:map:Score:None:lut:2,072 (22%):slice_reg:644 (6%):slice:1,367 (29%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapTiming2:map:Score:None:lut:2,131 (22%):slice_reg:644 (6%):slice:1,367 (29%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
+REMOTE_PID:21334
+RUNNING:21334:21338:MapTiming2:map:main.ngd: -timing -ol high -t 9 -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun6:slmain.pcf
+STATUS:MapTiming2:map:Score:None:lut:None:slice_reg:2,694 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.14 secs 
+STATUS:MapTiming2:map:Score:None:lut:6,111 (65%):slice_reg:2,694 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.14 secs 
+STATUS:MapTiming2:map:Score:None:lut:6,111 (65%):slice_reg:2,694 (28%):slice:3,837 (82%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.14 secs 
+STATUS:MapTiming2:map:Score:None:lut:6,175 (66%):slice_reg:2,694 (28%):slice:3,837 (82%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.14 secs 
 DONE:map:0
-RUNNING:18407:18445:MapTiming2:par:main_map.ncd: -ol high -t 9 -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun6:slmain.pcf
-STATUS:MapTiming2:par:Score:13620:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:40.10 secs 
-STATUS:MapTiming2:par:Score:13288:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:215.29 secs 
-STATUS:MapTiming2:par:Score:13288:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-3.450ns:Time:310.39 secs 
+RUNNING:21334:21374:MapTiming2:par:main_map.ncd: -ol high -t 9 -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun6:slmain.pcf
+STATUS:MapTiming2:par:Score:1866835:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:130.21 secs 
+STATUS:MapTiming2:par:Score:1866835:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-13.789ns:Time:135.22 secs 
 DONE:par:0
-RUNNING:18407:18489:MapTiming2:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run6/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun6:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun6:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun6:slmain.twr
-STATUS:MapTiming2:trce:Score:13288:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:315.46 secs 
+RUNNING:21334:21407:MapTiming2:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run6/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun6:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun6:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun6:slmain.twr
+STATUS:MapTiming2:trce:Score:1866835:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:145.24 secs 
 DONE:trce:0
 START:Strategy:7:MapUseIOReg
-REMOTE_PID:18490
-RUNNING:18490:18494:MapUseIOReg:map:main.ngd: -timing -ol high -pr b  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun7:slmain.pcf
-STATUS:MapUseIOReg:map:Score:None:lut:None:slice_reg:636 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapUseIOReg:map:Score:None:lut:2,072 (22%):slice_reg:636 (6%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapUseIOReg:map:Score:None:lut:2,072 (22%):slice_reg:636 (6%):slice:1,466 (31%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
-STATUS:MapUseIOReg:map:Score:None:lut:2,131 (22%):slice_reg:636 (6%):slice:1,466 (31%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:20.08 secs 
+REMOTE_PID:21410
+RUNNING:21410:21414:MapUseIOReg:map:main.ngd: -timing -ol high -pr b  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun7:slmain.pcf
+STATUS:MapUseIOReg:map:Score:None:lut:None:slice_reg:2,686 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.11 secs 
+STATUS:MapUseIOReg:map:Score:None:lut:6,111 (65%):slice_reg:2,686 (28%):slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.11 secs 
+STATUS:MapUseIOReg:map:Score:None:lut:6,111 (65%):slice_reg:2,686 (28%):slice:3,982 (85%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.11 secs 
+STATUS:MapUseIOReg:map:Score:None:lut:6,175 (66%):slice_reg:2,686 (28%):slice:3,982 (85%):bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:65.11 secs 
 DONE:map:0
-RUNNING:18490:18528:MapUseIOReg:par:main_map.ncd: -ol high  -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun7:slmain.pcf
-STATUS:MapUseIOReg:par:Score:15685:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:40.11 secs 
-STATUS:MapUseIOReg:par:Score:15075:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:180.26 secs 
-STATUS:MapUseIOReg:par:Score:15075:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-4.319ns:Time:265.35 secs 
+RUNNING:21410:21450:MapUseIOReg:par:main_map.ncd: -ol high  -w main.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun7:slmain.pcf
+STATUS:MapUseIOReg:par:Score:1715748:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:135.20 secs 
+STATUS:MapUseIOReg:par:Score:1715748:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:-15.254ns:Time:140.20 secs 
 DONE:par:0
-RUNNING:18490:18571:MapUseIOReg:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run7/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun7:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun7:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun7:slmain.twr
-STATUS:MapUseIOReg:trce:Score:15075:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:270.37 secs 
+RUNNING:21410:21485:MapUseIOReg:trce:/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/smartxplorer_results/run7/main.ncd::slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun7:slmain.pcf -xml :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun7:slmain.twx -v 3 -s 4 -n 3 -fastpaths   -ucf spartan3e-fg320.ucf -o :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun7:slmain.twr
+STATUS:MapUseIOReg:trce:Score:1715748:lut:None:slice_reg:None:slice:None:bram:None:dsp48:None:mult18x18:None:Power:None:wnsInfo:None:Time:150.23 secs 
 DONE:trce:0
 DONE:Xplorer

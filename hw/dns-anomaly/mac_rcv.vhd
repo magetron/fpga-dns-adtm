@@ -321,7 +321,7 @@ BEGIN
         -- DNS Msg
         -- TODO: If possible, Parsing on the fly
         WHEN DNSMsg =>
-          IF r.c = 508 THEN
+          IF r.c <= 508 THEN
             rin.d.dns((r.c + 3) DOWNTO (r.c)) <= E_RXD;
           END IF;
           IF r.c = (r.d.dnsLength * 8 - 4) THEN

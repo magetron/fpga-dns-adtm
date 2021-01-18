@@ -4,7 +4,7 @@
     </command>
     <programStatus>Done
     </programStatus>
-    <programPID>17986
+    <programPID>20919
     </programPID>
     
     <strategy name="MapTimingExtraEffort">
@@ -22,15 +22,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>13975
+        <timingScore>1425035
         </timingScore>
-        <WorstCaseSlack>-3.838ns
+        <WorstCaseSlack>-14.575ns
         </WorstCaseSlack>
-        <Luts>2,131 (22%)
+        <Luts>6,175 (66%)
 	</Luts>
-	<SliceRegisters>644 (6%)
+	<SliceRegisters>2,694 (28%)
 	</SliceRegisters>
-	<runTime>0h 4m 35s
+	<runTime>0h 2m 25s
         </runTime>
     </strategy>
     <strategy name="MapPhysSynthesis">
@@ -48,15 +48,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>11731
+        <timingScore>541505
         </timingScore>
-        <WorstCaseSlack>-3.195ns
+        <WorstCaseSlack>-9.825ns
         </WorstCaseSlack>
-        <Luts>2,133 (22%)
+        <Luts>6,531 (70%)
 	</Luts>
-	<SliceRegisters>742 (7%)
+	<SliceRegisters>2,985 (32%)
 	</SliceRegisters>
-	<runTime>0h 3m 25s
+	<runTime>0h 5m 40s
         </runTime>
     </strategy>
     <strategy name="ParHighEffort1">
@@ -74,15 +74,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>15746
+        <timingScore>1958374
         </timingScore>
-        <WorstCaseSlack>-4.511ns
+        <WorstCaseSlack>-11.604ns
         </WorstCaseSlack>
-        <Luts>2,131 (22%)
+        <Luts>6,175 (66%)
 	</Luts>
-	<SliceRegisters>644 (6%)
+	<SliceRegisters>2,694 (28%)
 	</SliceRegisters>
-	<runTime>0h 4m 50s
+	<runTime>0h 1m 50s
         </runTime>
     </strategy>
     <strategy name="ParHighEffort2">
@@ -100,15 +100,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>14734
+        <timingScore>2107560
         </timingScore>
-        <WorstCaseSlack>-4.491ns
+        <WorstCaseSlack>-12.659ns
         </WorstCaseSlack>
-        <Luts>2,131 (22%)
+        <Luts>6,175 (66%)
 	</Luts>
-	<SliceRegisters>644 (6%)
+	<SliceRegisters>2,694 (28%)
 	</SliceRegisters>
-	<runTime>0h 3m 20s
+	<runTime>0h 1m 50s
         </runTime>
     </strategy>
     <strategy name="MapTiming1">
@@ -126,15 +126,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>18925
+        <timingScore>1640224
         </timingScore>
-        <WorstCaseSlack>-3.694ns
+        <WorstCaseSlack>-14.352ns
         </WorstCaseSlack>
-        <Luts>2,131 (22%)
+        <Luts>6,175 (66%)
 	</Luts>
-	<SliceRegisters>644 (6%)
+	<SliceRegisters>2,694 (28%)
 	</SliceRegisters>
-	<runTime>0h 4m 35s
+	<runTime>0h 2m 34s
         </runTime>
     </strategy>
     <strategy name="MapTiming2">
@@ -152,15 +152,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>13288
+        <timingScore>1866835
         </timingScore>
-        <WorstCaseSlack>-3.450ns
+        <WorstCaseSlack>-13.789ns
         </WorstCaseSlack>
-        <Luts>2,131 (22%)
+        <Luts>6,175 (66%)
 	</Luts>
-	<SliceRegisters>644 (6%)
+	<SliceRegisters>2,694 (28%)
 	</SliceRegisters>
-	<runTime>0h 5m 20s
+	<runTime>0h 2m 29s
         </runTime>
     </strategy>
     <strategy name="MapUseIOReg">
@@ -178,15 +178,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>15075
+        <timingScore>1715748
         </timingScore>
-        <WorstCaseSlack>-4.319ns
+        <WorstCaseSlack>-15.254ns
         </WorstCaseSlack>
-        <Luts>2,131 (22%)
+        <Luts>6,175 (66%)
 	</Luts>
-	<SliceRegisters>636 (6%)
+	<SliceRegisters>2,686 (28%)
 	</SliceRegisters>
-	<runTime>0h 4m 35s
+	<runTime>0h 2m 35s
         </runTime>
     </strategy>
     <bestStrategy>MapPhysSynthesis
