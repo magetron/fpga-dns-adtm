@@ -10,7 +10,7 @@ ENTITY mac_rcv IS
     E_RX_CLK : IN STD_LOGIC; -- Receiver Clock.
     E_RX_DV : IN STD_LOGIC; -- Received Data Valid.
     E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
-    el_data : OUT data_t; -- Channel data.
+    el_data : OUT rcv_data_t; -- Channel data.
     el_dv : OUT STD_LOGIC -- Data valid.
     --LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
     --el_ack : IN STD_LOGIC -- Packet reception ACK.
@@ -46,8 +46,8 @@ ARCHITECTURE rtl OF mac_rcv IS
 
   TYPE rcv_t IS RECORD
     s : state_t; -- Receiver Parse State
-    d : data_t;  -- Parse Data
-    c : NATURAL RANGE 0 TO 16383; -- Counter MAX 65535
+    d : rcv_data_t;  -- Parse Data
+    c : NATURAL RANGE 0 TO 65535; -- Counter MAX 65535
   END RECORD;
 
   SIGNAL r, rin : rcv_t
@@ -75,7 +75,7 @@ BEGIN
     IF E_RX_DV = '1' THEN
       CASE r.s IS
 
-        -- Ethernet II - Preamble and Start Of Frame.                     --
+        -- Ethernet II - Preamble and Start Of Frame
         WHEN Preamble =>
           IF E_RXD = x"5" THEN
             IF r.c = 14 THEN
@@ -101,21 +101,21 @@ BEGIN
 
         -- Ethernet II - MAC DST and MAC SRC
         WHEN EtherMACDST =>
-          rin.d.dstMAC((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
-          IF r.c = 11 THEN
+          rin.d.dstMAC((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+          IF r.c = 44 THEN
             rin.c <= 0;
             rin.s <= EtherMACSRC;
           ELSE
-            rin.c <= r.c + 1;
+            rin.c <= r.c + 4;
           END IF;
 
         WHEN EtherMACSRC =>
-          rin.d.srcMAC((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
-          IF r.c = 11 THEN
+          rin.d.srcMAC((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+          IF r.c = 44 THEN
             rin.c <= 0;
             rin.s <= EtherType;
           ELSE
-            rin.c <= r.c + 1;
+            rin.c <= r.c + 4;
           END IF;
 
         -- Ethernet II - Ethertype 0x0800
@@ -244,18 +244,18 @@ BEGIN
 
         -- IP addr src
         WHEN IPAddrSRC =>
-          rin.d.srcIP((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
-          IF r.c = 7 THEN
+          rin.d.srcIP((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+          IF r.c = 28 THEN
             rin.c <= 0;
             rin.s <= IPAddrDST;
           ELSE
-            rin.c <= r.c + 1;
+            rin.c <= r.c + 4;
           END IF;
 
         -- IP addr dst
         WHEN IPAddrDST =>
-          rin.d.dstIP((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
-          IF r.c = 7 THEN
+          rin.d.dstIP((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+          IF r.c = 28 THEN
             rin.c <= 0;
             IF r.d.ipHeaderLength = 5 THEN
               rin.s <= UDPPortSRC;
@@ -263,7 +263,7 @@ BEGIN
               rin.s <= IPOptions;
             END IF;
           ELSE
-            rin.c <= r.c + 1;
+            rin.c <= r.c + 4;
           END IF;
 
         -- IP Options, dependent on IPIHL > 5
@@ -277,23 +277,23 @@ BEGIN
 
         -- UDP port src
         WHEN UDPPortSRC =>
-          rin.d.srcPort((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
-          IF r.c = 3 THEN
+          rin.d.srcPort((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+          IF r.c = 12 THEN
             rin.c <= 0;
             rin.s <= UDPPortDST;
           ELSE
-            rin.c <= r.c + 1;
+            rin.c <= r.c + 4;
           END IF;
 
         -- UDP port dst
         WHEN UDPPortDST =>
-          rin.d.dstPort((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
-          IF r.c = 3 THEN
+          rin.d.dstPort((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+          IF r.c = 12 THEN
             rin.c <= 0;
             rin.s <= UDPLength;
             rin.d.dnsLength <= 0;
           ELSE
-            rin.c <= r.c + 1;
+            rin.c <= r.c + 4;
           END IF;
 
         -- UDP payload length
@@ -321,14 +321,14 @@ BEGIN
         -- DNS Msg
         -- TODO: If possible, Parsing on the fly
         WHEN DNSMsg =>
-          IF r.c <= 127 THEN
-            rin.d.dns((r.c * 4 + 3) DOWNTO (r.c * 4)) <= E_RXD;
+          IF r.c = 508 THEN
+            rin.d.dns((r.c + 3) DOWNTO (r.c)) <= E_RXD;
           END IF;
-          IF r.c = (r.d.dnsLength * 2 - 1) THEN
+          IF r.c = (r.d.dnsLength * 8 - 4) THEN
             rin.c <= 0;
             rin.s <= Notify;
           ELSE
-            rin.c <= r.c + 1;
+            rin.c <= r.c + 4;
           END IF;
 
         -- Notification                                                   --

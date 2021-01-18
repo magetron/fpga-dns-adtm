@@ -43,7 +43,7 @@ ARCHITECTURE rtl OF main IS
       E_RX_CLK : IN STD_LOGIC; -- Receiver Clock.
       E_RX_DV : IN STD_LOGIC; -- Received Data Valid.
       E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
-      el_data : OUT data_t; -- Channel metadata.
+      el_data : OUT rcv_data_t; -- Channel metadata.
       el_dv : OUT STD_LOGIC -- Data valid.
       --LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
       --el_ack : IN STD_LOGIC -- Packet reception ACK.
@@ -56,7 +56,7 @@ ARCHITECTURE rtl OF main IS
       E_TX_EN : OUT STD_LOGIC; -- Sender Enable.
       E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Sent Data.
       E_TX_ER : OUT STD_LOGIC; -- Sent Data Error.
-      el_data : IN data_t; -- Actual Data
+      el_data : IN snd_data_t; -- Actual Data
       el_snd_en : IN STD_LOGIC -- User Start Send.
     );
   END COMPONENT;
@@ -66,11 +66,11 @@ ARCHITECTURE rtl OF main IS
       clk : IN STD_LOGIC;
       clk90 : IN STD_LOGIC;
       -- data received.
-      el_rcv_data : IN data_t;
+      el_rcv_data : IN rcv_data_t;
       el_rcv_dv : IN STD_LOGIC;
       --el_rcv_ack : OUT STD_LOGIC;
       -- data to send.
-      el_snd_data : OUT data_t;
+      el_snd_data : OUT snd_data_t;
       el_snd_en : OUT STD_LOGIC;
 
       --E_CRS : IN STD_LOGIC;
@@ -81,11 +81,11 @@ ARCHITECTURE rtl OF main IS
     );
   END COMPONENT;
 
-  SIGNAL el_rcv_data : data_t; -- Actual data.
+  SIGNAL el_rcv_data : rcv_data_t; -- Actual data.
   SIGNAL el_rcv_dv : STD_LOGIC; -- Received data valid.
   --SIGNAL el_rcv_ack : STD_LOGIC; -- Packet reception ACK.
 
-  SIGNAL el_snd_data : data_t; -- Send data.
+  SIGNAL el_snd_data : snd_data_t; -- Send data.
   SIGNAL el_snd_en : STD_LOGIC; -- Enable sending.
 
   SIGNAL clk90 : STD_LOGIC; -- Clock shift right 90 degree.

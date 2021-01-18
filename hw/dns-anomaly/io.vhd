@@ -10,11 +10,11 @@ ENTITY io IS
     clk : IN STD_LOGIC;
     clk90 : IN STD_LOGIC;
     -- Data received.
-    el_rcv_data : IN data_t;
+    el_rcv_data : IN rcv_data_t;
     el_rcv_dv : IN STD_LOGIC;
     --el_rcv_ack : OUT STD_LOGIC;
     -- Data to send.
-    el_snd_data : OUT data_t;
+    el_snd_data : OUT snd_data_t;
     el_snd_en : OUT STD_LOGIC;
 
     --E_CRS : IN STD_LOGIC;
@@ -35,7 +35,8 @@ ARCHITECTURE rtl OF io IS
 
   TYPE iostate_t IS RECORD
     s : state_t;
-    d : data_t; -- Data struct
+    rd : rcv_data_t; -- Rcv Data struct
+    sd : snd_data_t; -- Snd Data struct
     led : STD_LOGIC_VECTOR(7 DOWNTO 0); -- LED register.
     c : NATURAL RANGE 0 TO 255;
   END RECORD;
@@ -43,12 +44,20 @@ ARCHITECTURE rtl OF io IS
   SIGNAL s, sin : iostate_t
     := iostate_t'(
       s => Idle,
-      d => (
+      rd => (
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
         srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
         ipHeaderLength => 0, ipLength => 0,
         srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
         dnsLength => 0,
+        dns => (OTHERS => '0')
+      ),
+      sd => (
+        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
+        ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
+        udpLength => (OTHERS => '0'),
         dns => (OTHERS => '0')
       ),
       led => x"00",
@@ -68,34 +77,29 @@ ARCHITECTURE rtl OF io IS
     CASE s.s IS
       WHEN Idle =>
         IF el_rcv_dv = '1' THEN
-          sin.d <= el_rcv_data;
+          sin.rd <= el_rcv_data;
+          sin.sd.ipLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.ipLength, sin.sd.ipLength'length));
+          sin.sd.udpLength <= STD_LOGIC_VECTOR(to_unsigned((s.rd.dnsLength + 8), sin.sd.udpLength'length));
           sin.s <= Work;
         END IF;
 
       WHEN Work =>
         -- DO Processing
-        --sin.d.srcIP <= s.d.dstIP;
-        --sin.d.dstIP <= s.d.srcIP;
-        --sin.d.srcPort <= s.d.dstPort;
-        --sin.d.dstPort <= s.d.srcPort;
+        sin.sd.dns <= s.rd.dns;
 
-        --sin.d.srcMAC <= x"000000350a00";
-        sin.d.srcMAC <= s.d.dstMAC;
-
-        -- resume UDP Length
-        --sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.d.dnsLength, sin.led'length));
-        sin.d.dnsLength <= s.d.dnsLength + 8;
         sin.s <= PostWork;
 
       WHEN PostWork =>
-        sin.d.dstMAC <= x"98dc6b4ce000";
-
-        sin.d.ipLength <= (s.d.ipLength / 4096) + (s.d.ipLength / 256 mod 16) * 16 + (s.d.ipLength / 16 mod 16) * 256 + (s.d.ipLength mod 16) * 4096;
-        sin.d.dnsLength <= (s.d.dnsLength / 256) + (s.d.dnsLength mod 256) * 256;
+        sin.sd.srcMAC <= x"000000350a00";
+        sin.sd.dstMAC <= x"98dc6b4ce000";
+        sin.sd.srcIP <= s.rd.dstIP;
+        sin.sd.dstIP <= s.rd.srcIP;
+        sin.sd.srcPort <= s.rd.dstPort;
+        sin.sd.dstPort <= s.rd.srcPort;
+        sin.sd.ipTTL <= x"40";
         sin.s <= Send;
 
       WHEN Send =>
-
         el_snd_en <= '1'; -- Send Ethernet packet.
         sin.c <= s.c + 1;
         sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.c + 1, sin.led'length));
@@ -105,7 +109,7 @@ ARCHITECTURE rtl OF io IS
   END PROCESS;
 
   LED <= s.led;
-  el_snd_data <= s.d;
+  el_snd_data <= s.sd;
 
   reg : PROCESS (clk) --, E_CRS, E_COL)
   BEGIN

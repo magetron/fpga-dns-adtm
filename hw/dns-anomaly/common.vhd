@@ -3,7 +3,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 PACKAGE common IS
-  TYPE data_t IS RECORD
+  TYPE rcv_data_t IS RECORD
     srcMAC : STD_LOGIC_VECTOR(47 DOWNTO 0);
     dstMAC : STD_LOGIC_VECTOR(47 DOWNTO 0);
     srcIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -15,6 +15,20 @@ PACKAGE common IS
     dnsLength : NATURAL RANGE 0 TO 65535; -- MAX 508, 65535 for intake pkt
     dns : STD_LOGIC_VECTOR(511 DOWNTO 0); -- only store 512 bits for the moment
   END RECORD;
+
+  TYPE snd_data_t IS RECORD
+    srcMAC : STD_LOGIC_VECTOR(47 DOWNTO 0);
+    dstMAC : STD_LOGIC_VECTOR(47 DOWNTO 0);
+    srcIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    dstIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    ipLength : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    ipTTL : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    srcPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    udpLength : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    dns : STD_LOGIC_VECTOR(511 DOWNTO 0); -- only store 512 bits for the moment
+  END RECORD;
+
 END common;
 
 -- PACKAGE common IS

@@ -1,0 +1,3 @@
+START:Strategy:1:MapTimingExtraEffort
+REMOTE_PID:17993
+RUNNING:17993:17997:MapTimingExtraEffort:map:main.ngd: -timing -ol high -xe n  -p xc3s500e-fg320-4 -o main_map.ncd  :slmnt:slhgfs:slpatrick:slDropbox:slUniversity:dsCollege:dsLondon:slUCL:dsCS:slYear:ds3:slResearch:dsProject:slcpu:dsfpga:dsnwofle:slhw:sldns:dsanomaly:slsmartxplorer_results:slrun1:slmain.pcf
