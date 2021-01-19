@@ -79,7 +79,6 @@ ARCHITECTURE rtl OF io IS
         IF el_rcv_dv = '1' THEN
           sin.rd <= el_rcv_data;
           sin.sd.ipLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.ipLength, sin.sd.ipLength'length));
-          -- TODO: shall dnsLength + 8
           sin.sd.udpLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.dnsLength + 8, sin.sd.udpLength'length));
           sin.s <= Work;
         END IF;

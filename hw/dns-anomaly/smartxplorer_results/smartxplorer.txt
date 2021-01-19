@@ -7,13 +7,13 @@ FPGA SmartXplorer (tm) Version 14.7
  Run index                           : run1
  Map options                         : -timing -ol high -xe n 
  Par options                         : -ol high 
- Number of Luts                      : 6,175 (66%)
- Number of Slice Registers           : 2,694 (28%)
+ Number of Luts                      : 6,266 (67%)
+ Number of Slice Registers           : 0 (0%)
  Status                              : Done
- Achieved Timing Score               : 1425035
- Worst Case Slack                : -14.575ns
+ Achieved Timing Score               : 256254
+ Worst Case Slack                : -10.715ns
 
- Current Best (Lowest) Timing Score  : 1425035
+ Current Best (Lowest) Timing Score  : 256254
  Current Best Strategy               : MapTimingExtraEffort
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
@@ -22,14 +22,14 @@ FPGA SmartXplorer (tm) Version 14.7
  Run index                           : run2
  Map options                         : -timing -ol high -xe n -register_duplication on -logic_opt on 
  Par options                         : -ol high 
- Number of Luts                      : 6,531 (70%)
- Number of Slice Registers           : 2,985 (32%)
+ Number of Luts                      : 6,560 (70%)
+ Number of Slice Registers           : 0 (0%)
  Status                              : Done
- Achieved Timing Score               : 541505
- Worst Case Slack                : -9.825ns
+ Achieved Timing Score               : 282640
+ Worst Case Slack                : -9.720ns
 
- Current Best (Lowest) Timing Score  : 541505
- Current Best Strategy               : MapPhysSynthesis
+ Current Best (Lowest) Timing Score  : 256254
+ Current Best Strategy               : MapTimingExtraEffort
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
  Strategy : ParHighEffort1
@@ -37,14 +37,14 @@ FPGA SmartXplorer (tm) Version 14.7
  Run index                           : run3
  Map options                         : -cm area 
  Par options                         : -ol high 
- Number of Luts                      : 6,175 (66%)
- Number of Slice Registers           : 2,694 (28%)
+ Number of Luts                      : 6,266 (67%)
+ Number of Slice Registers           : 0 (0%)
  Status                              : Done
- Achieved Timing Score               : 1958374
- Worst Case Slack                : -11.604ns
+ Achieved Timing Score               : 2021265
+ Worst Case Slack                : -13.277ns
 
- Current Best (Lowest) Timing Score  : 541505
- Current Best Strategy               : MapPhysSynthesis
+ Current Best (Lowest) Timing Score  : 256254
+ Current Best Strategy               : MapTimingExtraEffort
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
  Strategy : ParHighEffort2
@@ -52,14 +52,14 @@ FPGA SmartXplorer (tm) Version 14.7
  Run index                           : run4
  Map options                         : -cm area -t 2
  Par options                         : -ol high -t 2
- Number of Luts                      : 6,175 (66%)
- Number of Slice Registers           : 2,694 (28%)
+ Number of Luts                      : 6,266 (67%)
+ Number of Slice Registers           : 0 (0%)
  Status                              : Done
- Achieved Timing Score               : 2107560
- Worst Case Slack                : -12.659ns
+ Achieved Timing Score               : 2076519
+ Worst Case Slack                : -14.125ns
 
- Current Best (Lowest) Timing Score  : 541505
- Current Best Strategy               : MapPhysSynthesis
+ Current Best (Lowest) Timing Score  : 256254
+ Current Best Strategy               : MapTimingExtraEffort
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
  Strategy : MapTiming1
@@ -67,14 +67,14 @@ FPGA SmartXplorer (tm) Version 14.7
  Run index                           : run5
  Map options                         : -timing -ol high 
  Par options                         : -ol high 
- Number of Luts                      : 6,175 (66%)
- Number of Slice Registers           : 2,694 (28%)
+ Number of Luts                      : 6,266 (67%)
+ Number of Slice Registers           : 0 (0%)
  Status                              : Done
- Achieved Timing Score               : 1640224
- Worst Case Slack                : -14.352ns
+ Achieved Timing Score               : 1445857
+ Worst Case Slack                : -14.342ns
 
- Current Best (Lowest) Timing Score  : 541505
- Current Best Strategy               : MapPhysSynthesis
+ Current Best (Lowest) Timing Score  : 256254
+ Current Best Strategy               : MapTimingExtraEffort
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
  Strategy : MapTiming2
@@ -82,14 +82,14 @@ FPGA SmartXplorer (tm) Version 14.7
  Run index                           : run6
  Map options                         : -timing -ol high -t 9
  Par options                         : -ol high -t 9
- Number of Luts                      : 6,175 (66%)
- Number of Slice Registers           : 2,694 (28%)
+ Number of Luts                      : 6,266 (67%)
+ Number of Slice Registers           : 0 (0%)
  Status                              : Done
- Achieved Timing Score               : 1866835
- Worst Case Slack                : -13.789ns
+ Achieved Timing Score               : 388821
+ Worst Case Slack                : -11.752ns
 
- Current Best (Lowest) Timing Score  : 541505
- Current Best Strategy               : MapPhysSynthesis
+ Current Best (Lowest) Timing Score  : 256254
+ Current Best Strategy               : MapTimingExtraEffort
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
  Strategy : MapUseIOReg
@@ -97,27 +97,27 @@ FPGA SmartXplorer (tm) Version 14.7
  Run index                           : run7
  Map options                         : -timing -ol high -pr b 
  Par options                         : -ol high 
- Number of Luts                      : 6,175 (66%)
- Number of Slice Registers           : 2,686 (28%)
+ Number of Luts                      : 6,266 (67%)
+ Number of Slice Registers           : 0 (0%)
  Status                              : Done
- Achieved Timing Score               : 1715748
- Worst Case Slack                : -15.254ns
+ Achieved Timing Score               : 561982
+ Worst Case Slack                : -11.093ns
 
- Current Best (Lowest) Timing Score  : 541505
- Current Best Strategy               : MapPhysSynthesis
+ Current Best (Lowest) Timing Score  : 256254
+ Current Best Strategy               : MapTimingExtraEffort
 ----------------------------------------------------------------------
 ######################################################################
- BestStrategy : MapPhysSynthesis
+ BestStrategy : MapTimingExtraEffort
 ######################################################################
- Run index                           : run2
- Map options                         : -timing -ol high -xe n -register_duplication on -logic_opt on 
+ Run index                           : run1
+ Map options                         : -timing -ol high -xe n 
  Par options                         : -ol high 
- Number of Luts                      : 6,531 (70%)
- Number of Slice Registers           : 2,985 (32%)
- Achieved Timing Score               : 541505
- Worst Case Slack                : -9.825ns
+ Number of Luts                      : 6,266 (67%)
+ Number of Slice Registers           : 0 (0%)
+ Achieved Timing Score               : 256254
+ Worst Case Slack                : -10.715ns
 
 ######################################################################
 
-Total Real Time:1272.9(secs)
+Total Real Time:1468.1(secs)
 SmartXplorer Done

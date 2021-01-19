@@ -4,7 +4,7 @@
     </command>
     <programStatus>Done
     </programStatus>
-    <programPID>20919
+    <programPID>23788
     </programPID>
     
     <strategy name="MapTimingExtraEffort">
@@ -22,15 +22,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>1425035
+        <timingScore>256254
         </timingScore>
-        <WorstCaseSlack>-14.575ns
+        <WorstCaseSlack>-10.715ns
         </WorstCaseSlack>
-        <Luts>6,175 (66%)
+        <Luts>6,266 (67%)
 	</Luts>
-	<SliceRegisters>2,694 (28%)
+	<SliceRegisters>0 (0%)
 	</SliceRegisters>
-	<runTime>0h 2m 25s
+	<runTime>0h 3m 40s
         </runTime>
     </strategy>
     <strategy name="MapPhysSynthesis">
@@ -48,15 +48,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>541505
+        <timingScore>282640
         </timingScore>
-        <WorstCaseSlack>-9.825ns
+        <WorstCaseSlack>-9.720ns
         </WorstCaseSlack>
-        <Luts>6,531 (70%)
+        <Luts>6,560 (70%)
 	</Luts>
-	<SliceRegisters>2,985 (32%)
+	<SliceRegisters>0 (0%)
 	</SliceRegisters>
-	<runTime>0h 5m 40s
+	<runTime>0h 4m 50s
         </runTime>
     </strategy>
     <strategy name="ParHighEffort1">
@@ -74,15 +74,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>1958374
+        <timingScore>2021265
         </timingScore>
-        <WorstCaseSlack>-11.604ns
+        <WorstCaseSlack>-13.277ns
         </WorstCaseSlack>
-        <Luts>6,175 (66%)
+        <Luts>6,266 (67%)
 	</Luts>
-	<SliceRegisters>2,694 (28%)
+	<SliceRegisters>0 (0%)
 	</SliceRegisters>
-	<runTime>0h 1m 50s
+	<runTime>0h 1m 55s
         </runTime>
     </strategy>
     <strategy name="ParHighEffort2">
@@ -100,15 +100,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>2107560
+        <timingScore>2076519
         </timingScore>
-        <WorstCaseSlack>-12.659ns
+        <WorstCaseSlack>-14.125ns
         </WorstCaseSlack>
-        <Luts>6,175 (66%)
+        <Luts>6,266 (67%)
 	</Luts>
-	<SliceRegisters>2,694 (28%)
+	<SliceRegisters>0 (0%)
 	</SliceRegisters>
-	<runTime>0h 1m 50s
+	<runTime>0h 2m 0s
         </runTime>
     </strategy>
     <strategy name="MapTiming1">
@@ -126,15 +126,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>1640224
+        <timingScore>1445857
         </timingScore>
-        <WorstCaseSlack>-14.352ns
+        <WorstCaseSlack>-14.342ns
         </WorstCaseSlack>
-        <Luts>6,175 (66%)
+        <Luts>6,266 (67%)
 	</Luts>
-	<SliceRegisters>2,694 (28%)
+	<SliceRegisters>0 (0%)
 	</SliceRegisters>
-	<runTime>0h 2m 34s
+	<runTime>0h 2m 15s
         </runTime>
     </strategy>
     <strategy name="MapTiming2">
@@ -152,15 +152,15 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>1866835
+        <timingScore>388821
         </timingScore>
-        <WorstCaseSlack>-13.789ns
+        <WorstCaseSlack>-11.752ns
         </WorstCaseSlack>
-        <Luts>6,175 (66%)
+        <Luts>6,266 (67%)
 	</Luts>
-	<SliceRegisters>2,694 (28%)
+	<SliceRegisters>0 (0%)
 	</SliceRegisters>
-	<runTime>0h 2m 29s
+	<runTime>0h 3m 55s
         </runTime>
     </strategy>
     <strategy name="MapUseIOReg">
@@ -178,18 +178,18 @@
         </status>
         <logFile>main_sx.log
         </logFile>
-        <timingScore>1715748
+        <timingScore>561982
         </timingScore>
-        <WorstCaseSlack>-15.254ns
+        <WorstCaseSlack>-11.093ns
         </WorstCaseSlack>
-        <Luts>6,175 (66%)
+        <Luts>6,266 (67%)
 	</Luts>
-	<SliceRegisters>2,686 (28%)
+	<SliceRegisters>0 (0%)
 	</SliceRegisters>
-	<runTime>0h 2m 35s
+	<runTime>0h 4m 10s
         </runTime>
     </strategy>
-    <bestStrategy>MapPhysSynthesis
+    <bestStrategy>MapTimingExtraEffort
     </bestStrategy>
     <envVariables>
         <env name="PATH"  value="/opt/Xilinx/14.7/ISE_DS/ISE//bin/lin64:/opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64:/opt/Xilinx/14.7/ISE_DS/ISE/sysgen/util:/opt/Xilinx/14.7/ISE_DS/ISE/sysgen/bin:/opt/Xilinx/14.7/ISE_DS/ISE/../../../DocNav:/opt/Xilinx/14.7/ISE_DS/PlanAhead/bin:/opt/Xilinx/14.7/ISE_DS/EDK/bin/lin64:/opt/Xilinx/14.7/ISE_DS/EDK/gnu/microblaze/lin/bin:/opt/Xilinx/14.7/ISE_DS/EDK/gnu/powerpc-eabi/lin/bin:/opt/Xilinx/14.7/ISE_DS/EDK/gnu/arm/lin/bin:/opt/Xilinx/14.7/ISE_DS/EDK/gnu/microblaze/linux_toolchain/lin64_be/bin:/opt/Xilinx/14.7/ISE_DS/EDK/gnu/microblaze/linux_toolchain/lin64_le/bin:/opt/Xilinx/14.7/ISE_DS/common/bin/lin64:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/ise/bin"/>
@@ -200,6 +200,6 @@
         <env name="XILINX"  value="/opt/Xilinx/14.7/ISE_DS/ISE/"/>
         
     </envVariables>
-    <copyResult>MapPhysSynthesis
+    <copyResult>MapTimingExtraEffort
     </copyResult>
 </smartXplorerReport>
