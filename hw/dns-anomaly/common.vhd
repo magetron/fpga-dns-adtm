@@ -22,10 +22,12 @@ PACKAGE common IS
     srcIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
     dstIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
     ipLength : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    ipChecksum : STD_LOGIC_VECTOR(15 DOWNTO 0);
     ipTTL : STD_LOGIC_VECTOR(7 DOWNTO 0);
     srcPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     udpLength : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    udpChecksum : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dns : STD_LOGIC_VECTOR(511 DOWNTO 0); -- only store 512 bits for the moment
   END RECORD;
 

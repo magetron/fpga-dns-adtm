@@ -73,6 +73,7 @@ ARCHITECTURE rtl OF mac_snd IS
     d : snd_data_t;
     crc : STD_LOGIC_VECTOR(31 DOWNTO 0); -- CRC32 latch.
     c : NATURAL RANGE 0 TO 511; -- Max Value 511
+
   END RECORD;
 
   SIGNAL s, sin : snd_t
@@ -82,8 +83,10 @@ ARCHITECTURE rtl OF mac_snd IS
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
         srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
         ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
+        ipChecksum => (OTHERS => '0'),
         srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
         udpLength => (OTHERS => '0'),
+        udpChecksum => (OTHERS => '0'),
         dns => (OTHERS => '0')
       ),
       crc => x"ffffffff",
@@ -262,14 +265,14 @@ BEGIN
 
       -- IPChecksum
       WHEN IPChecksum =>
-        E_TXD <= x"0";
+        E_TXD <= s.d.ipChecksum((s.c + 3) DOWNTO (s.c));
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 3 THEN
+        sin.crc <= nextCRC32_D4(s.d.ipChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
+        IF s.c = 12 THEN
           sin.c <= 0;
           sin.s <= IPAddrSRC;
         ELSE
-          sin.c <= s.c + 1;
+          sin.c <= s.c + 4;
         END IF;
 
       -- IP Addr SRC
@@ -334,14 +337,14 @@ BEGIN
 
       -- UDP checksum
       WHEN UDPChecksum =>
-        E_TXD <= x"0";
+        E_TXD <= s.d.udpChecksum((s.c + 3) DOWNTO (s.c));
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 3 THEN
+        sin.crc <= nextCRC32_D4(s.d.udpChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
+        IF s.c = 12 THEN
           sin.c <= 0;
           sin.s <= DNSMsg;
         ELSE
-          sin.c <= s.c + 1;
+          sin.c <= s.c + 4;
         END IF;
 
       -- DNS Message
