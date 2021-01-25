@@ -1,1 +1,0 @@
--intstyle "ise" -incremental -o "/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/testsnd_isim_beh.exe" -prj "/mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/testsnd_beh.prj" "testsnd" 
