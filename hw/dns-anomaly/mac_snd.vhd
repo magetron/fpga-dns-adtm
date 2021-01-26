@@ -86,8 +86,8 @@ ARCHITECTURE rtl OF mac_snd IS
         ipChecksum => (OTHERS => '0'),
         srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
         udpLength => (OTHERS => '0'),
-        udpChecksum => (OTHERS => '0'),
-        dns => (OTHERS => '0')
+        udpChecksum => (OTHERS => '0')
+        --dns => (OTHERS => '0')
       ),
       crc => x"ffffffff",
       c => 0
@@ -349,9 +349,11 @@ BEGIN
 
       -- DNS Message
       WHEN DNSMsg =>
-        E_TXD <= s.d.dns((s.c + 3) DOWNTO (s.c));
+        --E_TXD <= s.d.dns((s.c + 3) DOWNTO (s.c));
+        E_TXD <= x"0";
         E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.dns((s.c + 3) DOWNTO (s.c)), s.crc);
+        --sin.crc <= nextCRC32_D4(s.d.dns((s.c + 3) DOWNTO (s.c)), s.crc);
+        sin.crc <= nextCRC32_D4(x"0", s.crc);
         IF s.c = 508 THEN
           sin.c <= 0;
           sin.s <= FrameCheck;
