@@ -8,7 +8,7 @@ USE work.common.ALL;
 ENTITY io IS
   PORT (
     clk : IN STD_LOGIC;
-    clk90 : IN STD_LOGIC;
+    --clk90 : IN STD_LOGIC;
     -- Data received.
     el_rcv_data : IN rcv_data_t;
     el_rcv_dv : IN STD_LOGIC;
@@ -29,7 +29,12 @@ ARCHITECTURE rtl OF io IS
   TYPE state_t IS (
     Idle,
     Work,
-    PostWork,
+    MetaInfo,
+    IPChecksum,
+    UDPChecksum,
+    IPLength,
+    UDPLength,
+    Finalise,
     Send
   );
 
@@ -45,21 +50,21 @@ ARCHITECTURE rtl OF io IS
     := iostate_t'(
       s => Idle,
       rd => (
-        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
+        srcMAC => (OTHERS => '1'), dstMAC => (OTHERS => '1'),
+        srcIP  => (OTHERS => '1'), dstIP => (OTHERS => '1'),
         ipHeaderLength => 0, ipLength => 0,
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
+        srcPort => (OTHERS => '1'), dstPort => (OTHERS => '1'),
         dnsLength => 0
-        --dns => (OTHERS => '0')
+        --dns => (OTHERS => '1')
       ),
       sd => (
-        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
-        ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
-        ipChecksum => (OTHERS => '0'),
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-        udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0')
-        --dns => (OTHERS => '0')
+        srcMAC => (OTHERS => '1'), dstMAC => (OTHERS => '1'),
+        srcIP  => (OTHERS => '1'), dstIP => (OTHERS => '1'),
+        ipLength => (OTHERS => '1'), ipTTL => (OTHERS => '1'),
+        ipChecksum => (OTHERS => '1'),
+        srcPort => (OTHERS => '1'), dstPort => (OTHERS => '1'),
+        udpLength => (OTHERS => '1'), udpChecksum => (OTHERS => '1')
+        --dns => (OTHERS => '1')
       ),
       led => x"00",
       c => 0
@@ -68,7 +73,7 @@ ARCHITECTURE rtl OF io IS
   --SIGNAL reg_e_snd : STD_LOGIC := '0';
  BEGIN
 
-  rcvsnd : PROCESS (s, el_rcv_data, el_rcv_dv, clk90)
+  rcvsnd : PROCESS (s, el_rcv_data, el_rcv_dv)
   BEGIN
 
     sin <= s;
@@ -87,25 +92,45 @@ ARCHITECTURE rtl OF io IS
       WHEN Work =>
         -- DO Processing
         --sin.sd.dns <= s.rd.dns;
-        -- TODO : use function to calc them
-        sin.sd.ipChecksum <= x"21b5";
-        sin.sd.udpChecksum <= x"4195";
-        sin.s <= PostWork;
+        IF (sin.sd.srcMAC /= x"00c092f592ea") THEN
+          sin.led(7) <= '1';
+        END IF;
+        IF (sin.sd.dstMAC /= x"00a053000000") THEN
+          sin.led(6) <= '1';
+        END IF;
+        sin.s <= MetaInfo;
 
-      WHEN PostWork =>
-        sin.sd.srcMAC <= x"000000350a00";
-        sin.sd.dstMAC <= x"98dc6b4ce000";
+      WHEN MetaInfo =>
         sin.sd.srcIP <= s.rd.dstIP;
         sin.sd.dstIP <= s.rd.srcIP;
         sin.sd.srcPort <= s.rd.dstPort;
         sin.sd.dstPort <= s.rd.srcPort;
         sin.sd.ipTTL <= x"40";
+        sin.s <= IPChecksum;
+
+      WHEN IPChecksum =>
+        sin.sd.ipChecksum <= x"21b5";
+        sin.s <= UDPChecksum;
+
+      WHEN UDPChecksum =>
+        sin.sd.udpChecksum <= x"4195";
+        sin.s <= IPLength;
+
+      WHEN IPLength =>
         sin.sd.ipLength(3 DOWNTO 0) <= s.sd.ipLength(15 DOWNTO 12);
         sin.sd.ipLength(7 DOWNTO 4) <= s.sd.ipLength(11 DOWNTO 8);
         sin.sd.ipLength(11 DOWNTO 8) <= s.sd.ipLength(7 DOWNTO 4);
         sin.sd.ipLength(15 DOWNTO 12) <= s.sd.ipLength(3 DOWNTO 0);
+        sin.s <= UDPLength;
+
+      WHEN UDPLength =>
         sin.sd.udpLength(15 DOWNTO 8) <= s.sd.udpLength(7 DOWNTO 0);
         sin.sd.udpLength(7 DOWNTO 0) <= s.sd.udpLength(15 DOWNTO 8);
+        sin.s <= Finalise;
+
+      WHEN Finalise =>
+        sin.sd.srcMAC <= x"000000350a00";
+        sin.sd.dstMAC <= x"98dc6b4ce000";
         sin.s <= Send;
 
       WHEN Send =>

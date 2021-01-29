@@ -1,3 +1,30 @@
+--------------------------------------------------------------------------------
+-- Company: 
+-- Engineer:
+--
+-- Create Date:   14:50:20 01/29/2021
+-- Design Name:   
+-- Module Name:   /mnt/hgfs/patrick/Dropbox/University-College-London/UCL-CS/Year-3/Research-Project/cpu-fpga-nwofle/hw/dns-anomaly/test.vhd
+-- Project Name:  dns-anomaly
+-- Target Device:  
+-- Tool versions:  
+-- Description:   
+-- 
+-- VHDL Test Bench Created by ISE for module: main
+-- 
+-- Dependencies:
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+--
+-- Notes: 
+-- This testbench has been automatically generated using types std_logic and
+-- std_logic_vector for the ports of the unit under test.  Xilinx recommends
+-- that these types always be used for the top-level I/O of a design in order
+-- to guarantee that the testbench will bind correctly to the post-implementation 
+-- simulation model.
+--------------------------------------------------------------------------------
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 
@@ -5,20 +32,16 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
 
-ENTITY testsnd IS
-END testsnd;
+ENTITY test IS
+END test;
 
-ARCHITECTURE behavior OF testsnd IS
+ARCHITECTURE behavior OF test IS
 
   -- Component Declaration for the Unit Under Test (UUT)
 
   COMPONENT main
     PORT (
       clk : IN STD_LOGIC;
-      E_COL : IN STD_LOGIC;
-      E_CRS : IN STD_LOGIC;
-      E_MDC : OUT STD_LOGIC;
-      E_MDIO : IN STD_LOGIC;
       E_RX_CLK : IN STD_LOGIC;
       E_RX_DV : IN STD_LOGIC;
       E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
@@ -32,9 +55,6 @@ ARCHITECTURE behavior OF testsnd IS
   END COMPONENT;
   --Inputs
   SIGNAL clk : STD_LOGIC := '0';
-  SIGNAL E_COL : STD_LOGIC := '0';
-  SIGNAL E_CRS : STD_LOGIC := '0';
-  SIGNAL E_MDIO : STD_LOGIC := '0';
   SIGNAL E_RX_CLK : STD_LOGIC := '0';
   SIGNAL E_RX_DV : STD_LOGIC := '0';
   SIGNAL E_RXD : STD_LOGIC_VECTOR(3 DOWNTO 0) := (OTHERS => '0');
@@ -42,7 +62,6 @@ ARCHITECTURE behavior OF testsnd IS
   SIGNAL E_TX_CLK : STD_LOGIC := '0';
 
   --Outputs
-  SIGNAL E_MDC : STD_LOGIC;
   SIGNAL E_TX_EN : STD_LOGIC;
   SIGNAL E_TXD : STD_LOGIC_VECTOR(3 DOWNTO 0);
   SIGNAL E_TX_ER : STD_LOGIC;
@@ -50,18 +69,14 @@ ARCHITECTURE behavior OF testsnd IS
 
   -- Clock period definitions
   CONSTANT clk_period : TIME := 10 ns;
-  CONSTANT E_RX_CLK_period : TIME := 10 ns;
-  CONSTANT E_TX_CLK_period : TIME := 10 ns;
+  CONSTANT E_RX_CLK_period : TIME := 20 ns;
+  CONSTANT E_TX_CLK_period : TIME := 20 ns;
 
 BEGIN
 
   -- Instantiate the Unit Under Test (UUT)
   uut : main PORT MAP(
     clk => clk,
-    E_COL => E_COL,
-    E_CRS => E_CRS,
-    E_MDC => E_MDC,
-    E_MDIO => E_MDIO,
     E_RX_CLK => E_RX_CLK,
     E_RX_DV => E_RX_DV,
     E_RXD => E_RXD,
@@ -104,7 +119,8 @@ BEGIN
     WAIT FOR 100 ns;
 
     WAIT FOR clk_period * 10;
-    WAIT FOR 100 ns;
+
+    -- insert stimulus here
 
     WAIT;
   END PROCESS;
