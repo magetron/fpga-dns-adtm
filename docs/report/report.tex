@@ -1,0 +1,106 @@
+\documentclass[a4paper]{report}
+\usepackage{setspace}
+%\usepackage{subfigure}
+
+\pagestyle{plain}
+\usepackage{amssymb,graphicx,color}
+\usepackage{amsfonts}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage[a4paper, margin = 3cm, bottom = 2.5cm]{geometry}
+
+\newtheorem{theorem}{THEOREM}
+\newtheorem{lemma}[theorem]{LEMMA}
+\newtheorem{corollary}[theorem]{COROLLARY}
+\newtheorem{proposition}[theorem]{PROPOSITION}
+\newtheorem{remark}[theorem]{REMARK}
+\newtheorem{definition}[theorem]{DEFINITION}
+\newtheorem{fact}[theorem]{FACT}
+
+\newtheorem{problem}[theorem]{PROBLEM}
+\newtheorem{exercise}[theorem]{EXERCISE}
+\def \set#1{\{#1\} }
+
+\newenvironment{proof}{
+PROOF:
+\begin{quotation}}{
+$\Box$ \end{quotation}}
+
+
+
+\newcommand{\nats}{\mbox{\( \mathbb N \)}}
+\newcommand{\rat}{\mbox{\(\mathbb Q\)}}
+\newcommand{\rats}{\mbox{\(\mathbb Q\)}}
+\newcommand{\reals}{\mbox{\(\mathbb R\)}}
+\newcommand{\ints}{\mbox{\(\mathbb Z\)}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\title{{\vspace{-14em}}\\
+{{\Huge Project Title}}\\
+{\large Optional Subtitle}\\}
+
+\date{Submission date: 27 Jan 2020}
+\author{Patrick (Daiqi) Wu\thanks{
+{\bf Disclaimer:}
+This report is submitted as part requirement for Patrick (Daiqi) Wu's BSc Computer Science degree at UCL. It is
+substantially the result of my own work except where explicitly indicated in the text.
+The report will be distributed to the internal and external examiners, but thereafter may not be copied or distributed except with permission from the author.}
+\\ \\
+BSc Computer Science\\ \\
+Prof. Stephen Hailes and Phil Demetriou}
+
+
+
+\begin{document}
+ 
+\onehalfspacing
+\maketitle
+\begin{abstract}
+Summarise your report concisely.
+\end{abstract}
+\tableofcontents
+\setcounter{page}{1}
+
+
+\chapter{Introduction}
+This is just a bare minimum to get started.
+
+\section{Section 1}
+Chapters should contain numbered sections and sub-sections.
+
+\subsection{Sub-Section 1}
+Remember that this is a structured technical/academic report, not an essay.
+
+\chapter{Background and Related Works}
+
+\chapter{Requirement Gathering}
+
+\chapter{Design and Implementation}
+
+\chapter{Testing and Performance Evaluation}
+
+\chapter{Conclusion and Future Work}
+
+\section{More Content}
+
+\section{Summary}
+
+\chapter{Conclusions}
+
+\section{Achievements}
+Summarise the achievements to confirm the project goals have been met.
+\section{Evaluation}
+Evaluation of the work (this may be in a separate chapter if there is substantial evaluation).
+
+\section{Future Work}
+How the project might be continued, but don't give the impression you ran out of time!
+
+\appendix
+
+
+\chapter{Other appendices, e.g., code listing}
+Put your appendix sections here
+
+\end{document}
