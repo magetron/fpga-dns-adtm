@@ -49,16 +49,17 @@ ARCHITECTURE rtl OF io IS
         srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
         ipHeaderLength => 0, ipLength => 0,
         srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-        dnsLength => 0,
-        dns => (OTHERS => '0')
+        dnsLength => 0
+        --dns => (OTHERS => '0')
       ),
       sd => (
         srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
         srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
         ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
+        ipChecksum => (OTHERS => '0'),
         srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-        udpLength => (OTHERS => '0'),
-        dns => (OTHERS => '0')
+        udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0')
+        --dns => (OTHERS => '0')
       ),
       led => x"00",
       c => 0
@@ -85,8 +86,10 @@ ARCHITECTURE rtl OF io IS
 
       WHEN Work =>
         -- DO Processing
-        sin.sd.dns <= s.rd.dns;
-
+        --sin.sd.dns <= s.rd.dns;
+        -- TODO : use function to calc them
+        sin.sd.ipChecksum <= x"21b5";
+        sin.sd.udpChecksum <= x"4195";
         sin.s <= PostWork;
 
       WHEN PostWork =>
