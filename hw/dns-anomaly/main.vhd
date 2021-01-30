@@ -30,11 +30,8 @@ ARCHITECTURE rtl OF main IS
 
   COMPONENT clock
     PORT (
-      clkin_in : IN STD_LOGIC;
-      rst_in : IN STD_LOGIC;
-      clkin_ibufg_out : OUT STD_LOGIC;
-      clk0_out : OUT STD_LOGIC;
-      clk90_out : OUT STD_LOGIC
+      i_clk : in STD_LOGIC;
+      o25_clk : out STD_LOGIC
     );
   END COMPONENT;
 
@@ -88,18 +85,14 @@ ARCHITECTURE rtl OF main IS
   SIGNAL el_snd_data : snd_data_t; -- Send data.
   SIGNAL el_snd_en : STD_LOGIC; -- Enable sending.
 
-  SIGNAL clk90 : STD_LOGIC; -- Clock shift right 90 degree.
-  SIGNAL clk0 : STD_LOGIC;
+  SIGNAL clk25 : STD_LOGIC; -- Clock shift right 90 degree.
 BEGIN
 
   --E_MDC <= '1';
 
   inst_clock : clock PORT MAP(
-    clkin_in => clk,
-    rst_in => '0',
-    clkin_ibufg_out => OPEN,
-    clk0_out => clk0,
-    clk90_out => OPEN
+    i_clk => clk,
+    o25_clk => clk25
   );
 
   mac_receive : mac_rcv PORT MAP(
@@ -122,7 +115,7 @@ BEGIN
   );
 
   core : io PORT MAP(
-    clk => clk0,
+    clk => clk25,
     --clk90 => clk90,
     -- Data received.
     el_rcv_data => el_rcv_data,
