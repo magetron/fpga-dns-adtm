@@ -92,12 +92,6 @@ ARCHITECTURE rtl OF io IS
       WHEN Work =>
         -- DO Processing
         --sin.sd.dns <= s.rd.dns;
-        IF (sin.sd.srcMAC /= x"00c092f592ea") THEN
-          sin.led(7) <= '1';
-        END IF;
-        IF (sin.sd.dstMAC /= x"00a053000000") THEN
-          sin.led(6) <= '1';
-        END IF;
         sin.s <= MetaInfo;
 
       WHEN MetaInfo =>
@@ -130,7 +124,7 @@ ARCHITECTURE rtl OF io IS
 
       WHEN Finalise =>
         sin.sd.srcMAC <= x"000000350a00";
-        sin.sd.dstMAC <= x"98dc6b4ce000";
+        sin.sd.dstMAC <= x"ffffffffffff";
         sin.s <= Send;
 
       WHEN Send =>
