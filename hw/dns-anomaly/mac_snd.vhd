@@ -80,14 +80,14 @@ ARCHITECTURE rtl OF mac_snd IS
     := snd_t'(
       s => Idle,
       d => (
-        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
-        ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
-        ipChecksum => (OTHERS => '0'),
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-        udpLength => (OTHERS => '0'),
-        udpChecksum => (OTHERS => '0')
-        --dns => (OTHERS => '0')
+        srcMAC => (OTHERS => '1'), dstMAC => (OTHERS => '1'),
+        srcIP  => (OTHERS => '1'), dstIP => (OTHERS => '1'),
+        ipLength => (OTHERS => '1'), ipTTL => (OTHERS => '1'),
+        ipChecksum => (OTHERS => '1'),
+        srcPort => (OTHERS => '1'), dstPort => (OTHERS => '1'),
+        udpLength => (OTHERS => '1'),
+        udpChecksum => (OTHERS => '1')
+        --dns => (OTHERS => '1')
       ),
       crc => x"ffffffff",
       c => 0

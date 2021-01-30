@@ -54,12 +54,12 @@ ARCHITECTURE rtl OF mac_rcv IS
     := rcv_t'(
       s => Preamble,
       d => (
-        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
+        srcMAC => (OTHERS => '1'), dstMAC => (OTHERS => '1'),
+        srcIP  => (OTHERS => '1'), dstIP => (OTHERS => '1'),
         ipHeaderLength => 0, ipLength => 0,
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
+        srcPort => (OTHERS => '1'), dstPort => (OTHERS => '1'),
         dnsLength => 0
-        --dns => (OTHERS => '0')
+        --dns => (OTHERS => '1')
       ),
       c => 0
     );
@@ -177,7 +177,6 @@ BEGIN
           END IF;
 
         -- IP - Length
-        -- TODO: Ignore for now, could check
         WHEN IPLength =>
           rin.d.ipLength <= r.d.ipLength * 16 + to_integer(unsigned(E_RXD));
           IF r.c = 3 THEN
@@ -234,7 +233,6 @@ BEGIN
           END IF;
 
         -- IP Checksum
-        -- TODO: check checksum, Ignore for now
         WHEN IPChecksum =>
           IF r.c = 3 THEN
             rin.c <= 0;
@@ -309,19 +307,17 @@ BEGIN
           END IF;
 
         -- UDP Checksum
-        -- TODO: ignore for now, check later
         WHEN UDPChecksum =>
           IF r.c = 3 THEN
             rin.c <= 0;
             udpPayloadLength := r.d.dnsLength * 2 - 1;
             rin.s <= DNSMsg;
-            --rin.d.dns <= (OTHERS => '0');
+            --rin.d.dns <= (OTHERS => '1');
           ELSE
             rin.c <= r.c + 1;
           END IF;
 
         -- DNS Msg
-        -- TODO: If possible, Parsing on the fly
         WHEN DNSMsg =>
           --IF r.c <= 508 THEN
           --  rin.d.dns((r.c + 3) DOWNTO (r.c)) <= E_RXD;

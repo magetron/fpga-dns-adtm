@@ -9,10 +9,10 @@ ENTITY main IS
   PORT (
     clk : IN STD_LOGIC;
 
-    E_COL : IN STD_LOGIC; -- Collision Detect.
-    E_CRS : IN STD_LOGIC; -- Carrier Sense.
-    E_MDC : OUT STD_LOGIC;
-    E_MDIO : IN STD_LOGIC;
+    --E_COL : IN STD_LOGIC; -- Collision Detect.
+    --E_CRS : IN STD_LOGIC; -- Carrier Sense.
+    --E_MDC : OUT STD_LOGIC;
+    --E_MDIO : IN STD_LOGIC;
     E_RX_CLK : IN STD_LOGIC; -- Receiver Clock.
     E_RX_DV : IN STD_LOGIC; -- Received Data Valid.
     E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
@@ -64,7 +64,7 @@ ARCHITECTURE rtl OF main IS
   COMPONENT io IS
     PORT (
       clk : IN STD_LOGIC;
-      clk90 : IN STD_LOGIC;
+      --clk90 : IN STD_LOGIC;
       -- data received.
       el_rcv_data : IN rcv_data_t;
       el_rcv_dv : IN STD_LOGIC;
@@ -92,14 +92,14 @@ ARCHITECTURE rtl OF main IS
   SIGNAL clk0 : STD_LOGIC;
 BEGIN
 
-  E_MDC <= '0';
+  --E_MDC <= '1';
 
   inst_clock : clock PORT MAP(
     clkin_in => clk,
     rst_in => '0',
     clkin_ibufg_out => OPEN,
     clk0_out => clk0,
-    clk90_out => clk90
+    clk90_out => OPEN
   );
 
   mac_receive : mac_rcv PORT MAP(
@@ -123,7 +123,7 @@ BEGIN
 
   core : io PORT MAP(
     clk => clk0,
-    clk90 => clk90,
+    --clk90 => clk90,
     -- Data received.
     el_rcv_data => el_rcv_data,
     el_rcv_dv => el_rcv_dv,
