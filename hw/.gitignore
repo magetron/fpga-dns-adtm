@@ -7,4 +7,5 @@
 !*.v
 !*.sv
 !*.ngc
+!*.zip
 !.gitignore
