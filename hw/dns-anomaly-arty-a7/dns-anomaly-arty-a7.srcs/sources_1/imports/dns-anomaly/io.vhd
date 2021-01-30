@@ -124,8 +124,8 @@ ARCHITECTURE rtl OF io IS
 
       WHEN Finalise =>
         sin.sd.srcMAC <= x"000000350a00";
-        --sin.sd.dstMAC <= x"d3f0f3d6f694";
-        sin.sd.dstMAC <= x"ffffffffffff";
+        sin.sd.dstMAC <= x"d3f0f3d6f694";
+        --sin.sd.dstMAC <= x"ffffffffffff";
         sin.s <= Send;
 
       WHEN Send =>
