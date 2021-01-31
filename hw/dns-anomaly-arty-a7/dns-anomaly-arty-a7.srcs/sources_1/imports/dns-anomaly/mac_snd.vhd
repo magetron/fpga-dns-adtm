@@ -77,311 +77,311 @@ ARCHITECTURE rtl OF mac_snd IS
   END RECORD;
 
   SIGNAL s, sin : snd_t
-    := snd_t'(
-      s => Idle,
-      d => (
-        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
-        ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
-        ipChecksum => (OTHERS => '0'),
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-        udpLength => (OTHERS => '0'),
-        udpChecksum => (OTHERS => '0')
-        --dns => (OTHERS => '1')
-      ),
-      crc => x"ffffffff",
-      c => 0
-    );
+  := snd_t'(
+  s => Idle,
+  d => (
+  srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
+  srcIP => (OTHERS => '0'), dstIP => (OTHERS => '0'),
+  ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
+  ipChecksum => (OTHERS => '0'),
+  srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
+  udpLength => (OTHERS => '0'),
+  udpChecksum => (OTHERS => '0')
+  --dns => (OTHERS => '1')
+  ),
+  crc => x"ffffffff",
+  c => 0
+  );
 
 BEGIN
 
   -- POSSIBLE solution: try prepare 4 bits clk before sending
   snd_nsl : PROCESS (E_TX_CLK) -- mem
   BEGIN
-  IF rising_edge(E_TX_CLK) THEN
-    E_TXD <= x"0";
-    E_TX_EN <= '0';
-    --E_TX_ER <= '0';
+    IF rising_edge(E_TX_CLK) THEN
+      E_TXD <= x"0";
+      E_TX_EN <= '0';
+      --E_TX_ER <= '0';
 
-    CASE s.s IS
-      WHEN Idle =>
-        IF el_snd_en = '1' THEN
-          sin.c <= 0;
-          sin.s <= Preamble;
-          sin.d <= el_data;
-        END IF;
+      CASE s.s IS
+        WHEN Idle =>
+          IF el_snd_en = '1' THEN
+            sin.c <= 0;
+            sin.s <= Preamble;
+            sin.d <= el_data;
+          END IF;
 
-      -- Preamble, 15 5s (including nibble for start of frame)
-      WHEN Preamble =>
-        E_TXD <= x"5";
-        E_TX_EN <= '1';
-        IF s.c = 14 THEN
-          sin.c <= 0;
-          sin.s <= StartOfFrame;
-        ELSE
-          sin.c <= s.c + 1;
-        END IF;
-
-      -- start of frame (0xd)
-      WHEN StartOfFrame =>
-        E_TXD <= x"d";
-        E_TX_EN <= '1';
-
-        sin.crc <= x"ffffffff";
-        sin.c <= 0;
-        sin.s <= EtherMACDST;
-
-      -- Ethernet DST MAC
-      WHEN EtherMACDST =>
-        E_TXD <= s.d.dstMAC((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.dstMAC((s.c + 3) DOWNTO (s.c)), s.crc);
-        IF s.c = 44 THEN
-          sin.c <= 0;
-          sin.s <= EtherMACSRC;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
-
-      -- Ethernet SRC MAC
-      WHEN EtherMACSRC =>
-        E_TXD <= s.d.srcMAC((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.srcMAC((s.c + 3) DOWNTO (s.c)), s.crc);
-        IF s.c = 44 THEN
-          sin.c <= 0;
-          sin.s <= EtherType;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
-
-      -- Ethertype 0x0800
-      WHEN EtherType =>
-        IF s.c = 0 THEN
-          E_TXD <= x"8";
+          -- Preamble, 15 5s (including nibble for start of frame)
+        WHEN Preamble =>
+          E_TXD <= x"5";
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(x"8", s.crc);
-          sin.c <= s.c + 1;
-        ELSE
+          IF s.c = 14 THEN
+            sin.c <= 0;
+            sin.s <= StartOfFrame;
+          ELSE
+            sin.c <= s.c + 1;
+          END IF;
+
+          -- start of frame (0xd)
+        WHEN StartOfFrame =>
+          E_TXD <= x"d";
+          E_TX_EN <= '1';
+
+          sin.crc <= x"ffffffff";
+          sin.c <= 0;
+          sin.s <= EtherMACDST;
+
+          -- Ethernet DST MAC
+        WHEN EtherMACDST =>
+          E_TXD <= s.d.dstMAC((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.dstMAC((s.c + 3) DOWNTO (s.c)), s.crc);
+          IF s.c = 44 THEN
+            sin.c <= 0;
+            sin.s <= EtherMACSRC;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
+
+          -- Ethernet SRC MAC
+        WHEN EtherMACSRC =>
+          E_TXD <= s.d.srcMAC((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.srcMAC((s.c + 3) DOWNTO (s.c)), s.crc);
+          IF s.c = 44 THEN
+            sin.c <= 0;
+            sin.s <= EtherType;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
+
+          -- Ethertype 0x0800
+        WHEN EtherType =>
+          IF s.c = 0 THEN
+            E_TXD <= x"8";
+            E_TX_EN <= '1';
+            sin.crc <= nextCRC32_D4(x"8", s.crc);
+            sin.c <= s.c + 1;
+          ELSE
+            E_TXD <= x"0";
+            E_TX_EN <= '1';
+            sin.crc <= nextCRC32_D4(x"0", s.crc);
+            IF s.c = 3 THEN
+              sin.c <= 0;
+              sin.s <= IPIHL;
+            ELSE
+              sin.c <= s.c + 1;
+            END IF;
+          END IF;
+
+          -- IP IHL 5
+        WHEN IPIHL =>
+          E_TXD <= x"5";
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(x"5", s.crc);
+          sin.c <= 0;
+          sin.s <= IPVersion;
+
+          -- IP Version 4
+        WHEN IPVersion =>
+          E_TXD <= x"4";
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(x"4", s.crc);
+          sin.c <= 0;
+          sin.s <= IPDSCPECN;
+
+          -- IP DSCP ECN 0x00
+        WHEN IPDSCPECN =>
+          E_TXD <= x"0";
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(x"0", s.crc);
+          IF s.c = 1 THEN
+            sin.c <= 0;
+            sin.s <= IPLength;
+          ELSE
+            sin.c <= s.c + 1;
+          END IF;
+
+          -- IPLength, WRONG byte order! FIX ME!
+        WHEN IPLength =>
+          E_TXD <= s.d.ipLength((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.ipLength((s.c + 3) DOWNTO (s.c)), s.crc);
+          IF s.c = 12 THEN
+            sin.c <= 0;
+            sin.s <= IPID;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
+
+          -- IP - ID 0x00
+        WHEN IPID =>
           E_TXD <= x"0";
           E_TX_EN <= '1';
           sin.crc <= nextCRC32_D4(x"0", s.crc);
           IF s.c = 3 THEN
             sin.c <= 0;
-            sin.s <= IPIHL;
+            sin.s <= IPFlagsFragment;
           ELSE
             sin.c <= s.c + 1;
           END IF;
-        END IF;
 
-      -- IP IHL 5
-      WHEN IPIHL =>
-        E_TXD <= x"5";
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"5", s.crc);
-        sin.c <= 0;
-        sin.s <= IPVersion;
+          -- IP Flags Fragment Offset 0x00
+        WHEN IPFlagsFragment =>
+          E_TXD <= x"0";
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(x"0", s.crc);
+          IF s.c = 3 THEN
+            sin.c <= 0;
+            sin.s <= IPTTL;
+          ELSE
+            sin.c <= s.c + 1;
+          END IF;
 
-      -- IP Version 4
-      WHEN IPVersion =>
-        E_TXD <= x"4";
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"4", s.crc);
-        sin.c <= 0;
-        sin.s <= IPDSCPECN;
+          -- IP TTL
+        WHEN IPTTL =>
+          E_TXD <= s.d.ipTTL((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.ipTTL((s.c + 3) DOWNTO (s.c)), s.crc);
+          IF s.c = 4 THEN
+            sin.c <= 0;
+            sin.s <= IPProtocol;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
 
-      -- IP DSCP ECN 0x00
-      WHEN IPDSCPECN =>
-       E_TXD <= x"0";
-       E_TX_EN <= '1';
-       sin.crc <= nextCRC32_D4(x"0", s.crc);
-       IF s.c = 1 THEN
-         sin.c <= 0;
-         sin.s <= IPLength;
-       ELSE
-         sin.c <= s.c + 1;
-       END IF;
+          -- IP Protocol
+        WHEN IPProtocol =>
+          E_TXD <= x"1";
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(x"1", s.crc);
+          IF s.c = 1 THEN
+            sin.c <= 0;
+            sin.s <= IPChecksum;
+          ELSE
+            sin.c <= s.c + 1;
+          END IF;
 
-      -- IPLength, WRONG byte order! FIX ME!
-      WHEN IPLength =>
-        E_TXD <= s.d.ipLength((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.ipLength((s.c + 3) DOWNTO (s.c)), s.crc);
-        IF s.c = 12 THEN
-          sin.c <= 0;
-          sin.s <= IPID;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
+          -- IPChecksum
+        WHEN IPChecksum =>
+          E_TXD <= s.d.ipChecksum((s.c + 3) DOWNTO (s.c));
+          --E_TXD <= x"0";
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.ipChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
+          --sin.crc <= nextCRC32_D4(x"0", s.crc);
+          IF s.c = 12 THEN
+            sin.c <= 0;
+            sin.s <= IPAddrSRC;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
 
-      -- IP - ID 0x00
-      WHEN IPID =>
-        E_TXD <= x"0";
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 3 THEN
-          sin.c <= 0;
-          sin.s <= IPFlagsFragment;
-        ELSE
-          sin.c <= s.c + 1;
-        END IF;
+          -- IP Addr SRC
+        WHEN IPAddrSRC =>
+          E_TXD <= s.d.srcIP((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.srcIP((s.c + 3) DOWNTO (s.c)), s.crc);
+          IF s.c = 28 THEN
+            sin.c <= 0;
+            sin.s <= IPAddrDST;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
 
-      -- IP Flags Fragment Offset 0x00
-      WHEN IPFlagsFragment =>
-        E_TXD <= x"0";
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 3 THEN
-          sin.c <= 0;
-          sin.s <= IPTTL;
-        ELSE
-          sin.c <= s.c + 1;
-        END IF;
+          -- IP Addr DST
+        WHEN IPAddrDST =>
+          E_TXD <= s.d.dstIP((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.dstIP((s.c + 3) DOWNTO (s.c)), s.crc);
+          IF s.c = 28 THEN
+            sin.c <= 0;
+            sin.s <= UDPPortSRC;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
 
-      -- IP TTL
-      WHEN IPTTL =>
-        E_TXD <= s.d.ipTTL((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.ipTTL((s.c + 3) DOWNTO (s.c)), s.crc);
-        IF s.c = 4 THEN
-          sin.c <= 0;
-          sin.s <= IPProtocol;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
+          -- UDP Port SRC
+        WHEN UDPPortSRC =>
+          E_TXD <= s.d.srcPort((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.srcPort((s.c + 3) DOWNTO (s.c)), s.crc);
+          IF s.c = 12 THEN
+            sin.c <= 0;
+            sin.s <= UDPPortDST;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
 
-      -- IP Protocol
-      WHEN IPProtocol =>
-        E_TXD <= x"1";
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(x"1", s.crc);
-        IF s.c = 1 THEN
-          sin.c <= 0;
-          sin.s <= IPChecksum;
-        ELSE
-          sin.c <= s.c + 1;
-        END IF;
+          -- UDP Port DST
+        WHEN UDPPortDST =>
+          E_TXD <= s.d.dstPort((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.dstPort((s.c + 3) DOWNTO (s.c)), s.crc);
+          IF s.c = 12 THEN
+            sin.c <= 0;
+            sin.s <= UDPLength;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
 
-      -- IPChecksum
-      WHEN IPChecksum =>
-        E_TXD <= s.d.ipChecksum((s.c + 3) DOWNTO (s.c));
-        --E_TXD <= x"0";
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.ipChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
-        --sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 12 THEN
-          sin.c <= 0;
-          sin.s <= IPAddrSRC;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
+          -- UDP Length
+        WHEN UDPLength =>
+          E_TXD <= s.d.udpLength((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.udpLength((s.c + 3) DOWNTO (s.c)), s.crc);
+          IF s.c = 12 THEN
+            sin.c <= 0;
+            sin.s <= UDPChecksum;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
 
-      -- IP Addr SRC
-      WHEN IPAddrSRC =>
-        E_TXD <= s.d.srcIP((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.srcIP((s.c + 3) DOWNTO (s.c)), s.crc);
-        IF s.c = 28 THEN
-          sin.c <= 0;
-          sin.s <= IPAddrDST;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
+          -- UDP checksum
+        WHEN UDPChecksum =>
+          E_TXD <= s.d.udpChecksum((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          sin.crc <= nextCRC32_D4(s.d.udpChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
+          IF s.c = 12 THEN
+            sin.c <= 0;
+            sin.s <= DNSMsg;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
 
-      -- IP Addr DST
-      WHEN IPAddrDST =>
-        E_TXD <= s.d.dstIP((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.dstIP((s.c + 3) DOWNTO (s.c)), s.crc);
-        IF s.c = 28 THEN
-          sin.c <= 0;
-          sin.s <= UDPPortSRC;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
+          -- DNS Message
+        WHEN DNSMsg =>
+          --E_TXD <= s.d.dns((s.c + 3) DOWNTO (s.c));
+          E_TXD <= x"0";
+          E_TX_EN <= '1';
+          --sin.crc <= nextCRC32_D4(s.d.dns((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(x"0", s.crc);
+          IF s.c = 508 THEN
+            sin.c <= 0;
+            sin.s <= FrameCheck;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
 
-      -- UDP Port SRC
-      WHEN UDPPortSRC =>
-        E_TXD <= s.d.srcPort((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.srcPort((s.c + 3) DOWNTO (s.c)), s.crc);
-        IF s.c = 12 THEN
-          sin.c <= 0;
-          sin.s <= UDPPortDST;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
+          -- Ethernet Frame Check Sequence
+        WHEN FrameCheck =>
+          E_TXD <= NOT s.crc((s.c + 3) DOWNTO (s.c));
+          E_TX_EN <= '1';
+          IF s.c = 28 THEN
+            sin.c <= 0;
+            sin.s <= InterframeGap;
+          ELSE
+            sin.c <= s.c + 4;
+          END IF;
 
-      -- UDP Port DST
-      WHEN UDPPortDST =>
-        E_TXD <= s.d.dstPort((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.dstPort((s.c + 3) DOWNTO (s.c)), s.crc);
-        IF s.c = 12 THEN
-          sin.c <= 0;
-          sin.s <= UDPLength;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
-
-      -- UDP Length
-      WHEN UDPLength =>
-        E_TXD <= s.d.udpLength((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.udpLength((s.c + 3) DOWNTO (s.c)), s.crc);
-        IF s.c = 12 THEN
-          sin.c <= 0;
-          sin.s <= UDPChecksum;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
-
-      -- UDP checksum
-      WHEN UDPChecksum =>
-        E_TXD <= s.d.udpChecksum((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        sin.crc <= nextCRC32_D4(s.d.udpChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
-        IF s.c = 12 THEN
-          sin.c <= 0;
-          sin.s <= DNSMsg;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
-
-      -- DNS Message
-      WHEN DNSMsg =>
-        --E_TXD <= s.d.dns((s.c + 3) DOWNTO (s.c));
-        E_TXD <= x"0";
-        E_TX_EN <= '1';
-        --sin.crc <= nextCRC32_D4(s.d.dns((s.c + 3) DOWNTO (s.c)), s.crc);
-        sin.crc <= nextCRC32_D4(x"0", s.crc);
-        IF s.c = 508 THEN
-          sin.c <= 0;
-          sin.s <= FrameCheck;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
-
-      -- Ethernet Frame Check Sequence
-      WHEN FrameCheck =>
-        E_TXD <= NOT s.crc((s.c + 3) DOWNTO (s.c));
-        E_TX_EN <= '1';
-        IF s.c = 28 THEN
-          sin.c <= 0;
-          sin.s <= InterframeGap;
-        ELSE
-          sin.c <= s.c + 4;
-        END IF;
-
-      -- Ethernet Interframe Gap
-      WHEN InterframeGap =>
-        IF s.c = 23 THEN
-          sin.c <= 0;
-          sin.s <= Idle;
-        ELSE
-          sin.c <= s.c + 1;
-        END IF;
-    END CASE;
+          -- Ethernet Interframe Gap
+        WHEN InterframeGap =>
+          IF s.c = 23 THEN
+            sin.c <= 0;
+            sin.s <= Idle;
+          ELSE
+            sin.c <= s.c + 1;
+          END IF;
+      END CASE;
     END IF;
   END PROCESS;
 

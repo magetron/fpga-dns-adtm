@@ -1,29 +1,29 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
 
-entity clock is
-port(
-  i_clk : in  std_logic;
-  o25_clk : out std_logic;
-  o50_clk : out std_logic
-);
-end clock;
+ENTITY clock IS
+  PORT (
+    i_clk : IN STD_LOGIC;
+    o25_clk : OUT STD_LOGIC;
+    o50_clk : OUT STD_LOGIC
+  );
+END clock;
 
-architecture rtl of clock is
+ARCHITECTURE rtl OF clock IS
 
-signal clk_divider : unsigned(1 downto 0) := (OTHERS=>'0');
+  SIGNAL clk_divider : unsigned(1 DOWNTO 0) := (OTHERS => '0');
 
-begin
+BEGIN
 
-div: process(i_clk)
-begin
-  if (rising_edge(i_clk)) then
-    clk_divider <= clk_divider + 1;
-  end if;
-end process div;
+  div : PROCESS (i_clk)
+  BEGIN
+    IF (rising_edge(i_clk)) THEN
+      clk_divider <= clk_divider + 1;
+    END IF;
+  END PROCESS div;
 
-o25_clk <= clk_divider(1);
-o50_clk <= clk_divider(0);
+  o25_clk <= clk_divider(1);
+  o50_clk <= clk_divider(0);
 
-end rtl;
+END rtl;

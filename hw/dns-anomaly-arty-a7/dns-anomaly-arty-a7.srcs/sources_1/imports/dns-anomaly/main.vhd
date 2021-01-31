@@ -98,7 +98,7 @@ BEGIN
     o50_clk => clk50,
     o25_clk => clk25
   );
-  
+
   E_REF_CLK <= clk25;
 
   mac_receive : mac_rcv PORT MAP(

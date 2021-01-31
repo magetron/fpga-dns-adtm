@@ -38,7 +38,7 @@ ARCHITECTURE rtl OF mac_rcv IS
     IPOptions, -- dependent on IPIHL size > 5
     UDPPortSRC, -- 2 byte UDP Port SRC
     UDPPortDST, -- 2 byte UDP Port DST
-    UDPLength,  -- 2 byte UDP Length
+    UDPLength, -- 2 byte UDP Length
     UDPChecksum, -- 2 byte
     DNSMsg, -- 1472 bytes 1500 MTU - 20 IP - 8 UDP = 1472
     Notify -- Inform other hardware components.
@@ -46,297 +46,297 @@ ARCHITECTURE rtl OF mac_rcv IS
 
   TYPE rcv_t IS RECORD
     s : state_t; -- Receiver Parse State
-    d : rcv_data_t;  -- Parse Data
+    d : rcv_data_t; -- Parse Data
     c : NATURAL RANGE 0 TO 65535; -- Counter MAX 65535
     udpc : NATURAL RANGE 0 TO 65535;
   END RECORD;
 
   SIGNAL r, rin : rcv_t
-    := rcv_t'(
-      s => Preamble,
-      d => (
-        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
-        ipHeaderLength => 0, ipLength => 0,
-        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-        dnsLength => 0
-        --dns => (OTHERS => '1')
-      ),
-      c => 0,
-      udpc => 0
-    );
+  := rcv_t'(
+  s => Preamble,
+  d => (
+  srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
+  srcIP => (OTHERS => '0'), dstIP => (OTHERS => '0'),
+  ipHeaderLength => 0, ipLength => 0,
+  srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
+  dnsLength => 0
+  --dns => (OTHERS => '1')
+  ),
+  c => 0,
+  udpc => 0
+  );
 
 BEGIN
 
   rcv_nsl : PROCESS (E_RX_CLK) --, el_ack)
   BEGIN
     IF (rising_edge(E_RX_CLK)) THEN
-        el_dv <= '0';
-    
-        IF E_RX_DV = '1' THEN
-          CASE r.s IS
-    
+      el_dv <= '0';
+
+      IF E_RX_DV = '1' THEN
+        CASE r.s IS
+
             -- Ethernet II - Preamble and Start Of Frame
-            WHEN Preamble =>
-              IF E_RXD = x"5" THEN
-                IF r.c = 14 THEN
-                  rin.c <= 0;
-                  rin.s <= StartOfFrame;
-                ELSE
-                  rin.c <= r.c + 1;
-                END IF;
-              ELSIF E_RXD = x"d" AND r.c >= 12 THEN
-                -- could we miss the first few signals?
+          WHEN Preamble =>
+            IF E_RXD = x"5" THEN
+              IF r.c = 14 THEN
                 rin.c <= 0;
-                rin.s <= EtherMACDST;
+                rin.s <= StartOfFrame;
               ELSE
-                rin.c <= 0;
+                rin.c <= r.c + 1;
               END IF;
-    
-            WHEN StartOfFrame =>
-              IF E_RXD = x"d" THEN
-                rin.s <= EtherMACDST;
-              ELSE
-                rin.s <= Preamble;
-              END IF;
-    
+            ELSIF E_RXD = x"d" AND r.c >= 12 THEN
+              -- could we miss the first few signals?
+              rin.c <= 0;
+              rin.s <= EtherMACDST;
+            ELSE
+              rin.c <= 0;
+            END IF;
+
+          WHEN StartOfFrame =>
+            IF E_RXD = x"d" THEN
+              rin.s <= EtherMACDST;
+            ELSE
+              rin.s <= Preamble;
+            END IF;
+
             -- Ethernet II - MAC DST and MAC SRC
-            WHEN EtherMACDST =>
-              rin.d.dstMAC((r.c + 3) DOWNTO (r.c)) <= E_RXD;
-              IF r.c = 44 THEN
-                rin.c <= 0;
-                rin.s <= EtherMACSRC;
-              ELSE
-                rin.c <= r.c + 4;
-              END IF;
-    
-            WHEN EtherMACSRC =>
-              rin.d.srcMAC((r.c + 3) DOWNTO (r.c)) <= E_RXD;
-              IF r.c = 44 THEN
-                rin.c <= 0;
-                rin.s <= EtherType;
-              ELSE
-                rin.c <= r.c + 4;
-              END IF;
-    
+          WHEN EtherMACDST =>
+            rin.d.dstMAC((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            IF r.c = 44 THEN
+              rin.c <= 0;
+              rin.s <= EtherMACSRC;
+            ELSE
+              rin.c <= r.c + 4;
+            END IF;
+
+          WHEN EtherMACSRC =>
+            rin.d.srcMAC((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            IF r.c = 44 THEN
+              rin.c <= 0;
+              rin.s <= EtherType;
+            ELSE
+              rin.c <= r.c + 4;
+            END IF;
+
             -- Ethernet II - Ethertype 0x0800
-            WHEN EtherType =>
-              IF E_RXD = x"8" THEN
-                IF r.c = 0 THEN
-                  rin.c <= r.c + 1;
-                ELSE
-                  rin.c <= 0;
-                  rin.s <= Preamble;
-                END IF;
-              ELSIF E_RXD = x"0" THEN
-                IF r.c = 3 THEN
-                  rin.c <= 0;
-                  rin.s <= IPIHL;
-                  rin.d.ipHeaderLength <= 0;
-                ELSIF r.c = 0 THEN
-                  rin.c <= 0;
-                  rin.s <= Preamble;
-                ELSE
-                  rin.c <= r.c + 1;
-                END IF;
+          WHEN EtherType =>
+            IF E_RXD = x"8" THEN
+              IF r.c = 0 THEN
+                rin.c <= r.c + 1;
               ELSE
                 rin.c <= 0;
                 rin.s <= Preamble;
               END IF;
-    
-            -- IP - IHL 0x5
-            WHEN IPIHL =>
-              rin.d.ipHeaderLength <= to_integer(unsigned(E_RXD));
-              IF (E_RXD >= x"5") THEN
+            ELSIF E_RXD = x"0" THEN
+              IF r.c = 3 THEN
                 rin.c <= 0;
-                rin.s <= IPVersion;
-              ELSE
-                rin.c <= 0;
+                rin.s <= IPIHL;
                 rin.d.ipHeaderLength <= 0;
+              ELSIF r.c = 0 THEN
+                rin.c <= 0;
                 rin.s <= Preamble;
+              ELSE
+                rin.c <= r.c + 1;
               END IF;
-    
+            ELSE
+              rin.c <= 0;
+              rin.s <= Preamble;
+            END IF;
+
+            -- IP - IHL 0x5
+          WHEN IPIHL =>
+            rin.d.ipHeaderLength <= to_integer(unsigned(E_RXD));
+            IF (E_RXD >= x"5") THEN
+              rin.c <= 0;
+              rin.s <= IPVersion;
+            ELSE
+              rin.c <= 0;
+              rin.d.ipHeaderLength <= 0;
+              rin.s <= Preamble;
+            END IF;
+
             -- IP - Version 0x4                                                 --
-            WHEN IPVersion =>
-              IF E_RXD = x"4" THEN
-                rin.c <= 0;
-                rin.s <= IPDSCPECN;
-              ELSE
-                rin.c <= 0;
-                rin.s <= Preamble;
-              END IF;
-    
+          WHEN IPVersion =>
+            IF E_RXD = x"4" THEN
+              rin.c <= 0;
+              rin.s <= IPDSCPECN;
+            ELSE
+              rin.c <= 0;
+              rin.s <= Preamble;
+            END IF;
+
             -- IP - DSCP ECN 0x?0
-            WHEN IPDSCPECN =>
-              IF r.c = 1 THEN
-                rin.c <= 0;
-                rin.s <= IPLength;
-                rin.d.ipLength <= 0;
-              ELSE
-                rin.c <= r.c + 1;
-              END IF;
-    
+          WHEN IPDSCPECN =>
+            IF r.c = 1 THEN
+              rin.c <= 0;
+              rin.s <= IPLength;
+              rin.d.ipLength <= 0;
+            ELSE
+              rin.c <= r.c + 1;
+            END IF;
+
             -- IP - Length
-            WHEN IPLength =>
-              rin.d.ipLength <= r.d.ipLength * 16 + to_integer(unsigned(E_RXD));
-              IF r.c = 3 THEN
-                rin.c <= 0;
-                rin.s <= IPID;
-              ELSE
-                rin.c <= r.c + 1;
-              END IF;
-    
+          WHEN IPLength =>
+            rin.d.ipLength <= r.d.ipLength * 16 + to_integer(unsigned(E_RXD));
+            IF r.c = 3 THEN
+              rin.c <= 0;
+              rin.s <= IPID;
+            ELSE
+              rin.c <= r.c + 1;
+            END IF;
+
             -- IP - ID
-            WHEN IPID =>
+          WHEN IPID =>
+            IF r.c = 3 THEN
+              rin.c <= 0;
+              rin.s <= IPFlagsFragment;
+            ELSE
+              rin.c <= r.c + 1;
+            END IF;
+
+            -- IP Flags Fragment Offset 0x00
+          WHEN IPFlagsFragment =>
+            IF E_RXD = x"0" THEN
               IF r.c = 3 THEN
                 rin.c <= 0;
-                rin.s <= IPFlagsFragment;
+                rin.s <= IPTTL;
               ELSE
                 rin.c <= r.c + 1;
               END IF;
-    
-            -- IP Flags Fragment Offset 0x00
-            WHEN IPFlagsFragment =>
-              IF E_RXD = x"0" THEN
-                IF r.c = 3 THEN
-                  rin.c <= 0;
-                  rin.s <= IPTTL;
-                ELSE
-                  rin.c <= r.c + 1;
-                END IF;
-              ELSE
-                rin.c <= 0;
-                rin.s <= Preamble;
-              END IF;
-    
+            ELSE
+              rin.c <= 0;
+              rin.s <= Preamble;
+            END IF;
+
             -- IP TTL
-            WHEN IPTTL =>
+          WHEN IPTTL =>
+            IF r.c = 1 THEN
+              rin.c <= 0;
+              rin.s <= IPProtocol;
+            ELSE
+              rin.c <= r.c + 1;
+            END IF;
+
+            -- IP Protocol UDP 0x11
+          WHEN IPProtocol =>
+            IF E_RXD = x"1" THEN
               IF r.c = 1 THEN
                 rin.c <= 0;
-                rin.s <= IPProtocol;
+                rin.s <= IPChecksum;
               ELSE
                 rin.c <= r.c + 1;
               END IF;
-    
-            -- IP Protocol UDP 0x11
-            WHEN IPProtocol =>
-              IF E_RXD = x"1" THEN
-                IF r.c = 1 THEN
-                  rin.c <= 0;
-                  rin.s <= IPChecksum;
-                ELSE
-                  rin.c <= r.c + 1;
-                END IF;
-              ELSE
-                rin.c <= 0;
-                rin.s <= Preamble;
-              END IF;
-    
+            ELSE
+              rin.c <= 0;
+              rin.s <= Preamble;
+            END IF;
+
             -- IP Checksum
-            WHEN IPChecksum =>
-              IF r.c = 3 THEN
-                rin.c <= 0;
-                rin.s <= IPAddrSRC;
-              ELSE
-                rin.c <= r.c + 1;
-              END IF;
-    
+          WHEN IPChecksum =>
+            IF r.c = 3 THEN
+              rin.c <= 0;
+              rin.s <= IPAddrSRC;
+            ELSE
+              rin.c <= r.c + 1;
+            END IF;
+
             -- IP addr src
-            WHEN IPAddrSRC =>
-              rin.d.srcIP((r.c + 3) DOWNTO (r.c)) <= E_RXD;
-              IF r.c = 28 THEN
-                rin.c <= 0;
-                rin.s <= IPAddrDST;
-              ELSE
-                rin.c <= r.c + 4;
-              END IF;
-    
+          WHEN IPAddrSRC =>
+            rin.d.srcIP((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            IF r.c = 28 THEN
+              rin.c <= 0;
+              rin.s <= IPAddrDST;
+            ELSE
+              rin.c <= r.c + 4;
+            END IF;
+
             -- IP addr dst
-            WHEN IPAddrDST =>
-              rin.d.dstIP((r.c + 3) DOWNTO (r.c)) <= E_RXD;
-              IF r.c = 28 THEN
-                rin.c <= 0;
-                IF r.d.ipHeaderLength = 5 THEN
-                  rin.s <= UDPPortSRC;
-                ELSE
-                  rin.s <= IPOptions;
-                END IF;
-              ELSE
-                rin.c <= r.c + 4;
-              END IF;
-    
-            -- IP Options, dependent on IPIHL > 5
-            WHEN IPOptions =>
-              IF (r.c = (r.d.ipHeaderLength - 5) * 8 - 1) THEN
-                rin.c <= 0;
+          WHEN IPAddrDST =>
+            rin.d.dstIP((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            IF r.c = 28 THEN
+              rin.c <= 0;
+              IF r.d.ipHeaderLength = 5 THEN
                 rin.s <= UDPPortSRC;
               ELSE
-                rin.c <= r.c + 1;
+                rin.s <= IPOptions;
               END IF;
-    
-            -- UDP port src
-            WHEN UDPPortSRC =>
-              rin.d.srcPort((r.c + 3) DOWNTO (r.c)) <= E_RXD;
-              IF r.c = 12 THEN
-                rin.c <= 0;
-                rin.s <= UDPPortDST;
-              ELSE
-                rin.c <= r.c + 4;
-              END IF;
-    
-            -- UDP port dst
-            WHEN UDPPortDST =>
-              rin.d.dstPort((r.c + 3) DOWNTO (r.c)) <= E_RXD;
-              IF r.c = 12 THEN
-                rin.c <= 0;
-                rin.s <= UDPLength;
-                rin.d.dnsLength <= 0;
-              ELSE
-                rin.c <= r.c + 4;
-              END IF;
-    
-            -- UDP payload length
-            WHEN UDPLength =>
-              rin.d.dnsLength <= r.d.dnsLength * 16 + to_integer(unsigned(E_RXD));
-              IF r.c = 3 THEN
-                rin.c <= 0;
-                rin.d.dnsLength <= r.d.dnsLength - 8; -- deduct UDP header 8
-                rin.s <= UDPChecksum;
-              ELSE
-                rin.c <= r.c + 1;
-              END IF;
-    
-            -- UDP Checksum
-            WHEN UDPChecksum =>
-              IF r.c = 3 THEN
-                rin.c <= 0;
-                rin.udpc <= r.d.dnsLength * 2 - 1;
-                rin.s <= DNSMsg;
-                --rin.d.dns <= (OTHERS => '1');
-              ELSE
-                rin.c <= r.c + 1;
-              END IF;
-    
-            -- DNS Msg
-            WHEN DNSMsg =>
-              --IF r.c <= 508 THEN
-              --  rin.d.dns((r.c + 3) DOWNTO (r.c)) <= E_RXD;
-              --END IF;
-              IF r.c = r.udpc THEN
-                rin.c <= 0;
-                rin.s <= Notify;
-              ELSE
-                rin.c <= r.c + 1;
-              END IF;
-    
-            -- Notification                                                   --
-            WHEN Notify =>
-              el_dv <= '1';
-              rin.s <= Preamble;
+            ELSE
+              rin.c <= r.c + 4;
+            END IF;
+
+            -- IP Options, dependent on IPIHL > 5
+          WHEN IPOptions =>
+            IF (r.c = (r.d.ipHeaderLength - 5) * 8 - 1) THEN
               rin.c <= 0;
-    
-          END CASE;
-        END IF;
+              rin.s <= UDPPortSRC;
+            ELSE
+              rin.c <= r.c + 1;
+            END IF;
+
+            -- UDP port src
+          WHEN UDPPortSRC =>
+            rin.d.srcPort((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            IF r.c = 12 THEN
+              rin.c <= 0;
+              rin.s <= UDPPortDST;
+            ELSE
+              rin.c <= r.c + 4;
+            END IF;
+
+            -- UDP port dst
+          WHEN UDPPortDST =>
+            rin.d.dstPort((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            IF r.c = 12 THEN
+              rin.c <= 0;
+              rin.s <= UDPLength;
+              rin.d.dnsLength <= 0;
+            ELSE
+              rin.c <= r.c + 4;
+            END IF;
+
+            -- UDP payload length
+          WHEN UDPLength =>
+            rin.d.dnsLength <= r.d.dnsLength * 16 + to_integer(unsigned(E_RXD));
+            IF r.c = 3 THEN
+              rin.c <= 0;
+              rin.d.dnsLength <= r.d.dnsLength - 8; -- deduct UDP header 8
+              rin.s <= UDPChecksum;
+            ELSE
+              rin.c <= r.c + 1;
+            END IF;
+
+            -- UDP Checksum
+          WHEN UDPChecksum =>
+            IF r.c = 3 THEN
+              rin.c <= 0;
+              rin.udpc <= r.d.dnsLength * 2 - 1;
+              rin.s <= DNSMsg;
+              --rin.d.dns <= (OTHERS => '1');
+            ELSE
+              rin.c <= r.c + 1;
+            END IF;
+
+            -- DNS Msg
+          WHEN DNSMsg =>
+            --IF r.c <= 508 THEN
+            --  rin.d.dns((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            --END IF;
+            IF r.c = r.udpc THEN
+              rin.c <= 0;
+              rin.s <= Notify;
+            ELSE
+              rin.c <= r.c + 1;
+            END IF;
+
+            -- Notification                                                   --
+          WHEN Notify =>
+            el_dv <= '1';
+            rin.s <= Preamble;
+            rin.c <= 0;
+
+        END CASE;
+      END IF;
     END IF;
   END PROCESS;
 
