@@ -49,8 +49,8 @@ ARCHITECTURE behavior OF test IS
       E_TX_CLK : IN STD_LOGIC;
       E_TX_EN : OUT STD_LOGIC;
       E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-      E_TX_ER : OUT STD_LOGIC;
-      LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
+--      E_TX_ER : OUT STD_LOGIC;
+      LED : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
     );
   END COMPONENT;
   --Inputs
@@ -65,12 +65,12 @@ ARCHITECTURE behavior OF test IS
   SIGNAL E_TX_EN : STD_LOGIC;
   SIGNAL E_TXD : STD_LOGIC_VECTOR(3 DOWNTO 0);
   SIGNAL E_TX_ER : STD_LOGIC;
-  SIGNAL LED : STD_LOGIC_VECTOR(7 DOWNTO 0);
+  SIGNAL LED : STD_LOGIC_VECTOR(3 DOWNTO 0);
 
   -- Clock period definitions
   CONSTANT clk_period : TIME := 10 ns;
-  CONSTANT E_RX_CLK_period : TIME := 20 ns;
-  CONSTANT E_TX_CLK_period : TIME := 20 ns;
+  CONSTANT E_RX_CLK_period : TIME := 40 ns;
+  CONSTANT E_TX_CLK_period : TIME := 40 ns;
 
 BEGIN
 
@@ -84,7 +84,6 @@ BEGIN
     E_TX_CLK => E_TX_CLK,
     E_TX_EN => E_TX_EN,
     E_TXD => E_TXD,
-    E_TX_ER => E_TX_ER,
     LED => LED
   );
 

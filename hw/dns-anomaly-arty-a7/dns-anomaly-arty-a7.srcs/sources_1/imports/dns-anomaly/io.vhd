@@ -51,20 +51,20 @@ ARCHITECTURE rtl OF io IS
     := iostate_t'(
       s => Idle,
       rd => (
-        srcMAC => (OTHERS => '1'), dstMAC => (OTHERS => '1'),
-        srcIP  => (OTHERS => '1'), dstIP => (OTHERS => '1'),
+        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
         ipHeaderLength => 0, ipLength => 0,
-        srcPort => (OTHERS => '1'), dstPort => (OTHERS => '1'),
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
         dnsLength => 0
         --dns => (OTHERS => '1')
       ),
       sd => (
-        srcMAC => (OTHERS => '1'), dstMAC => (OTHERS => '1'),
-        srcIP  => (OTHERS => '1'), dstIP => (OTHERS => '1'),
-        ipLength => (OTHERS => '1'), ipTTL => (OTHERS => '1'),
-        ipChecksum => (OTHERS => '1'),
-        srcPort => (OTHERS => '1'), dstPort => (OTHERS => '1'),
-        udpLength => (OTHERS => '1'), udpChecksum => (OTHERS => '1')
+        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
+        ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
+        ipChecksum => (OTHERS => '0'),
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
+        udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0')
         --dns => (OTHERS => '1')
       ),
       chksumbuf => x"00000000",
@@ -105,13 +105,15 @@ ARCHITECTURE rtl OF io IS
         sin.s <= IPChecksum;
 
       WHEN IPChecksum =>
-        sin.sd.ipChecksum <= x"21b5";
-        --sin.chksumbuf <= x"00004500" + x"00000023" + x"00004011" + x"0000c0a8" + x"00000501"; 
+        --sin.chksumbuf <= unsigned(s.rd.srcIP); 
+        --sin.chksumbuf <= x"ffff21b5";
+        sin.chksumbuf <= x"00004500" + unsigned(s.rd.srcIP);
         sin.s <= UDPChecksum;
 
       WHEN UDPChecksum =>
         --4add
         --sin.chksumbuf <= resize(s.chksumbuf(31 DOWNTO 16) + s.chksumbuf(15 DOWNTO 0), sin.chksumbuf'length);
+        sin.sd.ipChecksum <= STD_LOGIC_VECTOR(s.chksumbuf(15 DOWNTO 0));
         sin.sd.udpChecksum <= x"4195";
         sin.s <= IPLength;
 
@@ -130,7 +132,6 @@ ARCHITECTURE rtl OF io IS
       WHEN Finalise =>
         sin.sd.srcMAC <= x"000000350a00";
         sin.sd.dstMAC <= x"d3f0f3d6f694";
-        --sin.sd.dstMAC <= x"ffffffffffff";
         sin.s <= Send;
 
       WHEN Send =>

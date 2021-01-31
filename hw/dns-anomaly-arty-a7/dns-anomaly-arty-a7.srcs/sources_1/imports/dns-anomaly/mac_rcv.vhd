@@ -55,10 +55,10 @@ ARCHITECTURE rtl OF mac_rcv IS
     := rcv_t'(
       s => Preamble,
       d => (
-        srcMAC => (OTHERS => '1'), dstMAC => (OTHERS => '1'),
-        srcIP  => (OTHERS => '1'), dstIP => (OTHERS => '1'),
+        srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
+        srcIP  => (OTHERS => '0'), dstIP => (OTHERS => '0'),
         ipHeaderLength => 0, ipLength => 0,
-        srcPort => (OTHERS => '1'), dstPort => (OTHERS => '1'),
+        srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
         dnsLength => 0
         --dns => (OTHERS => '1')
       ),
