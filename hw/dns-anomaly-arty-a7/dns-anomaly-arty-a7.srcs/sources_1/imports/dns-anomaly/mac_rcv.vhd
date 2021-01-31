@@ -48,6 +48,7 @@ ARCHITECTURE rtl OF mac_rcv IS
     s : state_t; -- Receiver Parse State
     d : rcv_data_t;  -- Parse Data
     c : NATURAL RANGE 0 TO 65535; -- Counter MAX 65535
+    udpc : NATURAL RANGE 0 TO 65535;
   END RECORD;
 
   SIGNAL r, rin : rcv_t
@@ -61,13 +62,13 @@ ARCHITECTURE rtl OF mac_rcv IS
         dnsLength => 0
         --dns => (OTHERS => '1')
       ),
-      c => 0
+      c => 0,
+      udpc => 0
     );
 
 BEGIN
 
   rcv_nsl : PROCESS (E_RX_CLK) --, el_ack)
-  VARIABLE udpPayloadLength : NATURAL RANGE 0 TO 65535 := 0;
   BEGIN
     IF (rising_edge(E_RX_CLK)) THEN
         el_dv <= '0';
@@ -309,7 +310,7 @@ BEGIN
             WHEN UDPChecksum =>
               IF r.c = 3 THEN
                 rin.c <= 0;
-                udpPayloadLength := r.d.dnsLength * 2 - 1;
+                rin.udpc <= r.d.dnsLength * 2 - 1;
                 rin.s <= DNSMsg;
                 --rin.d.dns <= (OTHERS => '1');
               ELSE
@@ -321,7 +322,7 @@ BEGIN
               --IF r.c <= 508 THEN
               --  rin.d.dns((r.c + 3) DOWNTO (r.c)) <= E_RXD;
               --END IF;
-              IF r.c = udpPayloadLength THEN
+              IF r.c = r.udpc THEN
                 rin.c <= 0;
                 rin.s <= Notify;
               ELSE

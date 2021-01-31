@@ -42,6 +42,7 @@ ARCHITECTURE rtl OF io IS
     s : state_t;
     rd : rcv_data_t; -- Rcv Data struct
     sd : snd_data_t; -- Snd Data struct
+    chksumbuf : UNSIGNED(31 DOWNTO 0);
     led : STD_LOGIC_VECTOR(3 DOWNTO 0); -- LED register.
     c : NATURAL RANGE 0 TO 255;
   END RECORD;
@@ -66,6 +67,7 @@ ARCHITECTURE rtl OF io IS
         udpLength => (OTHERS => '1'), udpChecksum => (OTHERS => '1')
         --dns => (OTHERS => '1')
       ),
+      chksumbuf => x"00000000",
       led => x"0",
       c => 0
     );
@@ -104,13 +106,16 @@ ARCHITECTURE rtl OF io IS
 
       WHEN IPChecksum =>
         sin.sd.ipChecksum <= x"21b5";
+        --sin.chksumbuf <= x"00004500" + x"00000023" + x"00004011" + x"0000c0a8" + x"00000501"; 
         sin.s <= UDPChecksum;
 
       WHEN UDPChecksum =>
+        --4add
+        --sin.chksumbuf <= resize(s.chksumbuf(31 DOWNTO 16) + s.chksumbuf(15 DOWNTO 0), sin.chksumbuf'length);
         sin.sd.udpChecksum <= x"4195";
         sin.s <= IPLength;
 
-      WHEN IPLength =>
+      WHEN IPLength =>      
         sin.sd.ipLength(3 DOWNTO 0) <= s.sd.ipLength(15 DOWNTO 12);
         sin.sd.ipLength(7 DOWNTO 4) <= s.sd.ipLength(11 DOWNTO 8);
         sin.sd.ipLength(11 DOWNTO 8) <= s.sd.ipLength(7 DOWNTO 4);

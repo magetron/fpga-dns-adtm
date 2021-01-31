@@ -265,8 +265,10 @@ BEGIN
       -- IPChecksum
       WHEN IPChecksum =>
         E_TXD <= s.d.ipChecksum((s.c + 3) DOWNTO (s.c));
+        --E_TXD <= x"0";
         E_TX_EN <= '1';
         sin.crc <= nextCRC32_D4(s.d.ipChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
+        --sin.crc <= nextCRC32_D4(x"0", s.crc);
         IF s.c = 12 THEN
           sin.c <= 0;
           sin.s <= IPAddrSRC;
