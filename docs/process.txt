@@ -25,7 +25,26 @@ Stages
   - Clock dedicated path
   - Now it's not perfect, but it doesn't crash any more
 
+Feb 1st update:
+
+* Recently got the new Arty-A7 35T board and updated to Artix-7 platform
+
+* Timing issues resolved!
+  - It's a clock sync problem, the core module using the internal FPGA clock is always 2x or 4x faster than the RX TX clock. Hence, there requires a buffer in the middle the seperates them. one cannot just directly pass on the signal
+  - The Spartan 3E board is different from the Arty A7 in a sense that the ip chip on the Spartan 3E has a seperate osillator, while the Arty A7 one requires a reference clock input from the FPGA clk
+  - Hence, if were to work on the Spartan 3E, another sync shall be required
+  - Temporarily, we fix the clk on the core module to be as slow as that of the TX RX. However, this is a huge waste of processing power. We can potentially speed up the core, but then we need a FIFO module on both sides to act as buffers
+
+* Introduce IP header checksum
+  - Switched NIC cards in the middle of the process due to Arty A7 board needs a reference clk on the ip chip, but the reset design doesn't input such clock, causing the interface to crash on reset.
+  - Thus I switched from USB-Type-C Realtek card to Ethernet port on the back of my Mac Pro, onto NIC card from Apple AQC107-AFW
+  - There's a caveat, the NIC card from Apple parses pkt to IP lvl and discards pkts without correct IP header checksum, causing all my pkts to be voided.
+  - CHIPScope! Life saver! A tool provided by Xilinx Vivado to debug on hardware, triggered by triggers, and sample 1024 / 2048 depth of signals on a given netlist
+  - NETList! new knowledge of synthesied VHDL code -> netlist -> impl on the board
+  - impl ip checksum finally and infra shall be complete
+
 TODO:
 
-Fix issues where certain pkts don't get responded, but shows responded on LED FPGA
-Checksum IP / UDP
+Impl core anamoly detection logic
+FIFO buffer on TX and RX connection with core
+Distributed RAM / Block RAM / or even logic unit?
