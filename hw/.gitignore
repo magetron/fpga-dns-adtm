@@ -8,4 +8,5 @@
 !*.sv
 !*.ngc
 !*.zip
+!*.xdc
 !.gitignore
