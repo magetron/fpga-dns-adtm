@@ -1,15 +1,17 @@
 Stages
 
-* Ethernet rcv with FPGA
+* Ethernet rcv with FPG
+  - careful when parsing the preamble, some NICs provide various length of preamble, or you can potentially miss couple of beats on new negotiations of speed
   - First major milestone with multiple attempts at using the Ethernet chip RXD
 
 * Ethernet snd with FPGA
   - Issues to pay attention to
-    - FCS
-    - Payload length > minimum Ethernet II required length
-    - correct endianess
+    - FCS, without correct FCS, NIC would just discard pkts
+    - understand CRC32 comprehensively and implement full parallel process on each incremental 4 bytes
+    - Payload length > minimum Ethernet II required length, NIC would also just discard pkts
+    - correct endianess, other wise you wouldn't get MAC address in pkt right
 
-* Major changes to core module to support forwarding instead of (read / display / output)
+* Major changes to core module to support forwarding instead of (read / display / output that's etherlab, read display output doens't necessarily have a clear correlation)
   - Finite State Machine Cycle
 
 * upgrade rcv to support UDP
@@ -21,9 +23,15 @@ Stages
 * Timing Issues! with more complicated parsing of pkts
   - Attempted different Place and Route strategies
   - Fixed with optimisations to reduce logic levels, store variables to utilise the slices
-  - TX -> PAD , PAD -> RX timing constraints
-  - Clock dedicated path
+  - TX -> core, core -> RX timing constraints
+  - Clock dedicated path not met, due to the fact we need clk on state changes
   - Now it's not perfect, but it doesn't crash any more
+
+- Multiple efforts to allocate more D-Latches to ease the processing amount on Spartan 3E board
+- i.e  -  update counter increments of 4 instead of 1, so just need to r.c + 3 downto r.c instead of r.c * 4 + 3 downto r.c
+       -  seperate processing stages in core, into multiple stages one afeter each other, each focusing on part of the core
+       -  use rising edge of clock to init processing, and use falling edge of clock to refresh states, to archive better speed
+
 
 Feb 1st update:
 
@@ -37,11 +45,19 @@ Feb 1st update:
 
 * Introduce IP header checksum
   - Switched NIC cards in the middle of the process due to Arty A7 board needs a reference clk on the ip chip, but the reset design doesn't input such clock, causing the interface to crash on reset.
+  - That's due to negotiation of PHY level speed on the interface not successful.
   - Thus I switched from USB-Type-C Realtek card to Ethernet port on the back of my Mac Pro, onto NIC card from Apple AQC107-AFW
   - There's a caveat, the NIC card from Apple parses pkt to IP lvl and discards pkts without correct IP header checksum, causing all my pkts to be voided.
   - CHIPScope! Life saver! A tool provided by Xilinx Vivado to debug on hardware, triggered by triggers, and sample 1024 / 2048 depth of signals on a given netlist
   - NETList! new knowledge of synthesied VHDL code -> netlist -> impl on the board
   - impl ip checksum finally and infra shall be complete
+
+Some analysis on the interface crashing,
+  - it wouldn't crash on the new Arty A7 board anymore (after Feb 1 clock sync fixes), whether it's possible on the old board
+  - we assume it's a sort of buffer, if there's enough packets to be discarded by the NIC, 
+  - clock sync issues previously causing something wrong like a memory corruption, you would say if (a = 1) out = 1 else out = 2, and out would be neither 1 nor 2. So the out is necessarily memory corrupted.
+  - Assume then the sent pkts would contain all sorts of corrupted bytes, including even on the PHY level, and upper levels, some we are lucky enough to see on Wireshark, while some not. (we don't have chipscope on the older Spartan3E, or nor I'm aware of on the older ISE Webpack IDE)./
+  - the NIC would then doubt it's decision and re-negotiate PHY with the FPGA. There're chances where the PHY on the FPGA is not clocked correctly to re-negotiate (i.e. fail to clk correctly to send negotiation bytes), then the macOS driver deems the interface void, hence totally halting the interface and deems it void (unconnected)
 
 TODO:
 
