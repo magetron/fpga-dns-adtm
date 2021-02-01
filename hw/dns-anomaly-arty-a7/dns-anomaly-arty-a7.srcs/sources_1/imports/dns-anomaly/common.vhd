@@ -13,7 +13,6 @@ PACKAGE common IS
     srcPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dnsLength : NATURAL RANGE 0 TO 65535; -- MAX 508, 65535 for intake pkt
-    --dns : STD_LOGIC_VECTOR(511 DOWNTO 0); -- only store 512 bits for the moment
   END RECORD;
 
   TYPE snd_data_t IS RECORD
@@ -28,7 +27,6 @@ PACKAGE common IS
     dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     udpLength : STD_LOGIC_VECTOR(15 DOWNTO 0);
     udpChecksum : STD_LOGIC_VECTOR(15 DOWNTO 0);
-    --dns : STD_LOGIC_VECTOR(511 DOWNTO 0); -- only store 512 bits for the moment
   END RECORD;
 
 END common;

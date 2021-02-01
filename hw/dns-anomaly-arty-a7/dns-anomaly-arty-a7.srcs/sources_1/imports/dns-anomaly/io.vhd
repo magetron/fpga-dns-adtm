@@ -30,10 +30,10 @@ ARCHITECTURE rtl OF io IS
     Idle,
     Work,
     MetaInfo,
-    IPChecksum,
-    UDPChecksum,
-    IPLength,
-    UDPLength,
+    ChecksumCalc,
+    ChecksumPopulate,
+    IPHeader,
+    UDPHeader,
     Finalise,
     Send
   );
@@ -102,29 +102,33 @@ BEGIN
           sin.sd.srcPort <= s.rd.dstPort;
           sin.sd.dstPort <= s.rd.srcPort;
           sin.sd.ipTTL <= x"40";
-          sin.s <= IPChecksum;
+          sin.s <= ChecksumCalc;
 
-        WHEN IPChecksum =>
-          --sin.chksumbuf <= unsigned(s.rd.srcIP); 
-          --sin.chksumbuf <= x"ffff21b5";
-          sin.chksumbuf <= x"00004500" + unsigned(s.rd.srcIP);
-          sin.s <= UDPChecksum;
+        WHEN ChecksumCalc =>
+          sin.chksumbuf <= x"00004500" +
+                           unsigned(x"0000" & s.sd.ipLength(3 DOWNTO 0) & s.sd.ipLength(7 DOWNTO 4)) +
+                           unsigned(x"0000" & s.sd.ipTTL & x"11") +
+                           unsigned(x"0000" & s.sd.srcIP(23 DOWNTO 16) & s.sd.srcIP(31 DOWNTO 24)) +
+                           unsigned(x"0000" & s.sd.srcIP(7 DOWNTO 0) & s.sd.srcIP(15 DOWNTO 8)) +
+                           unsigned(x"0000" & s.sd.dstIP(23 DOWNTO 16) & s.sd.dstIP(31 DOWNTO 24)) +
+                           unsigned(x"0000" & s.sd.dstIP(7 DOWNTO 0) & s.sd.dstIP(15 DOWNTO 8));
+          sin.s <= ChecksumPopulate;
 
-        WHEN UDPChecksum =>
-          --4add
-          --sin.chksumbuf <= resize(s.chksumbuf(31 DOWNTO 16) + s.chksumbuf(15 DOWNTO 0), sin.chksumbuf'length);
-          sin.sd.ipChecksum <= STD_LOGIC_VECTOR(s.chksumbuf(15 DOWNTO 0));
-          sin.sd.udpChecksum <= x"4195";
-          sin.s <= IPLength;
+        WHEN ChecksumPopulate =>
+          sin.sd.ipChecksum <= STD_LOGIC_VECTOR(NOT resize(s.chksumbuf(31 DOWNTO 16) + s.chksumbuf(15 DOWNTO 0), sin.sd.ipChecksum'length));
+          sin.sd.udpChecksum <= x"0000";
+          sin.s <= IPHeader;
 
-        WHEN IPLength =>
+        WHEN IPHeader =>
           sin.sd.ipLength(3 DOWNTO 0) <= s.sd.ipLength(15 DOWNTO 12);
           sin.sd.ipLength(7 DOWNTO 4) <= s.sd.ipLength(11 DOWNTO 8);
           sin.sd.ipLength(11 DOWNTO 8) <= s.sd.ipLength(7 DOWNTO 4);
           sin.sd.ipLength(15 DOWNTO 12) <= s.sd.ipLength(3 DOWNTO 0);
-          sin.s <= UDPLength;
+          sin.sd.ipChecksum(15 DOWNTO 8) <= s.sd.ipChecksum(7 DOWNTO 0);
+          sin.sd.ipChecksum(7 DOWNTO 0) <= s.sd.ipChecksum(15 DOWNTO 8);
+          sin.s <= UDPHeader;
 
-        WHEN UDPLength =>
+        WHEN UDPHeader =>
           sin.sd.udpLength(15 DOWNTO 8) <= s.sd.udpLength(7 DOWNTO 0);
           sin.sd.udpLength(7 DOWNTO 0) <= s.sd.udpLength(15 DOWNTO 8);
           sin.s <= Finalise;
