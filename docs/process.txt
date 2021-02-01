@@ -59,8 +59,28 @@ Some analysis on the interface crashing,
   - Assume then the sent pkts would contain all sorts of corrupted bytes, including even on the PHY level, and upper levels, some we are lucky enough to see on Wireshark, while some not. (we don't have chipscope on the older Spartan3E, or nor I'm aware of on the older ISE Webpack IDE)./
   - the NIC would then doubt it's decision and re-negotiate PHY with the FPGA. There're chances where the PHY on the FPGA is not clocked correctly to re-negotiate (i.e. fail to clk correctly to send negotiation bytes), then the macOS driver deems the interface void, hence totally halting the interface and deems it void (unconnected)
 
+
+Some more enlightment / decision we can make:
+- MicroBlaze! could be promising if we don't focus that much on performance, i.e. we can even deploy a TCP server on it as a processor
+- FPGA-cores, some commercial cores available, that supports remote programming
+- verilog-ethernet a very good project for general deployment of ethernet/udp stack
+- VHDL/Verilog, Ada, pascal like grammar, which i used to do as a kid, very different from C, force me to think differently, strongly-typed so I can really find bugs at syn stage
+- Mac Pro's USB Type C NIC is from Realtek, while the physical 10Gigabit NIC is from Apple, behave very differently!
+- MII interface, 25 Mhz * 4bits supports 100Mbits!, some other interface RMII, GMII, SGMII, could have further expansions and conversions.
+- FPGA borad choice, Arty A7 over others, sensible budget, all we need, neer firmware and comprehensive debug support
+- Simulator ISim vs modelsim.
+- UDP stack offloader VS. DNS anomaly detection, why these choices
+
+SW:
+- Using linux raw socket to send packets, and then bridge the linux interface in VM with the physical interface on macOS, with version upgrade, in 10.15, VMWare used to do the bridging in VM, now it's integrated with the macOS system, took a while to figure out.
+- In the very early stage when ethernet II / I payload are of fixed length, with some inst. to turn on of LED, we used custom C++ program to send and receive ping raw ethernet packets, including raw_bdcast, raw_sender, raw_receiver
+- We always use C++ program dns_sender.out to figure out MAC address and test pkts (probing) the FPGA logic and reflect on LED lights ( seven segment with Arty A7) expansion.
+- We have ported some code from Github on Ethernet CRC32 to test the ethernet CRC32 generator in VHDL on iSim, and then deploy to FPGA. (we hardcoded Ethernet CRC32 to test snd first), later on porting using Easics BV CRC generator (performant! parallel generation!).
+
+
 TODO:
 
+Impl test bench for each of the moduels, and have integrated testing
 Impl core anamoly detection logic
 FIFO buffer on TX and RX connection with core
 Distributed RAM / Block RAM / or even logic unit?
