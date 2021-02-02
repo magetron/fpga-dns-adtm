@@ -8,17 +8,14 @@ USE work.common.ALL;
 ENTITY io IS
   PORT (
     clk : IN STD_LOGIC;
-    --clk90 : IN STD_LOGIC;
     -- Data received.
     el_rcv_data : IN rcv_data_t;
     el_rcv_dv : IN STD_LOGIC;
-    --el_rcv_ack : OUT STD_LOGIC;
+    el_rcv_rdy : OUT STD_LOGIC;
     -- Data to send.
     el_snd_data : OUT snd_data_t;
     el_snd_en : OUT STD_LOGIC;
 
-    --E_CRS : IN STD_LOGIC;
-    --E_COL : IN STD_LOGIC;
     -- LEDs.
     LED : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
   );
@@ -80,11 +77,12 @@ BEGIN
 
     IF rising_edge(clk) THEN
       el_snd_en <= '0';
-      --el_rcv_ack <= '0'; -- Ethernet receiver data ready ACK.
+      el_rcv_rdy <= '0';
 
       CASE s.s IS
         WHEN Idle =>
           IF el_rcv_dv = '1' THEN
+            el_rcv_rdy <= '1';
             sin.rd <= el_rcv_data;
             sin.sd.ipLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.ipLength, sin.sd.ipLength'length));
             sin.sd.udpLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.dnsLength + 8, sin.sd.udpLength'length));

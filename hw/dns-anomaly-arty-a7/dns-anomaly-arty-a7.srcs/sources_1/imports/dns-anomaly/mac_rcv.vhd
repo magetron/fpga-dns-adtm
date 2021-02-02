@@ -10,7 +10,7 @@ ENTITY mac_rcv IS
     E_RX_CLK : IN STD_LOGIC; -- Receiver Clock.
     E_RX_DV : IN STD_LOGIC; -- Received Data Valid.
     E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
-    el_data : OUT rcv_data_t; -- Channel data.
+    el_data : OUT rcv_data_t; -- Ethernet Receving Data.
     el_dv : OUT STD_LOGIC -- Data valid.
     --LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
     --el_ack : IN STD_LOGIC -- Packet reception ACK.

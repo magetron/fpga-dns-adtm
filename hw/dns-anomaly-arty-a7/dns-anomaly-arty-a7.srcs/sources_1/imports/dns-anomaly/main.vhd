@@ -44,10 +44,20 @@ ARCHITECTURE rtl OF main IS
       E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
       el_data : OUT rcv_data_t; -- Channel metadata.
       el_dv : OUT STD_LOGIC -- Data valid.
-      --LED : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
-      --el_ack : IN STD_LOGIC -- Packet reception ACK.
     );
   END COMPONENT;
+  
+  COMPONENT fifo_rcv IS
+    PORT (
+      clk : IN STD_LOGIC; -- FIFO buffer Clock
+      w_en : IN STD_LOGIC; -- Write Enable
+      w_data : IN rcv_data_t; -- Ethernet Receving Data in
+      buf_full : OUT STD_LOGIC; -- Buffer Full
+      r_en : IN STD_LOGIC; -- Read Enable
+      r_data : OUT rcv_data_t; -- Ethernet Receving Data out
+      buf_not_empty : OUT STD_LOGIC -- Buffer NOT Empty
+    );
+  END COMPONENT;  
 
   COMPONENT mac_snd IS
     PORT (
@@ -63,35 +73,32 @@ ARCHITECTURE rtl OF main IS
   COMPONENT io IS
     PORT (
       clk : IN STD_LOGIC;
-      --clk90 : IN STD_LOGIC;
       -- data received.
       el_rcv_data : IN rcv_data_t;
       el_rcv_dv : IN STD_LOGIC;
-      --el_rcv_ack : OUT STD_LOGIC;
+      el_rcv_rdy : OUT STD_LOGIC;
       -- data to send.
       el_snd_data : OUT snd_data_t;
       el_snd_en : OUT STD_LOGIC;
-
-      --E_CRS : IN STD_LOGIC;
-      --E_COL : IN STD_LOGIC;
 
       -- LEDs.
       LED : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
     );
   END COMPONENT;
 
-  SIGNAL el_rcv_data : rcv_data_t; -- Actual data.
-  SIGNAL el_rcv_dv : STD_LOGIC; -- Received data valid.
-  --SIGNAL el_rcv_ack : STD_LOGIC; -- Packet reception ACK.
-
+  SIGNAL el_rcv_data_phy : rcv_data_t; -- Receive data RCV -> FIFO_RCV
+  SIGNAL el_rcv_dv_phy : STD_LOGIC; -- Received data valid RCV -> FIFO_RCV
+  
+  SIGNAL el_rcv_dv_buf : STD_LOGIC; -- Received data valid FIFO_RCV -> Core
+  SIGNAL el_rcv_data_buf : rcv_data_t;  -- Recevie data FIFO_RCV -> Core
+  SIGNAL el_rcv_rdy_buf : STD_LOGIC; -- Recevied data Ready FIFO_RCV -> Core
+    
   SIGNAL el_snd_data : snd_data_t; -- Send data.
   SIGNAL el_snd_en : STD_LOGIC; -- Enable sending.
 
   SIGNAL clk50 : STD_LOGIC; -- half speed clock
   SIGNAL clk25 : STD_LOGIC; -- 25 Mhz clock
 BEGIN
-
-  --E_MDC <= '1';
 
   inst_clock : clock PORT MAP(
     i_clk => clk,
@@ -105,10 +112,18 @@ BEGIN
     E_RX_CLK => E_RX_CLK,
     E_RX_DV => E_RX_DV,
     E_RXD => E_RXD,
-    el_data => el_rcv_data,
-    el_dv => el_rcv_dv
-    --LED => LED
-    --el_ack => el_rcv_ack
+    el_data => el_rcv_data_phy,
+    el_dv => el_rcv_dv_phy
+  );
+  
+  fifo_receive : fifo_rcv PORT MAP(
+    clk => clk,
+    w_en => el_rcv_dv_phy,
+    w_data => el_rcv_data_phy,
+    buf_full => OPEN,
+    r_en => el_rcv_rdy_buf,
+    r_data => el_rcv_data_buf,
+    buf_not_empty => el_rcv_dv_buf
   );
 
   mac_send : mac_snd PORT MAP(
@@ -122,17 +137,13 @@ BEGIN
 
   core : io PORT MAP(
     clk => clk25,
-    --clk90 => clk90,
     -- Data received.
-    el_rcv_data => el_rcv_data,
-    el_rcv_dv => el_rcv_dv,
-    --el_rcv_ack => el_rcv_ack,
+    el_rcv_data => el_rcv_data_buf,
+    el_rcv_dv => el_rcv_dv_buf,
+    el_rcv_rdy => el_rcv_rdy_buf,
     -- Data to send.
     el_snd_data => el_snd_data,
     el_snd_en => el_snd_en,
-
-    --E_COL => E_COL,
-    --E_CRS => E_CRS,
 
     -- LEDs.
     LED => LED
