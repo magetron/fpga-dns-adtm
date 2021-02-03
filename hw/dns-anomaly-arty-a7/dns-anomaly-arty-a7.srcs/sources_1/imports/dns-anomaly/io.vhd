@@ -8,17 +8,14 @@ USE work.common.ALL;
 ENTITY io IS
   PORT (
     clk : IN STD_LOGIC;
-    --clk90 : IN STD_LOGIC;
     -- Data received.
     el_rcv_data : IN rcv_data_t;
     el_rcv_dv : IN STD_LOGIC;
-    --el_rcv_ack : OUT STD_LOGIC;
+    el_rcv_ack : OUT STD_LOGIC;
     -- Data to send.
     el_snd_data : OUT snd_data_t;
     el_snd_en : OUT STD_LOGIC;
 
-    --E_CRS : IN STD_LOGIC;
-    --E_COL : IN STD_LOGIC;
     -- LEDs.
     LED : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
   );
@@ -71,8 +68,7 @@ ARCHITECTURE rtl OF io IS
   led => x"0",
   c => 0
   );
-  --SIGNAL reg_e_col : STD_LOGIC := '0';
-  --SIGNAL reg_e_snd : STD_LOGIC := '0';
+
 BEGIN
 
   rcvsnd : PROCESS (clk)
@@ -80,14 +76,13 @@ BEGIN
 
     IF rising_edge(clk) THEN
       el_snd_en <= '0';
-      --el_rcv_ack <= '0'; -- Ethernet receiver data ready ACK.
+      el_rcv_ack <= '0';
 
       CASE s.s IS
         WHEN Idle =>
           IF el_rcv_dv = '1' THEN
+            el_rcv_ack <= '1';
             sin.rd <= el_rcv_data;
-            sin.sd.ipLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.ipLength, sin.sd.ipLength'length));
-            sin.sd.udpLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.dnsLength + 8, sin.sd.udpLength'length));
             sin.s <= Work;
           END IF;
 
@@ -102,6 +97,8 @@ BEGIN
           sin.sd.srcPort <= s.rd.dstPort;
           sin.sd.dstPort <= s.rd.srcPort;
           sin.sd.ipTTL <= x"40";
+          sin.sd.ipLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.ipLength, sin.sd.ipLength'length));
+          sin.sd.udpLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.dnsLength + 8, sin.sd.udpLength'length));
           sin.s <= ChecksumCalc;
 
         WHEN ChecksumCalc =>
