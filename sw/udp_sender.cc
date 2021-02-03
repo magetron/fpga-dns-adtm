@@ -20,12 +20,18 @@
 static const uint64_t SEC_IN_USEC = 1e6;
 static const uint64_t MS_IN_USEC = 1e3;
 
-enum class send_mode_t {
+enum class packet_mode_t {
   UDP_TEST,
   DNS_TEST
 };
 
-send_mode_t SEND_MODE = send_mode_t::UDP_TEST;
+enum class send_mode_t {
+  DAEMON,
+  ONCE
+};
+
+packet_mode_t PACKET_MODE = packet_mode_t::UDP_TEST;
+send_mode_t SEND_MODE = send_mode_t::ONCE;
 uint64_t SEND_TIME = SEC_IN_USEC;
 
 uint16_t checksum(uint16_t *buff, int32_t _16bitword) {
@@ -37,21 +43,47 @@ uint16_t checksum(uint16_t *buff, int32_t _16bitword) {
   return (uint16_t)(~sum);
 }
 
+void trigger_send (ifreq ifreq_i, int32_t sock_raw, uint8_t *sendbuf) {
+  sockaddr_ll sadr_ll;
+  sadr_ll.sll_ifindex = ifreq_i.ifr_ifindex;
+  sadr_ll.sll_halen = ETH_ALEN;
+  sadr_ll.sll_addr[0] = 0x00;
+  sadr_ll.sll_addr[0] = 0x0A;
+  sadr_ll.sll_addr[0] = 0x35;
+  sadr_ll.sll_addr[0] = 0x00;
+  sadr_ll.sll_addr[0] = 0x00;
+  sadr_ll.sll_addr[0] = 0x00;
+
+  int32_t send_len = sendto(sock_raw, sendbuf, 7 + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
+                            reinterpret_cast<const sockaddr *>(&sadr_ll), sizeof(sockaddr_ll));
+  if (send_len < 0)
+  {
+    printf("ERROR in sending, sendlen=%d, errno=%d\n", send_len, errno);
+    perror("Socket:");
+    exit(-1);
+  }
+
+  usleep(SEND_TIME);
+}
+
 int main (int argc, char **argv) {
 
   int c;
   opterr = 0;
-  while ((c = getopt(argc, argv, "p:t:")) != -1) {
+  while ((c = getopt(argc, argv, "p:t:d")) != -1) {
     switch (c) {
       case 'p':
-        if (strncmp(optarg, "UDP", 4)) {
-          SEND_MODE = send_mode_t::UDP_TEST;
-        } else if (strncmp(optarg, "DNS", 4)) {
-          SEND_MODE = send_mode_t::DNS_TEST;
+        if (!strncmp(optarg, "UDP", 4)) {
+          PACKET_MODE = packet_mode_t::UDP_TEST;
+        } else if (!strncmp(optarg, "DNS", 4)) {
+          PACKET_MODE = packet_mode_t::DNS_TEST;
         }
         break;
       case 't':
         SEND_TIME = atoi(optarg) * MS_IN_USEC;
+        break;
+      case 'd':
+        SEND_MODE = send_mode_t::DAEMON;
         break;
       default:
         printf("Unrecognised argument\n");
@@ -116,7 +148,7 @@ int main (int argc, char **argv) {
   udp->dest = htons(23456);
   udp->check = 0;
 
-  if (SEND_MODE == send_mode_t::DNS_TEST) {
+  if (PACKET_MODE == packet_mode_t::DNS_TEST) {
     char *payload = reinterpret_cast<char *>(udp + 1);
     payload[0] = 'i';
     payload[1] = 't';
@@ -140,28 +172,12 @@ int main (int argc, char **argv) {
   ip->tot_len = htons(7 + sizeof(udphdr) + sizeof(iphdr));
   ip->check = htons(checksum(reinterpret_cast<uint16_t *>(ip), (sizeof(iphdr) / 2)));
 
-  while (true)
-  {
-    sockaddr_ll sadr_ll;
-    sadr_ll.sll_ifindex = ifreq_i.ifr_ifindex;
-    sadr_ll.sll_halen = ETH_ALEN;
-    sadr_ll.sll_addr[0] = 0x00;
-    sadr_ll.sll_addr[0] = 0x0A;
-    sadr_ll.sll_addr[0] = 0x35;
-    sadr_ll.sll_addr[0] = 0x00;
-    sadr_ll.sll_addr[0] = 0x00;
-    sadr_ll.sll_addr[0] = 0x00;
-
-    int32_t send_len = sendto(sock_raw, sendbuf, 7 + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
-                              reinterpret_cast<const sockaddr *>(&sadr_ll), sizeof(sockaddr_ll));
-    if (send_len < 0)
-    {
-      printf("ERROR in sending, sendlen=%d, errno=%d\n", send_len, errno);
-      perror("Socket:");
-      return -1;
+  if (SEND_MODE == send_mode_t::DAEMON) {
+    while (true) {
+      trigger_send(ifreq_i, sock_raw, sendbuf);
     }
-
-    usleep(SEND_TIME);
+  } else {
+    trigger_send(ifreq_i, sock_raw, sendbuf);
   }
 
   delete[] sendbuf;
