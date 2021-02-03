@@ -11,9 +11,9 @@ ENTITY mac_snd IS
     E_TX_CLK : IN STD_LOGIC; -- Sender Clock.
     E_TX_EN : OUT STD_LOGIC; -- Sender Enable.
     E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Sent Data.
-    --E_TX_ER : OUT STD_LOGIC; -- Sent Data Error.
     el_data : IN snd_data_t; -- Actual data.
-    el_snd_en : IN STD_LOGIC -- User Start Send.
+    el_snd_en : IN STD_LOGIC; -- User Start Send.
+    el_snd_ack : OUT STD_LOGIC -- Send Ack to FIFO buffer
   );
 END mac_snd;
 
@@ -87,7 +87,6 @@ ARCHITECTURE rtl OF mac_snd IS
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
   udpLength => (OTHERS => '0'),
   udpChecksum => (OTHERS => '0')
-  --dns => (OTHERS => '1')
   ),
   crc => x"ffffffff",
   c => 0
@@ -101,7 +100,7 @@ BEGIN
     IF rising_edge(E_TX_CLK) THEN
       E_TXD <= x"0";
       E_TX_EN <= '0';
-      --E_TX_ER <= '0';
+      el_snd_ack <= '0';
 
       CASE s.s IS
         WHEN Idle =>
@@ -109,6 +108,7 @@ BEGIN
             sin.c <= 0;
             sin.s <= Preamble;
             sin.d <= el_data;
+            el_snd_ack <= '1';
           END IF;
 
           -- Preamble, 15 5s (including nibble for start of frame)
