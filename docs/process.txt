@@ -78,9 +78,22 @@ SW:
 - We have ported some code from Github on Ethernet CRC32 to test the ethernet CRC32 generator in VHDL on iSim, and then deploy to FPGA. (we hardcoded Ethernet CRC32 to test snd first), later on porting using Easics BV CRC generator (performant! parallel generation!).
 
 
+Feb 2nd / 3rd 03:22 Log:
+FIFO on rcv and snd done.
+The FIFO would act as a sync between a slower E_RX_CLK and clk, the phy clk is four times slower, so it writes to the buffer whenever it finishes work. and the core module fetches from the buffer, to avoid clk sync issue among cores and phy. So as to not slow the core down by 4 times.
+
+The FIFO design is rather complicated as it includes a synchroniser and a FIFO. There are error in cases i.e. w_en from RX_CLK, at 25Mhz, would hold for 4 actual clk cycles, causing the item to be written four times. To avoid that, we need a separate counter (b.r_en_dcnt/b.w_en_dcnt) for read / write logic for FIFO_rcv and FIFO_snd to accommodate the issue.
+
+We designed FIFO to output buf_full / buf_not_empty (why not buf_empty)? buf_not_empty can be used as datavalid/ data pending logic for the next module once in idle state. (with b.c)
+
+FIFO is also designed as a ring buffer, with a given size of 8 pkts in buffer (Might need Block RAM FIFO in the future). with w_index, r_index going around the ring to track the queue in ringbuffer.
+
+Bug so far, the FIFO doesn't work perfectly, sometimes check fails and I would all of a sudden receive multiple duplicate packets out of nowhere. 
+This FIFO error is observable at faster speeds, i.e. 100ms / per packet. less observable at very high speed. Could be due to timing constraints failing? Seems to be. I made a change to alleviate the bug by fixing the timing. 
+
 TODO:
 
 Impl test bench for each of the moduels, and have integrated testing
 Impl core anamoly detection logic
-FIFO buffer on TX and RX connection with core
+Fix? FIFO ring buffer.
 Distributed RAM / Block RAM / or even logic unit?
