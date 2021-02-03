@@ -65,7 +65,7 @@ BEGIN
         bin.r_en_dcnt <= b.r_en_dcnt - 1;
       END IF;
  
-      IF (w_en = '1' and (r_en = '0' or (r_en = '1' and b.r_en_dcnt > 0))) THEN
+      IF (w_en = '1' and (r_en = '0' or b.r_en_dcnt > 0)) THEN
         IF (b.c < g_depth) THEN
           bin.c <= b.c + 1;
         END IF;

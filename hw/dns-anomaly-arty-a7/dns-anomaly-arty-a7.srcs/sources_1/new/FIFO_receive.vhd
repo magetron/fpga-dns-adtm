@@ -67,7 +67,7 @@ BEGIN
         IF (b.c < g_depth) THEN
           bin.c <= b.c + 1;
         END IF;
-      ELSIF ((w_en = '0' or (w_en = '1' and b.w_en_dcnt > 0)) and r_en = '1') THEN
+      ELSIF ((w_en = '0' or b.w_en_dcnt > 0) and r_en = '1') THEN
         IF (b.c > 0) THEN
           bin.c <= b.c - 1;
         END IF;
