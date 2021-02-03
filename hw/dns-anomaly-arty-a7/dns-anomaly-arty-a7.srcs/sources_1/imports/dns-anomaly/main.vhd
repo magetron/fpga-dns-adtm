@@ -64,9 +64,23 @@ ARCHITECTURE rtl OF main IS
       E_TX_CLK : IN STD_LOGIC; -- Sender Clock.
       E_TX_EN : OUT STD_LOGIC; -- Sender Enable.
       E_TXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Sent Data.
-      --E_TX_ER : OUT STD_LOGIC; -- Sent Data Error.
       el_data : IN snd_data_t; -- Actual Data
-      el_snd_en : IN STD_LOGIC -- User Start Send.
+      el_snd_en : IN STD_LOGIC; -- User Start Send.
+      el_snd_ack : OUT STD_LOGIC -- Send Ack to FIFO buffer
+    );
+  END COMPONENT;
+
+  COMPONENT fifo_snd IS
+    PORT (
+      clk : IN STD_LOGIC; -- FIFO buffer Clock
+    
+      w_en : IN STD_LOGIC; -- Write Enable
+      w_data : IN snd_data_t; -- Ethernet Send Data in
+      buf_full : OUT STD_LOGIC; -- Buffer Full
+    
+      r_en : IN STD_LOGIC; -- Read Enable
+      r_data : OUT snd_data_t; -- Ethernet Send Data out
+      buf_not_empty : OUT STD_LOGIC -- Buffer NOT Empty
     );
   END COMPONENT;
 
@@ -76,7 +90,7 @@ ARCHITECTURE rtl OF main IS
       -- data received.
       el_rcv_data : IN rcv_data_t;
       el_rcv_dv : IN STD_LOGIC;
-      el_rcv_rdy : OUT STD_LOGIC;
+      el_rcv_ack : OUT STD_LOGIC;
       -- data to send.
       el_snd_data : OUT snd_data_t;
       el_snd_en : OUT STD_LOGIC;
@@ -91,10 +105,14 @@ ARCHITECTURE rtl OF main IS
   
   SIGNAL el_rcv_dv_buf : STD_LOGIC; -- Received data valid FIFO_RCV -> Core
   SIGNAL el_rcv_data_buf : rcv_data_t;  -- Recevie data FIFO_RCV -> Core
-  SIGNAL el_rcv_rdy_buf : STD_LOGIC; -- Recevied data Ready FIFO_RCV -> Core
+  SIGNAL el_rcv_ack_buf : STD_LOGIC; -- Recevied data Ready FIFO_RCV -> Core
     
-  SIGNAL el_snd_data : snd_data_t; -- Send data.
-  SIGNAL el_snd_en : STD_LOGIC; -- Enable sending.
+  SIGNAL el_snd_data_buf : snd_data_t; -- Send data Core 
+  SIGNAL el_snd_en_buf : STD_LOGIC; -- Enable sending.
+
+  SIGNAL el_snd_en_phy : STD_LOGIC;
+  SIGNAL el_snd_data_phy : snd_data_t;
+  SIGNAL el_snd_ack_phy : STD_LOGIC;
 
   SIGNAL clk50 : STD_LOGIC; -- half speed clock
   SIGNAL clk25 : STD_LOGIC; -- 25 Mhz clock
@@ -121,7 +139,7 @@ BEGIN
     w_en => el_rcv_dv_phy,
     w_data => el_rcv_data_phy,
     buf_full => OPEN,
-    r_en => el_rcv_rdy_buf,
+    r_en => el_rcv_ack_buf,
     r_data => el_rcv_data_buf,
     buf_not_empty => el_rcv_dv_buf
   );
@@ -130,20 +148,30 @@ BEGIN
     E_TX_CLK => E_TX_CLK,
     E_TX_EN => E_TX_EN,
     E_TXD => E_TXD,
-    --E_TX_ER => E_TX_ER,
-    el_snd_en => el_snd_en,
-    el_data => el_snd_data
+    el_snd_en => el_snd_en_phy,
+    el_data => el_snd_data_phy,
+    el_snd_ack => el_snd_ack_phy
+  );
+  
+  fifo_send : fifo_snd PORT MAP(
+    clk => clk,
+    w_en => el_snd_en_buf,
+    w_data => el_snd_data_buf,
+    buf_full => OPEN,
+    r_en => el_snd_ack_phy,
+    r_data => el_snd_data_phy,
+    buf_not_empty => el_snd_en_phy
   );
 
   core : io PORT MAP(
-    clk => clk25,
+    clk => clk,
     -- Data received.
     el_rcv_data => el_rcv_data_buf,
     el_rcv_dv => el_rcv_dv_buf,
-    el_rcv_rdy => el_rcv_rdy_buf,
+    el_rcv_ack => el_rcv_ack_buf,
     -- Data to send.
-    el_snd_data => el_snd_data,
-    el_snd_en => el_snd_en,
+    el_snd_data => el_snd_data_buf,
+    el_snd_en => el_snd_en_buf,
 
     -- LEDs.
     LED => LED
