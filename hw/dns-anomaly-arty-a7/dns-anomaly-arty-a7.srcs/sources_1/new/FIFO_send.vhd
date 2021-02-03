@@ -38,7 +38,7 @@ ARCHITECTURE rtl of FIFO_snd is
 ));
   
   TYPE buf_state_t IS RECORD
-    --r_en_dcnt : NATURAL RANGE 0 TO 3;
+    r_en_dcnt : NATURAL RANGE 0 TO 3;
     w_index : NATURAL RANGE 0 TO g_depth - 1;
     r_index : NATURAL RANGE 0 TO g_depth - 1;
     c : INTEGER RANGE 0 TO g_depth;
@@ -46,7 +46,7 @@ ARCHITECTURE rtl of FIFO_snd is
     
   SIGNAL b, bin : buf_state_t 
   := buf_state_t'(
-  --r_en_dcnt => 0,
+  r_en_dcnt => 0,
   w_index => 0,
   r_index => 0,
   c => 0
@@ -59,18 +59,18 @@ BEGIN
     IF (rising_edge(clk)) THEN
     
       -- avoid slow clk in PHY affect the FIFO and causing 4 times more writes
-      --IF (r_en = '1' and b.r_en_dcnt = 0) THEN
-      --  bin.r_en_dcnt <= 3;
-      --ELSIF (r_en = '1') THEN
-      --  bin.r_en_dcnt <= b.r_en_dcnt - 1;
-      --END IF;
+      IF (r_en = '1' and b.r_en_dcnt = 0) THEN
+        bin.r_en_dcnt <= 3;
+      ELSE
+        bin.r_en_dcnt <= b.r_en_dcnt - 1;
+      END IF;
  
-      IF (w_en = '1' and r_en = '0') THEN
+      IF (w_en = '1' and (r_en = '0' or (r_en = '1' and b.r_en_dcnt > 0))) THEN
         IF (b.c < g_depth) THEN
           bin.c <= b.c + 1;
         END IF;
-      --ELSIF (w_en = '0' and r_en = '1' and b.r_en_dcnt = 0) THEN
-      ELSIF (w_en = '0' and r_en = '1') THEN
+      ELSIF (w_en = '0' and r_en = '1' and b.r_en_dcnt = 0) THEN
+      --ELSIF (w_en = '0' and r_en = '1') THEN
         IF (b.c > 0) THEN
           bin.c <= b.c - 1;
         END IF;
@@ -87,8 +87,8 @@ BEGIN
         bin.w_index <= b.w_index;
       END IF;
       
-      --IF (r_en = '1' and b.r_en_dcnt = 0) THEN
-      IF (r_en = '1') THEN
+      IF (r_en = '1' and b.r_en_dcnt = 0) THEN
+      --IF (r_en = '1') THEN
         IF (b.r_index = g_depth - 1) THEN
           bin.r_index <= 0;
         ELSE

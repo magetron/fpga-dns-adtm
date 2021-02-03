@@ -35,7 +35,7 @@ ARCHITECTURE rtl of FIFO_rcv is
       dnsLength => 0));
   
   TYPE buf_state_t IS RECORD
-    --w_en_dcnt : NATURAL RANGE 0 TO 3;
+    w_en_dcnt : NATURAL RANGE 0 TO 3;
     w_index : NATURAL RANGE 0 TO g_depth - 1;
     r_index : NATURAL RANGE 0 TO g_depth - 1;
     c : INTEGER RANGE 0 TO g_depth;
@@ -43,7 +43,7 @@ ARCHITECTURE rtl of FIFO_rcv is
     
   SIGNAL b, bin : buf_state_t 
   := buf_state_t'(
-  --w_en_dcnt => 0,
+  w_en_dcnt => 0,
   w_index => 0,
   r_index => 0,
   c => 0
@@ -56,25 +56,25 @@ BEGIN
     IF (rising_edge(clk)) THEN
 
       -- avoid slow clk in PHY affect the FIFO and causing 4 times more writes
-      --IF (w_en = '1' and b.w_en_dcnt = 0) THEN
-      --  bin.w_en_dcnt <= 3;
-      --ELSIF (w_en = '1') THEN
-      --  bin.w_en_dcnt <= b.w_en_dcnt - 1;
-      --END IF;
+      IF (w_en = '1' and b.w_en_dcnt = 0) THEN
+        bin.w_en_dcnt <= 3;
+      ELSE
+        bin.w_en_dcnt <= b.w_en_dcnt - 1;
+      END IF;
  
-      --IF (w_en = '1' and b.w_en_dcnt = 0 and r_en = '0') THEN
-      IF (w_en = '1' and r_en = '0') THEN
+      IF (w_en = '1' and b.w_en_dcnt = 0 and r_en = '0') THEN
+      --IF (w_en = '1' and r_en = '0') THEN
         IF (b.c < g_depth) THEN
           bin.c <= b.c + 1;
         END IF;
-      ELSIF (w_en = '0' and r_en = '1') THEN
+      ELSIF ((w_en = '0' or (w_en = '1' and b.w_en_dcnt > 0)) and r_en = '1') THEN
         IF (b.c > 0) THEN
           bin.c <= b.c - 1;
         END IF;
       END IF;
       
-      --IF (w_en = '1' and b.w_en_dcnt = 0) THEN
-      IF (w_en = '1') THEN
+      IF (w_en = '1' and b.w_en_dcnt = 0) THEN
+      --IF (w_en = '1') THEN
         buf(b.w_index) <= w_data;
         IF (b.w_index = g_depth - 1) THEN
           bin.w_index <= 0;

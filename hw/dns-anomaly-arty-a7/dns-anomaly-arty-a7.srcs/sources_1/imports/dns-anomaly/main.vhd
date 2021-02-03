@@ -164,7 +164,7 @@ BEGIN
   );
 
   core : io PORT MAP(
-    clk => clk25,
+    clk => clk,
     -- Data received.
     el_rcv_data => el_rcv_data_buf,
     el_rcv_dv => el_rcv_dv_buf,
