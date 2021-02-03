@@ -90,6 +90,15 @@ FIFO is also designed as a ring buffer, with a given size of 8 pkts in buffer (M
 
 Bug so far, the FIFO doesn't work perfectly, sometimes check fails and I would all of a sudden receive multiple duplicate packets out of nowhere. 
 This FIFO error is observable at faster speeds, i.e. 100ms / per packet. less observable at very high speed. Could be due to timing constraints failing? Seems to be. I made a change to alleviate the bug by fixing the timing. 
+Could consider lowering clk speed to 50Mhz, or try something else.
+
+SW side:
+
+update upd_sender.cc to support args parsing,
+three args at the moment
+-p packet type DNS or UDP
+-t time interval, in ms, fatest pkt stream 1ms, default 1s
+-d daemon mode, or single pkt mode, default in single pkt mode
 
 TODO:
 
