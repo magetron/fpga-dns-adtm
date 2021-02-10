@@ -17,24 +17,11 @@
 
 #include "rawsockinit/config.hh"
 
-static const uint64_t SEC_IN_USEC = 1e6;
-static const uint64_t MS_IN_USEC = 1e3;
-
-enum class packet_mode_t {
-  UDP_TEST,
-  DNS_TEST
-};
-
-enum class send_mode_t {
-  DAEMON,
-  ONCE
-};
-
 packet_mode_t PACKET_MODE = packet_mode_t::UDP_TEST;
 send_mode_t SEND_MODE = send_mode_t::ONCE;
 uint64_t SEND_TIME = SEC_IN_USEC;
 
-uint16_t checksum(uint16_t *buff, int32_t _16bitword) {
+static inline uint16_t IPchecksum(uint16_t *buff, int32_t _16bitword) {
   uint32_t sum;
   for (sum = 0; _16bitword > 0; _16bitword--)
     sum += htons(*(buff)++);
@@ -43,7 +30,7 @@ uint16_t checksum(uint16_t *buff, int32_t _16bitword) {
   return (uint16_t)(~sum);
 }
 
-void trigger_send (ifreq ifreq_i, int32_t sock_raw, uint8_t *sendbuf) {
+void trigger_send (const ifreq& ifreq_i, const int32_t sock_raw, const uint8_t *sendbuf) {
   sockaddr_ll sadr_ll;
   sadr_ll.sll_ifindex = ifreq_i.ifr_ifindex;
   sadr_ll.sll_halen = ETH_ALEN;
@@ -66,52 +53,7 @@ void trigger_send (ifreq ifreq_i, int32_t sock_raw, uint8_t *sendbuf) {
   usleep(SEND_TIME);
 }
 
-int main (int argc, char **argv) {
-
-  int c;
-  opterr = 0;
-  while ((c = getopt(argc, argv, "p:t:d")) != -1) {
-    switch (c) {
-      case 'p':
-        if (!strncmp(optarg, "UDP", 4)) {
-          PACKET_MODE = packet_mode_t::UDP_TEST;
-        } else if (!strncmp(optarg, "DNS", 4)) {
-          PACKET_MODE = packet_mode_t::DNS_TEST;
-        }
-        break;
-      case 't':
-        SEND_TIME = atoi(optarg) * MS_IN_USEC;
-        break;
-      case 'd':
-        SEND_MODE = send_mode_t::DAEMON;
-        break;
-      default:
-        printf("Unrecognised argument\n");
-    }
-  }
-
-  int32_t sock_raw = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
-  if (sock_raw == -1)
-  {
-    printf("ERROR in socket\n");
-  }
-
-  ifreq ifreq_i;
-  memset(&ifreq_i, 0, sizeof(ifreq_i));
-  strncpy(ifreq_i.ifr_name, "ens37", 6);
-  if ((ioctl(sock_raw, SIOCGIFINDEX, &ifreq_i)) < 0)
-  {
-    printf("ERROR in index ioctl reading");
-  }
-
-  ifreq ifreq_c;
-  memset(&ifreq_c, 0, sizeof(ifreq_c));
-  strncpy(ifreq_c.ifr_name, "ens37", 6);
-  if ((ioctl(sock_raw, SIOCGIFHWADDR, &ifreq_c)) < 0)
-  {
-    printf("ERROR in SIOCGIFHWADDR ioctl reading\n");
-  }
-
+const uint8_t* form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i, const packet_mode_t packet_mode) {
   uint8_t *sendbuf = new uint8_t[BUFFER_SIZE];
 
   ethhdr *eth = reinterpret_cast<ethhdr *>(sendbuf);
@@ -121,9 +63,6 @@ int main (int argc, char **argv) {
   eth->h_source[3] = (uint8_t)(ifreq_c.ifr_hwaddr.sa_data[3]);
   eth->h_source[4] = (uint8_t)(ifreq_c.ifr_hwaddr.sa_data[4]);
   eth->h_source[5] = (uint8_t)(ifreq_c.ifr_hwaddr.sa_data[5]);
-  printf("%02X.%02X.%02X.%02X.%02X.%02X\n", eth->h_source[0], eth->h_source[1],
-         eth->h_source[2], eth->h_source[3],
-         eth->h_source[4], eth->h_source[5]);
   eth->h_dest[0] = 0x00;
   eth->h_dest[1] = 0x0A;
   eth->h_dest[2] = 0x35;
@@ -131,6 +70,14 @@ int main (int argc, char **argv) {
   eth->h_dest[4] = 0x00;
   eth->h_dest[6] = 0x00;
   eth->h_proto = htons(static_cast<uint16_t>(e_ethertype::IPv4));
+
+  printf("src MAC: %02X.%02X.%02X.%02X.%02X.%02X\n", eth->h_source[0], eth->h_source[1],
+         eth->h_source[2], eth->h_source[3],
+         eth->h_source[4], eth->h_source[5]);
+  printf("dst MAC: %02X.%02X.%02X.%02X.%02X.%02X\n", eth->h_dest[0], eth->h_dest[1],
+        eth->h_dest[2], eth->h_dest[3],
+        eth->h_dest[4], eth->h_dest[5]);
+
   iphdr *ip = reinterpret_cast<iphdr *>(eth + 1);
   ip->ihl = 5;
   ip->version = 4;
@@ -139,9 +86,11 @@ int main (int argc, char **argv) {
   ip->ttl = 64;
   ip->protocol = 17;
   ip->saddr = inet_addr(inet_ntoa((((sockaddr_in *)&(ifreq_i.ifr_addr))->sin_addr)));
-  char ipstr[INET_ADDRSTRLEN];
-  printf("%s\n", inet_ntop(AF_INET, &(ip->saddr), ipstr, INET_ADDRSTRLEN));
   ip->daddr = htonl((192 << 24) + (168 << 16) + (5 << 8) + 1);
+
+  char ipstr[INET_ADDRSTRLEN];
+  printf("src IP: %s\n", inet_ntop(AF_INET, &(ip->saddr), ipstr, INET_ADDRSTRLEN));
+  printf("dst IP: %s\n", inet_ntop(AF_INET, &(ip->daddr), ipstr, INET_ADDRSTRLEN));
 
   udphdr *udp = reinterpret_cast<udphdr *>(ip + 1);
   udp->source = htons(12345);
@@ -170,7 +119,67 @@ int main (int argc, char **argv) {
 
   udp->len = htons(7 + sizeof(udphdr));
   ip->tot_len = htons(7 + sizeof(udphdr) + sizeof(iphdr));
-  ip->check = htons(checksum(reinterpret_cast<uint16_t *>(ip), (sizeof(iphdr) / 2)));
+  ip->check = htons(IPchecksum(reinterpret_cast<uint16_t *>(ip), (sizeof(iphdr) / 2)));
+
+  return sendbuf;
+}
+
+void parse_args (int argc, char** argv) {
+  int c;
+  opterr = 0;
+  while ((c = getopt(argc, argv, "p:t:s:")) != -1) {
+    switch (c) {
+      case 'p':
+        if (!strncmp(optarg, "UDP", 4)) {
+          PACKET_MODE = packet_mode_t::UDP_TEST;
+        } else if (!strncmp(optarg, "DNS", 4)) {
+          PACKET_MODE = packet_mode_t::DNS_TEST;
+        }
+        break;
+      case 't':
+        SEND_TIME = atoi(optarg) * MS_IN_USEC;
+        break;
+      case 's':
+        if (!strncmp(optarg, "daemon", 7)) {
+          SEND_MODE = send_mode_t::DAEMON;
+        } else if (!strncmp(optarg, "changing", 9)) {
+          SEND_MODE = send_mode_t::CHANGING;
+        } else if (!strncmp(optarg, "once", 5)) {
+          SEND_MODE = send_mode_t::ONCE;
+        }
+        break;
+      default:
+        printf("Unrecognised argument\n");
+    }
+  }
+}
+
+int main (int argc, char** argv) {
+  parse_args(argc, argv);
+
+  int32_t sock_raw = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
+  if (sock_raw == -1)
+  {
+    printf("ERROR in socket\n");
+  }
+
+  ifreq ifreq_i;
+  memset(&ifreq_i, 0, sizeof(ifreq_i));
+  strncpy(ifreq_i.ifr_name, "ens37", 6);
+  if ((ioctl(sock_raw, SIOCGIFINDEX, &ifreq_i)) < 0)
+  {
+    printf("ERROR in index ioctl reading");
+  }
+
+  ifreq ifreq_c;
+  memset(&ifreq_c, 0, sizeof(ifreq_c));
+  strncpy(ifreq_c.ifr_name, "ens37", 6);
+  if ((ioctl(sock_raw, SIOCGIFHWADDR, &ifreq_c)) < 0)
+  {
+    printf("ERROR in SIOCGIFHWADDR ioctl reading\n");
+  }
+
+  const uint8_t* sendbuf = form_packet(ifreq_c, ifreq_i, PACKET_MODE);
 
   if (SEND_MODE == send_mode_t::DAEMON) {
     while (true) {
