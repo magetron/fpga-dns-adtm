@@ -8,7 +8,8 @@ USE work.common.ALL;
 
 ENTITY FIFO_snd IS
   GENERIC (
-    g_depth : NATURAL := 8
+    g_depth : NATURAL := 8;
+    g_sync_ratio : NATURAL := 4
   );
   PORT (
     clk : IN STD_LOGIC; -- FIFO buffer Clock
@@ -38,7 +39,7 @@ ARCHITECTURE rtl of FIFO_snd is
 ));
   
   TYPE buf_state_t IS RECORD
-    r_en_dcnt : NATURAL RANGE 0 TO 3;
+    r_en_dcnt : NATURAL RANGE 0 TO g_sync_ratio - 1;
     w_index : NATURAL RANGE 0 TO g_depth - 1;
     r_index : NATURAL RANGE 0 TO g_depth - 1;
     c : INTEGER RANGE 0 TO g_depth;
@@ -60,20 +61,16 @@ BEGIN
     
       -- avoid slow clk in PHY affect the FIFO and causing 4 times more writes
       IF (r_en = '1' and b.r_en_dcnt = 0) THEN
-        bin.r_en_dcnt <= 3;
+        bin.r_en_dcnt <= g_sync_ratio - 1;
       ELSE
         bin.r_en_dcnt <= b.r_en_dcnt - 1;
       END IF;
  
-      IF (w_en = '1' and (r_en = '0' or b.r_en_dcnt > 0)) THEN
-        IF (b.c < g_depth) THEN
-          bin.c <= b.c + 1;
-        END IF;
-      ELSIF (w_en = '0' and r_en = '1' and b.r_en_dcnt = 0) THEN
+      IF (w_en = '1' and (r_en = '0' or b.r_en_dcnt > 0) and b.c < g_depth) THEN
+        bin.c <= b.c + 1;
+      ELSIF (w_en = '0' and r_en = '1' and b.r_en_dcnt = 0 and b.c > 0) THEN
       --ELSIF (w_en = '0' and r_en = '1') THEN
-        IF (b.c > 0) THEN
-          bin.c <= b.c - 1;
-        END IF;
+        bin.c <= b.c - 1;
       END IF;
       
       IF (w_en = '1') THEN
