@@ -185,8 +185,13 @@ int main (int argc, char** argv) {
     while (true) {
       trigger_send(ifreq_i, sock_raw, sendbuf);
     }
-  } else {
+  } else if (SEND_MODE == send_mode_t::ONCE) {
     trigger_send(ifreq_i, sock_raw, sendbuf);
+  } else if (SEND_MODE == send_mode_t::CHANGING) {
+    while (true) {
+      trigger_send(ifreq_i, sock_raw, sendbuf);
+      sendbuf = form_packet(ifreq_c, ifreq_i, PACKET_MODE);
+    }
   }
 
   delete[] sendbuf;
