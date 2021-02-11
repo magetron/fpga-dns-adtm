@@ -1,6 +1,7 @@
 // Original code credit to
 // Ross Williams (ross@guest.adelaide.edu.au.)
 // James Bensley github.com/jwbensley
+// Modified by Patrick Wu for UCL CS Final Year Project
 
 #define MAX_FRAME_SIZE 10000
 #define BITMASK(X) (1L << (X))
@@ -39,7 +40,7 @@ static void cm_ini (p_cm_t p_cm);
 static void cm_nxt (p_cm_t p_cm, uint32_t ch);
 /* Processes a single message byte [0,255]. */
 
-static void cm_blk (p_cm_t p_cm, uint8_t *blk_adr, uint32_t blk_len);
+//static void cm_blk (p_cm_t p_cm, uint8_t *blk_adr, uint32_t blk_len);
 /* Processes a block of message bytes. */
 
 static uint32_t cm_crc (p_cm_t p_cm);
@@ -51,14 +52,14 @@ static uint32_t cm_crc (p_cm_t p_cm);
 /* The following function can be used to calculate a CRC lookup table.        */
 /* It can also be used at run-time to create or check static tables.          */
 
-static uint32_t cm_tab (p_cm_t p_cm, uint32_t index);
+//static uint32_t cm_tab (p_cm_t p_cm, uint32_t index);
 /* Returns the i'th entry for the lookup table for the specified algorithm.   */
 /* The function examines the fields cm_width, cm_poly, cm_refin, and the      */
 /* argument table index in the range [0,255] and returns the table entry in   */
 /* the bottom cm_width bytes of the return value.                             */
 
 
-static uint32_t reflect (uint32_t v, uint32_t b);
+//static uint32_t reflect (uint32_t v, uint32_t b);
 /* Returns the value v with the bottom b [0,32] bits reflected. */
 /* Example: reflect(0x3e23L,3) == 0x3e26                        */
 
@@ -66,7 +67,7 @@ static uint32_t widmask (p_cm_t);
 /* Returns a longword whose value is (2^p_cm->cm_width)-1.     */
 /* The trick is to do this portably (e.g. without doing <<32). */
 
-int32_t main(uint16_t argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
   cm_t cm;
   p_cm_t p_cm = &cm;
@@ -81,7 +82,7 @@ int32_t main(uint16_t argc, char *argv[]) {
 
   FILE *fp = NULL;
 
-  static uint16_t idx = 1;
+  static int32_t idx = 1;
 
   do {
 
@@ -222,12 +223,11 @@ static void cm_nxt(p_cm_t p_cm, uint32_t ch) {
 
 }
 
-
+/*
 static void cm_blk(p_cm_t p_cm, uint8_t *blk_adr, uint32_t blk_len) {
-
   while (blk_len--) cm_nxt(p_cm, *blk_adr++);
-
 }
+*/
 
 
 static uint32_t cm_crc(p_cm_t p_cm) {
@@ -240,7 +240,7 @@ static uint32_t cm_crc(p_cm_t p_cm) {
 
 }
 
-
+/*
 static uint32_t cm_tab(p_cm_t p_cm, uint32_t index) {
 
   static uint8_t  i;
@@ -267,4 +267,4 @@ static uint32_t cm_tab(p_cm_t p_cm, uint32_t index) {
   return r & widmask(p_cm);
 
 }
-
+*/

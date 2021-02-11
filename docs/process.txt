@@ -100,6 +100,10 @@ three args at the moment
 -t time interval, in ms, fatest pkt stream 1ms, default 1s
 -d daemon mode, or single pkt mode, default in single pkt mode
 
+Feb 10th Log:
+Fixed FIFO ring buffer by reducing FIFO buffer size. This is suspected to be a timing issue, as the large FIFO buf size would cause issue in the buffer counter, reading the buffer would bypass the decrement check and let the buffer count go to max, hence sending "buffer_size" amount of packets altogether in a bugged time.
+
+
 TODO:
 
 Impl test bench for each of the moduels, and have integrated testing
