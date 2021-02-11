@@ -103,6 +103,10 @@ three args at the moment
 Feb 10th Log:
 Fixed FIFO ring buffer by reducing FIFO buffer size. This is suspected to be a timing issue, as the large FIFO buf size would cause issue in the buffer counter, reading the buffer would bypass the decrement check and let the buffer count go to max, hence sending "buffer_size" amount of packets altogether in a bugged time.
 
+SW side:
+impl s: send mode, to replace dameon mode, now we can send once, send dameon, or send changing to preopare for upcoming filtering logic
+Also have makefile, make building easier
+
 
 TODO:
 
