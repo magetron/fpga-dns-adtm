@@ -25,7 +25,9 @@ ARCHITECTURE rtl OF io IS
 
   TYPE state_t IS (
     Idle,
-    Work,
+    FilterSrcMAC,
+    FilterDstMAC,
+    Empty,
     MetaInfo,
     ChecksumCalc,
     ChecksumPopulate,
@@ -41,7 +43,8 @@ ARCHITECTURE rtl OF io IS
     sd : snd_data_t; -- Snd Data struct
     chksumbuf : UNSIGNED(31 DOWNTO 0);
     led : STD_LOGIC_VECTOR(3 DOWNTO 0); -- LED register.
-    c : NATURAL RANGE 0 TO 255;
+    pc : NATURAL RANGE 0 TO 15; -- packet counter
+    c : NATURAL RANGE 0 TO 255; -- general purpose array counter 
   END RECORD;
 
   SIGNAL s, sin : iostate_t
@@ -66,12 +69,34 @@ ARCHITECTURE rtl OF io IS
   ),
   chksumbuf => x"00000000",
   led => x"0",
+  pc => 0,
   c => 0
   );
+  
+  -- TODO: avoid hardcode, set via admin packet
+  SIGNAL f : filter_t
+  := filter_t'(
+    --whitelist only VMWare MAC
+    srcMACBW => '1',
+    srcMACLength => 1,
+    srcMACList => (x"ae295f290c00", x"000000000000"),
+
+    --blacklist 00:0a:35:ff:ff:ff
+    dstMACBW => '0',
+    dstMACLength => 1,
+    dstMACList => (x"ffffff350a00", x"000000000000")
+    
+    --srcIPBW => '0',
+    --srcIPList => (OTHERS => (OTHERS => '0')),
+    --dstIPBW => '0',
+    --dstIPList => (OTHERS => (OTHERS => '0')),
+   );
 
 BEGIN
 
   rcvsnd : PROCESS (clk)
+  VARIABLE srcIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
+  VARIABLE dstIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
   BEGIN
 
     IF rising_edge(clk) THEN
@@ -83,12 +108,62 @@ BEGIN
           IF el_rcv_dv = '1' THEN
             el_rcv_ack <= '1';
             sin.rd <= el_rcv_data;
-            sin.s <= Work;
+            sin.s <= FilterSrcMAC;
+            sin.c <= 0;
           END IF;
 
-        WHEN Work =>
-          -- DO Processing
-          --sin.sd.dns <= s.rd.dns;
+        WHEN FilterSrcMAC =>
+          IF (s.c = f.srcMACLength) THEN
+            sin.s <= FilterDstMAC;
+            sin.c <= 0;
+          ELSE
+            -- check if srcMAC is on list
+            IF (s.rd.srcMAC = f.srcMACList(s.c)) THEN
+              IF (f.srcMACBW = '0') THEN
+                --it's on blacklist
+                sin.s <= Idle;
+                sin.c <= 0;
+              ELSE 
+                sin.c <= s.c + 1;
+              END IF;
+            ELSE
+              IF (f.srcMACBW = '0') THEN
+                --it's not on blacklist
+                sin.c <= s.c + 1;
+              ELSE
+                sin.s <= Idle;
+                sin.c <= 0;
+              END IF;
+            END IF;
+          END IF;
+          
+        WHEN FilterDstMAC =>
+          IF (s.c = f.dstMACLength) THEN
+            sin.s <= Empty;
+            sin.c <= 0;
+          ELSE
+            -- check if dstMAC is on list
+            IF (s.rd.dstMAC = f.dstMACList(s.c)) THEN
+              IF (f.dstMACBW = '0') THEN
+                --it's on blacklist
+                sin.s <= Idle;
+                sin.c <= 0;
+              ELSE 
+                sin.c <= s.c + 1;
+              END IF;
+            ELSE
+              IF (f.dstMACBW = '0') THEN
+                --it's not on blacklist
+                sin.c <= s.c + 1;
+              ELSE
+                sin.s <= Idle;
+                sin.c <= 0;
+              END IF;
+            END IF;
+          END IF;
+        
+        WHEN Empty =>
+          --Wait another clock cycle
           sin.s <= MetaInfo;
 
         WHEN MetaInfo =>
@@ -99,16 +174,17 @@ BEGIN
           sin.sd.ipTTL <= x"40";
           sin.sd.ipLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.ipLength, sin.sd.ipLength'length));
           sin.sd.udpLength <= STD_LOGIC_VECTOR(to_unsigned(s.rd.dnsLength + 8, sin.sd.udpLength'length));
+          srcIPchecksumbuf := unsigned(STD_LOGIC_VECTOR'(x"0000" & s.sd.srcIP(23 DOWNTO 16) & s.sd.srcIP(31 DOWNTO 24))) +
+                              unsigned(STD_LOGIC_VECTOR'(x"0000" & s.sd.srcIP(7 DOWNTO 0) & s.sd.srcIP(15 DOWNTO 8)));
+          dstIPchecksumbuf := unsigned(STD_LOGIC_VECTOR'(x"0000" & s.sd.dstIP(23 DOWNTO 16) & s.sd.dstIP(31 DOWNTO 24))) +
+                              unsigned(STD_LOGIC_VECTOR'(x"0000" & s.sd.dstIP(7 DOWNTO 0) & s.sd.dstIP(15 DOWNTO 8)));
           sin.s <= ChecksumCalc;
 
         WHEN ChecksumCalc =>
           sin.chksumbuf <= x"00004500" +
-                           unsigned(x"0000" & s.sd.ipLength(3 DOWNTO 0) & s.sd.ipLength(7 DOWNTO 4)) +
-                           unsigned(x"0000" & s.sd.ipTTL & x"11") +
-                           unsigned(x"0000" & s.sd.srcIP(23 DOWNTO 16) & s.sd.srcIP(31 DOWNTO 24)) +
-                           unsigned(x"0000" & s.sd.srcIP(7 DOWNTO 0) & s.sd.srcIP(15 DOWNTO 8)) +
-                           unsigned(x"0000" & s.sd.dstIP(23 DOWNTO 16) & s.sd.dstIP(31 DOWNTO 24)) +
-                           unsigned(x"0000" & s.sd.dstIP(7 DOWNTO 0) & s.sd.dstIP(15 DOWNTO 8));
+                           unsigned(STD_LOGIC_VECTOR'(x"0000" & s.sd.ipLength(3 DOWNTO 0) & s.sd.ipLength(7 DOWNTO 4))) +
+                           unsigned(STD_LOGIC_VECTOR'(x"0000" & s.sd.ipTTL & x"11")) +
+                           srcIPchecksumbuf + dstIPchecksumbuf;
           sin.s <= ChecksumPopulate;
 
         WHEN ChecksumPopulate =>
@@ -137,8 +213,8 @@ BEGIN
 
         WHEN Send =>
           el_snd_en <= '1'; -- Send Ethernet packet.
-          sin.c <= s.c + 1;
-          sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.c + 1, sin.led'length));
+          sin.pc <= s.pc + 1;
+          sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.pc + 1, sin.led'length));
           sin.s <= Idle;
 
       END CASE;
