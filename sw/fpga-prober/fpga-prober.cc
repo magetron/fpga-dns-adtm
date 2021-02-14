@@ -7,28 +7,9 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <errno.h>
-#include <unistd.h>
 
-#include <cstdio>
-#include <cstdint>
-#include <cstdlib>
-#include <cstring>
-#include <type_traits>
-
-#include "rawsockinit/config.hh"
-
-packet_mode_t PACKET_MODE = packet_mode_t::UDP_TEST;
-send_mode_t SEND_MODE = send_mode_t::ONCE;
-uint64_t SEND_TIME = SEC_IN_USEC;
-
-static inline uint16_t IPchecksum(uint16_t *buff, int32_t _16bitword) {
-  uint32_t sum;
-  for (sum = 0; _16bitword > 0; _16bitword--)
-    sum += htons(*(buff)++);
-  sum = ((sum >> 16) + (sum & 0xFFFF));
-  sum += (sum >> 16);
-  return (uint16_t)(~sum);
-}
+#include "fpga-prober.hh"
+#include "parser.hh"
 
 void trigger_send (const ifreq& ifreq_i, const int32_t sock_raw, const uint8_t *sendbuf) {
   sockaddr_ll sadr_ll;
@@ -47,28 +28,28 @@ void trigger_send (const ifreq& ifreq_i, const int32_t sock_raw, const uint8_t *
   {
     printf("ERROR in sending, sendlen=%d, errno=%d\n", send_len, errno);
     perror("Socket:");
-    exit(-1);
+    exit(1);
   }
 
   usleep(SEND_TIME);
 }
 
-const uint8_t* form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i, const packet_mode_t packet_mode) {
+const uint8_t* form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i) {
   uint8_t *sendbuf = new uint8_t[BUFFER_SIZE];
 
   ethhdr *eth = reinterpret_cast<ethhdr *>(sendbuf);
-  eth->h_source[0] = (uint8_t)(ifreq_c.ifr_hwaddr.sa_data[0]);
-  eth->h_source[1] = (uint8_t)(ifreq_c.ifr_hwaddr.sa_data[1]);
-  eth->h_source[2] = (uint8_t)(ifreq_c.ifr_hwaddr.sa_data[2]);
-  eth->h_source[3] = (uint8_t)(ifreq_c.ifr_hwaddr.sa_data[3]);
-  eth->h_source[4] = (uint8_t)(ifreq_c.ifr_hwaddr.sa_data[4]);
-  eth->h_source[5] = (uint8_t)(ifreq_c.ifr_hwaddr.sa_data[5]);
-  eth->h_dest[0] = 0x00;
-  eth->h_dest[1] = 0x0A;
-  eth->h_dest[2] = 0x35;
-  eth->h_dest[3] = 0x00;
-  eth->h_dest[4] = 0x00;
-  eth->h_dest[5] = 0x00;
+  eth->h_source[0] = MAC_ADDRS[0].byte[0];
+  eth->h_source[1] = MAC_ADDRS[0].byte[1];
+  eth->h_source[2] = MAC_ADDRS[0].byte[2];
+  eth->h_source[3] = MAC_ADDRS[0].byte[3];
+  eth->h_source[4] = MAC_ADDRS[0].byte[4];
+  eth->h_source[5] = MAC_ADDRS[0].byte[5];
+  eth->h_dest[0] = MAC_ADDRS[1].byte[0];
+  eth->h_dest[1] = MAC_ADDRS[1].byte[1];
+  eth->h_dest[2] = MAC_ADDRS[1].byte[2];
+  eth->h_dest[3] = MAC_ADDRS[1].byte[3];
+  eth->h_dest[4] = MAC_ADDRS[1].byte[4];
+  eth->h_dest[5] = MAC_ADDRS[1].byte[5];
   eth->h_proto = htons(static_cast<uint16_t>(e_ethertype::IPv4));
 
   printf("src MAC: %02X.%02X.%02X.%02X.%02X.%02X\n", eth->h_source[0], eth->h_source[1],
@@ -85,17 +66,19 @@ const uint8_t* form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i, const pa
   ip->id = htons(10201);
   ip->ttl = 64;
   ip->protocol = 17;
-  ip->saddr = inet_addr(inet_ntoa((((sockaddr_in *)&(ifreq_i.ifr_addr))->sin_addr)));
-  ip->daddr = htonl((192 << 24) + (168 << 16) + (5 << 8) + 1);
+  ip->saddr = *reinterpret_cast<uint32_t*>(&IP_ADDRS[0]);
+  ip->daddr = *reinterpret_cast<uint32_t*>(&IP_ADDRS[1]);
 
   char ipstr[INET_ADDRSTRLEN];
   printf("src IP: %s\n", inet_ntop(AF_INET, &(ip->saddr), ipstr, INET_ADDRSTRLEN));
   printf("dst IP: %s\n", inet_ntop(AF_INET, &(ip->daddr), ipstr, INET_ADDRSTRLEN));
 
   udphdr *udp = reinterpret_cast<udphdr *>(ip + 1);
-  udp->source = htons(12345);
-  udp->dest = htons(23456);
+  udp->source = htons(UDP_PORTS[0].port);
+  udp->dest = htons(UDP_PORTS[1].port);
   udp->check = 0;
+  printf("src Port: %d\n", ntohs(udp->source));
+  printf("dst Port: %d\n", ntohs(udp->dest));
 
   if (PACKET_MODE == packet_mode_t::DNS_TEST) {
     char *payload = reinterpret_cast<char *>(udp + 1);
@@ -124,46 +107,19 @@ const uint8_t* form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i, const pa
   return sendbuf;
 }
 
-void parse_args (int argc, char** argv) {
-  int c;
-  opterr = 0;
-  while ((c = getopt(argc, argv, "p:t:s:m:i:u:")) != -1) {
-    switch (c) {
-      case 'p':
-        if (!strncmp(optarg, "UDP", 4)) {
-          PACKET_MODE = packet_mode_t::UDP_TEST;
-        } else if (!strncmp(optarg, "DNS", 4)) {
-          PACKET_MODE = packet_mode_t::DNS_TEST;
-        }
-        break;
-      case 't':
-        SEND_TIME = atoi(optarg) * MS_IN_USEC;
-        break;
-      case 's':
-        if (!strncmp(optarg, "daemon", 7)) {
-          SEND_MODE = send_mode_t::DAEMON;
-        } else if (!strncmp(optarg, "once", 5)) {
-          SEND_MODE = send_mode_t::ONCE;
-        }
-        break;
-      case 'm':
-      case 'i':
-      case 'u':
-      default:
-        printf("Unrecognised argument\n");
-    }
-  }
+void change_packet () {
+  // DO NOTHING
 }
 
 int main (int argc, char** argv) {
   parse_args(argc, argv);
 
+  // init socket
   int32_t sock_raw = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
   if (sock_raw == -1)
   {
     printf("ERROR in socket\n");
   }
-
   ifreq ifreq_i;
   memset(&ifreq_i, 0, sizeof(ifreq_i));
   strncpy(ifreq_i.ifr_name, "ens37", 6);
@@ -171,7 +127,6 @@ int main (int argc, char** argv) {
   {
     printf("ERROR in index ioctl reading");
   }
-
   ifreq ifreq_c;
   memset(&ifreq_c, 0, sizeof(ifreq_c));
   strncpy(ifreq_c.ifr_name, "ens37", 6);
@@ -180,8 +135,7 @@ int main (int argc, char** argv) {
     printf("ERROR in SIOCGIFHWADDR ioctl reading\n");
   }
 
-  const uint8_t* sendbuf = form_packet(ifreq_c, ifreq_i, PACKET_MODE);
-
+  const uint8_t* sendbuf = form_packet(ifreq_c, ifreq_i);
   if (SEND_MODE == send_mode_t::DAEMON) {
     while (true) {
       trigger_send(ifreq_i, sock_raw, sendbuf);
@@ -191,7 +145,8 @@ int main (int argc, char** argv) {
   } else if (SEND_MODE == send_mode_t::CHANGING) {
     while (true) {
       trigger_send(ifreq_i, sock_raw, sendbuf);
-      sendbuf = form_packet(ifreq_c, ifreq_i, PACKET_MODE);
+      change_packet();
+      sendbuf = form_packet(ifreq_c, ifreq_i);
     }
   }
 
