@@ -114,7 +114,8 @@ static inline void parse_args (int argc, char** argv) {
       case 'h':
       default:
         printf("Unrecognised argument\n");
-        printf("./fpga-prober -p UDP -t 500 -s daemon "
+        printf("Usage:\n"
+               "./fpga-prober -r dnspacket.bin -t 500 -s daemon "
                "-m 0a:0b:0c:0d:0e:0f,1a:1b:1c:1d:1e:1f -i 10.0.1.14,192.168.5.1 "
                "-u 12345,23456\n");
         exit(0);
