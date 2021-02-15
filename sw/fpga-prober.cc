@@ -68,7 +68,7 @@ const uint8_t* form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i, const pa
   eth->h_dest[2] = 0x35;
   eth->h_dest[3] = 0x00;
   eth->h_dest[4] = 0x00;
-  eth->h_dest[6] = 0x00;
+  eth->h_dest[5] = 0x00;
   eth->h_proto = htons(static_cast<uint16_t>(e_ethertype::IPv4));
 
   printf("src MAC: %02X.%02X.%02X.%02X.%02X.%02X\n", eth->h_source[0], eth->h_source[1],
@@ -127,7 +127,7 @@ const uint8_t* form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i, const pa
 void parse_args (int argc, char** argv) {
   int c;
   opterr = 0;
-  while ((c = getopt(argc, argv, "p:t:s:")) != -1) {
+  while ((c = getopt(argc, argv, "p:t:s:m:i:u:")) != -1) {
     switch (c) {
       case 'p':
         if (!strncmp(optarg, "UDP", 4)) {
@@ -142,12 +142,13 @@ void parse_args (int argc, char** argv) {
       case 's':
         if (!strncmp(optarg, "daemon", 7)) {
           SEND_MODE = send_mode_t::DAEMON;
-        } else if (!strncmp(optarg, "changing", 9)) {
-          SEND_MODE = send_mode_t::CHANGING;
         } else if (!strncmp(optarg, "once", 5)) {
           SEND_MODE = send_mode_t::ONCE;
         }
         break;
+      case 'm':
+      case 'i':
+      case 'u':
       default:
         printf("Unrecognised argument\n");
     }

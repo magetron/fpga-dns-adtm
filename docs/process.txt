@@ -103,6 +103,15 @@ three args at the moment
 Feb 10th Log:
 Fixed FIFO ring buffer by reducing FIFO buffer size. This is suspected to be a timing issue, as the large FIFO buf size would cause issue in the buffer counter, reading the buffer would bypass the decrement check and let the buffer count go to max, hence sending "buffer_size" amount of packets altogether in a bugged time.
 
+Solved a timing constraint fail by introducing more pipeline and intermediate variable on calculating IP checksum.
+
+SW side:
+impl s: send mode, to replace dameon mode, now we can send once, send dameon, or send changing to preopare for upcoming filtering logic
+Also have makefile, make building easier
+
+Feb 11th Log:
+Discovered the fact that clock sync between clk and E_TX_CLK. If core stages utilises odd number of clk cycles, it can slip in an update before send clk gets triggered. Which then results in correct behaviour, however, if it collides (i.e. clk has even number of cycles), then there's possibility to have two sends at the same time BUGGY!.
+
 
 TODO:
 

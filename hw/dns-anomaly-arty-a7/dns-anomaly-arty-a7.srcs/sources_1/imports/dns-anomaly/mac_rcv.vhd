@@ -295,10 +295,15 @@ BEGIN
 
             -- UDP payload length
           WHEN UDPLength =>
-            rin.d.dnsLength <= r.d.dnsLength * 16 + to_integer(unsigned(E_RXD));
+            IF r.c = 0 or r.c = 2 THEN
+              rin.d.dnsLength <= r.d.dnsLength + to_integer(unsigned(E_RXD));
+            ELSIF r.c = 1 THEN
+              rin.d.dnsLength <= (r.d.dnsLength + to_integer(unsigned(E_RXD)) * 16) * 256;
+            ELSE
+              rin.d.dnsLength <= r.d.dnsLength + to_integer(unsigned(E_RXD)) * 16 - 8;
+            END IF;
             IF r.c = 3 THEN
               rin.c <= 0;
-              rin.d.dnsLength <= r.d.dnsLength - 8; -- deduct UDP header 8
               rin.s <= UDPChecksum;
             ELSE
               rin.c <= r.c + 1;
