@@ -44,6 +44,7 @@ ARCHITECTURE rtl OF main IS
       E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
       el_data : OUT rcv_data_t; -- Channel metadata.
       el_dv : OUT STD_LOGIC -- Data valid.
+      --led : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
     );
   END COMPONENT;
   
@@ -132,6 +133,7 @@ BEGIN
     E_RXD => E_RXD,
     el_data => el_rcv_data_phy,
     el_dv => el_rcv_dv_phy
+    --led => LED
   );
   
   fifo_receive : fifo_rcv PORT MAP(
