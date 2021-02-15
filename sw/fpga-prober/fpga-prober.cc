@@ -11,7 +11,7 @@
 #include "fpga-prober.hh"
 #include "parser.hh"
 
-void trigger_send (const ifreq& ifreq_i, const int32_t sock_raw, const uint8_t *sendbuf) {
+void trigger_send (const ifreq& ifreq_i, const int32_t sock_raw) {
   sockaddr_ll sadr_ll;
   sadr_ll.sll_ifindex = ifreq_i.ifr_ifindex;
   sadr_ll.sll_halen = ETH_ALEN;
@@ -22,7 +22,7 @@ void trigger_send (const ifreq& ifreq_i, const int32_t sock_raw, const uint8_t *
   sadr_ll.sll_addr[0] = 0x00;
   sadr_ll.sll_addr[0] = 0x00;
 
-  int32_t send_len = sendto(sock_raw, sendbuf, 7 + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
+  int32_t send_len = sendto(sock_raw, PKTBUF, PAYLOAD_LENGTH + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
                             reinterpret_cast<const sockaddr *>(&sadr_ll), sizeof(sockaddr_ll));
   if (send_len < 0)
   {
@@ -34,10 +34,9 @@ void trigger_send (const ifreq& ifreq_i, const int32_t sock_raw, const uint8_t *
   usleep(SEND_TIME);
 }
 
-const uint8_t* form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i) {
-  uint8_t *sendbuf = new uint8_t[BUFFER_SIZE];
+void form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i) {
 
-  ethhdr *eth = reinterpret_cast<ethhdr *>(sendbuf);
+  ethhdr *eth = reinterpret_cast<ethhdr *>(PKTBUF);
   eth->h_source[0] = MAC_ADDRS[0].byte[0];
   eth->h_source[1] = MAC_ADDRS[0].byte[1];
   eth->h_source[2] = MAC_ADDRS[0].byte[2];
@@ -52,10 +51,10 @@ const uint8_t* form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i) {
   eth->h_dest[5] = MAC_ADDRS[1].byte[5];
   eth->h_proto = htons(static_cast<uint16_t>(e_ethertype::IPv4));
 
-  printf("src MAC: %02X.%02X.%02X.%02X.%02X.%02X\n", eth->h_source[0], eth->h_source[1],
+  printf("src MAC: %02X:%02X:%02X:%02X:%02X:%02X\n", eth->h_source[0], eth->h_source[1],
          eth->h_source[2], eth->h_source[3],
          eth->h_source[4], eth->h_source[5]);
-  printf("dst MAC: %02X.%02X.%02X.%02X.%02X.%02X\n", eth->h_dest[0], eth->h_dest[1],
+  printf("dst MAC: %02X:%02X:%02X:%02X:%02X:%02X\n", eth->h_dest[0], eth->h_dest[1],
         eth->h_dest[2], eth->h_dest[3],
         eth->h_dest[4], eth->h_dest[5]);
 
@@ -80,31 +79,18 @@ const uint8_t* form_packet (const ifreq& ifreq_c, const ifreq& ifreq_i) {
   printf("src Port: %d\n", ntohs(udp->source));
   printf("dst Port: %d\n", ntohs(udp->dest));
 
-  if (PACKET_MODE == packet_mode_t::DNS_TEST) {
-    char *payload = reinterpret_cast<char *>(udp + 1);
-    payload[0] = 'i';
-    payload[1] = 't';
-    payload[2] = 's';
-    payload[3] = 'd';
-    payload[4] = 'n';
-    payload[5] = 's';
-    payload[6] = '\0';
+  char *payload = reinterpret_cast<char *>(udp + 1);
+  if (PACKET_MODE == packet_mode_t::UDP_TEST) {
+    memcpy(payload, "test01", 7);
+    PAYLOAD_LENGTH = 7;
   } else {
-    char *payload = reinterpret_cast<char *>(udp + 1);
-    payload[0] = 't';
-    payload[1] = 'e';
-    payload[2] = 's';
-    payload[3] = 't';
-    payload[4] = '1';
-    payload[5] = '2';
-    payload[6] = '\0';
+    memcpy(payload, PAYLOAD, PAYLOAD_LENGTH);
   }
 
-  udp->len = htons(7 + sizeof(udphdr));
-  ip->tot_len = htons(7 + sizeof(udphdr) + sizeof(iphdr));
+  udp->len = htons(PAYLOAD_LENGTH + sizeof(udphdr));
+  ip->tot_len = htons(PAYLOAD_LENGTH + sizeof(udphdr) + sizeof(iphdr));
   ip->check = htons(IPchecksum(reinterpret_cast<uint16_t *>(ip), (sizeof(iphdr) / 2)));
 
-  return sendbuf;
 }
 
 void change_packet () {
@@ -135,22 +121,20 @@ int main (int argc, char** argv) {
     printf("ERROR in SIOCGIFHWADDR ioctl reading\n");
   }
 
-  const uint8_t* sendbuf = form_packet(ifreq_c, ifreq_i);
+  form_packet(ifreq_c, ifreq_i);
   if (SEND_MODE == send_mode_t::DAEMON) {
     while (true) {
-      trigger_send(ifreq_i, sock_raw, sendbuf);
+      trigger_send(ifreq_i, sock_raw);
     }
   } else if (SEND_MODE == send_mode_t::ONCE) {
-    trigger_send(ifreq_i, sock_raw, sendbuf);
+    trigger_send(ifreq_i, sock_raw);
   } else if (SEND_MODE == send_mode_t::CHANGING) {
     while (true) {
-      trigger_send(ifreq_i, sock_raw, sendbuf);
+      trigger_send(ifreq_i, sock_raw);
       change_packet();
-      sendbuf = form_packet(ifreq_c, ifreq_i);
+      form_packet(ifreq_c, ifreq_i);
     }
   }
-
-  delete[] sendbuf;
 
   return 0;
 }

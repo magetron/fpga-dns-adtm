@@ -67,18 +67,25 @@ static inline void parse_udp(char* str) {
   }
 }
 
+static inline void read_file(char* filename) {
+  FILE* fileptr = fopen(filename, "rb");
+  fseek(fileptr, 0, SEEK_END);
+  PAYLOAD_LENGTH = ftell(fileptr);
+  if (PAYLOAD_LENGTH > BUFFER_SIZE) { PAYLOAD_LENGTH = BUFFER_SIZE; }
+  rewind(fileptr);
+  fread(PAYLOAD, PAYLOAD_LENGTH, 1, fileptr);
+  fclose(fileptr);
+}
+
 static inline void parse_args (int argc, char** argv) {
   int c;
   opterr = 0;
-  while ((c = getopt(argc, argv, "p:t:s:m:i:u:")) != -1) {
+  while ((c = getopt(argc, argv, "r:t:s:m:i:u:")) != -1) {
     switch (c) {
-      case 'p':
-      // packet type
-        if (!strncmp(optarg, "UDP", 4)) {
-          PACKET_MODE = packet_mode_t::UDP_TEST;
-        } else if (!strncmp(optarg, "DNS", 4)) {
-          PACKET_MODE = packet_mode_t::DNS_TEST;
-        }
+      case 'r':
+      // read file
+        PACKET_MODE = packet_mode_t::FILE_TEST;
+        read_file(optarg);
         break;
       case 't':
       // time interval

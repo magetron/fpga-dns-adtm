@@ -112,6 +112,10 @@ Also have makefile, make building easier
 Feb 11th Log:
 Discovered the fact that clock sync between clk and E_TX_CLK. If core stages utilises odd number of clk cycles, it can slip in an update before send clk gets triggered. Which then results in correct behaviour, however, if it collides (i.e. clk has even number of cycles), then there's possibility to have two sends at the same time BUGGY!.
 
+Feb 15th Log:
+IP and UDP seem to have different bitwise endianess, bug fixed
+UDP -> 0xab0f -> receive order on MII baf0
+IP -> 0xab20 -> receive order ab20
 
 TODO:
 
