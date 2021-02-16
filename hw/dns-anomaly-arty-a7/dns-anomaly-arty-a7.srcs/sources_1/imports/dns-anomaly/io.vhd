@@ -6,6 +6,9 @@ LIBRARY work;
 USE work.common.ALL;
 
 ENTITY io IS
+  GENERIC (
+    g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00"
+  );
   PORT (
     clk : IN STD_LOGIC;
     -- Data received.
@@ -24,10 +27,18 @@ END io;
 ARCHITECTURE rtl OF io IS
 
   TYPE state_t IS (
+    -- MINDFUL: must have odd number of stages to slip in an update
+    -- within TX clk cycles
+  
     Idle,
+    
+    CheckAdmin,
+    
+    -- Filtering Stages
     FilterSrcMAC,
     FilterDstMAC,
-    Empty,
+    
+    -- Finalising Stages
     MetaInfo,
     ChecksumCalc,
     ChecksumPopulate,
@@ -73,7 +84,6 @@ ARCHITECTURE rtl OF io IS
   c => 0
   );
   
-  -- TODO: avoid hardcode, set via admin packet
   SIGNAL f : filter_t
   := filter_t'(
     --whitelist only VMWare MAC
@@ -105,9 +115,20 @@ BEGIN
 
       CASE s.s IS
         WHEN Idle =>
-          IF el_rcv_dv = '1' THEN
+          IF (el_rcv_dv = '1') THEN
             el_rcv_ack <= '1';
             sin.rd <= el_rcv_data;
+            sin.s <= CheckAdmin;
+          END IF;
+          
+        WHEN CheckAdmin =>
+          IF (s.rd.dstMAC = g_admin_mac) THEN
+            -- TODO: update filter
+            sin.s <= Idle;
+            sin.pc <= 0;
+            -- SIGNALs recognition of admin pkt
+            sin.led <= x"f";
+          ELSE
             sin.s <= FilterSrcMAC;
             sin.c <= 0;
           END IF;
@@ -139,7 +160,7 @@ BEGIN
           
         WHEN FilterDstMAC =>
           IF (s.c = f.dstMACLength) THEN
-            sin.s <= Empty;
+            sin.s <= MetaInfo;
             sin.c <= 0;
           ELSE
             -- check if dstMAC is on list
@@ -161,10 +182,6 @@ BEGIN
               END IF;
             END IF;
           END IF;
-        
-        WHEN Empty =>
-          --Wait another clock cycle
-          sin.s <= MetaInfo;
 
         WHEN MetaInfo =>
           sin.sd.srcIP <= s.rd.dstIP;
