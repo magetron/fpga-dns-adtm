@@ -33,7 +33,7 @@ ARCHITECTURE rtl of FIFO_rcv is
       srcIP => (OTHERS => '0'), dstIP => (OTHERS => '0'),
       ipHeaderLength => 0, ipLength => 0,
       srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-      dnsLength => 0));
+      dnsLength => 0, dnsPkt => (OTHERS => '0')));
   
   TYPE buf_state_t IS RECORD
     w_en_dcnt : NATURAL RANGE 0 TO g_sync_ratio - 1;

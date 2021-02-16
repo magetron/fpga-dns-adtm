@@ -57,8 +57,8 @@ ARCHITECTURE rtl OF mac_rcv IS
   srcIP => (OTHERS => '0'), dstIP => (OTHERS => '0'),
   ipHeaderLength => 0, ipLength => 0,
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-  dnsLength => 0
-  --dns => (OTHERS => '1')
+  dnsLength => 0,
+  dnsPkt => (OTHERS => '0')
   ),
   c => 0,
   udpc => 0
@@ -313,23 +313,22 @@ BEGIN
           WHEN UDPChecksum =>
             IF r.c = 3 THEN
               rin.c <= 0;
-              rin.udpc <= r.d.dnsLength * 2 - 1;
+              rin.udpc <= r.d.dnsLength * 8 - 4;
               rin.s <= DNSMsg;
-              --rin.d.dns <= (OTHERS => '1');
             ELSE
               rin.c <= r.c + 1;
             END IF;
 
             -- DNS Msg
           WHEN DNSMsg =>
-            --IF r.c <= 508 THEN
-            --  rin.d.dns((r.c + 3) DOWNTO (r.c)) <= E_RXD;
-            --END IF;
+            IF r.c <= 508 THEN
+              rin.d.dnsPkt((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            END IF;
             IF r.c = r.udpc THEN
               rin.c <= 0;
               rin.s <= Notify;
             ELSE
-              rin.c <= r.c + 1;
+              rin.c <= r.c + 4;
             END IF;
 
             -- Notification                                                   --

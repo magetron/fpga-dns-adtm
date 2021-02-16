@@ -66,8 +66,8 @@ ARCHITECTURE rtl OF io IS
   srcIP => (OTHERS => '0'), dstIP => (OTHERS => '0'),
   ipHeaderLength => 0, ipLength => 0,
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-  dnsLength => 0
-  --dns => (OTHERS => '1')
+  dnsLength => 0,
+  dnsPkt => (OTHERS => '0')
   ),
   sd => (
   srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
@@ -75,8 +75,8 @@ ARCHITECTURE rtl OF io IS
   ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
   ipChecksum => (OTHERS => '0'),
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-  udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0')
-  --dns => (OTHERS => '1')
+  udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0'),
+  dnsPkt => (OTHERS => '0')
   ),
   chksumbuf => x"00000000",
   led => x"0",
@@ -226,6 +226,7 @@ BEGIN
         WHEN Finalise =>
           sin.sd.srcMAC <= x"000000350a00";
           sin.sd.dstMAC <= x"d3f0f3d6f694";
+          sin.sd.dnsPkt <= s.rd.dnsPkt;
           sin.s <= Send;
 
         WHEN Send =>
