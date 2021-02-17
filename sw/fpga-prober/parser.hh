@@ -77,10 +77,10 @@ static inline void read_file(char* filename) {
   fclose(fileptr);
 }
 
-static inline void parse_args (int argc, char** argv) {
+static inline void parse_args_sender(int argc, char** argv) {
   int c;
   opterr = 0;
-  while ((c = getopt(argc, argv, "r:t:s:m:i:u:")) != -1) {
+  while ((c = getopt(argc, argv, "r:t:s:m:i:u:h")) != -1) {
     switch (c) {
       case 'r':
       // read file
@@ -111,13 +111,31 @@ static inline void parse_args (int argc, char** argv) {
       // udp port number
         parse_udp(optarg);
         break;
+      default:
+        printf("Unrecognised argument\n");
+      case 'h':
+        printf("Usage:\n"
+               "./pkt-sender.out -r dnspacket.bin -t 500 -s daemon "
+               "-m 0a:0b:0c:0d:0e:0f,1a:1b:1c:1d:1e:1f -i 10.0.1.14,192.168.5.1 "
+               "-u 12345,23456\n");
+        exit(0);
+    }
+  }
+}
+
+static inline void parse_args_builder (int argc, char** argv) {
+  int c;
+  opterr = 0;
+  while ((c = getopt(argc, argv, "w:h")) != -1) {
+    switch (c) {
+      case 'w':
+        WRITE_FILENAME = optarg;
+        break;
       case 'h':
       default:
         printf("Unrecognised argument\n");
         printf("Usage:\n"
-               "./fpga-prober -r dnspacket.bin -t 500 -s daemon "
-               "-m 0a:0b:0c:0d:0e:0f,1a:1b:1c:1d:1e:1f -i 10.0.1.14,192.168.5.1 "
-               "-u 12345,23456\n");
+               "./admin-builder.out -w admin.bin");
         exit(0);
     }
   }

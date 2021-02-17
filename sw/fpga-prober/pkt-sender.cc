@@ -98,7 +98,7 @@ void change_packet () {
 }
 
 int main (int argc, char** argv) {
-  parse_args(argc, argv);
+  parse_args_sender(argc, argv);
 
   // init socket
   int32_t sock_raw = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
