@@ -83,10 +83,6 @@ BEGIN
               ELSE
                 rin.c <= r.c + 1;
               END IF;
-            ELSIF E_RXD = x"d" AND r.c >= 12 THEN
-              -- could we miss the first few signals?
-              rin.c <= 0;
-              rin.s <= EtherMACDST;
             ELSE
               rin.c <= 0;
             END IF;

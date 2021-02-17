@@ -8,7 +8,7 @@ USE work.common.ALL;
 
 ENTITY FIFO_rcv IS
   GENERIC (
-    g_depth : NATURAL := 4;
+    g_depth : NATURAL := 1;
     g_sync_ratio : NATURAL := 4
   );
   PORT (
@@ -37,16 +37,12 @@ ARCHITECTURE rtl of FIFO_rcv is
   
   TYPE buf_state_t IS RECORD
     w_en_dcnt : NATURAL RANGE 0 TO g_sync_ratio - 1;
-    w_index : NATURAL RANGE 0 TO g_depth - 1;
-    r_index : NATURAL RANGE 0 TO g_depth - 1;
     c : INTEGER RANGE 0 TO g_depth;
   END RECORD;
     
   SIGNAL b, bin : buf_state_t 
   := buf_state_t'(
   w_en_dcnt => 0,
-  w_index => 0,
-  r_index => 0,
   c => 0
   );
     
@@ -64,38 +60,19 @@ BEGIN
       END IF;
  
       IF (w_en = '1' and b.w_en_dcnt = 0 and r_en = '0' and b.c < g_depth) THEN
-      --IF (w_en = '1' and r_en = '0') THEN
         bin.c <= b.c + 1;
       ELSIF ((w_en = '0' or b.w_en_dcnt > 0) and r_en = '1' and b.c > 0) THEN
         bin.c <= b.c - 1;
       END IF;
       
       IF (w_en = '1' and b.w_en_dcnt = 0) THEN
-      --IF (w_en = '1') THEN
-        buf(b.w_index) <= w_data;
-        IF (b.w_index = g_depth - 1) THEN
-          bin.w_index <= 0;
-        ELSE
-          bin.w_index <= b.w_index + 1;
-        END IF;
-      ELSE
-        bin.w_index <= b.w_index;
-      END IF;
-      
-      IF (r_en = '1') THEN
-        IF (b.r_index = g_depth - 1) THEN
-          bin.r_index <= 0;
-        ELSE
-          bin.r_index <= b.r_index + 1;
-        END IF;
-      ELSE
-        bin.r_index <= b.r_index;
+        buf(0) <= w_data;
       END IF;
 
     END IF;
   END PROCESS;
   
-  r_data <= buf(b.r_index);
+  r_data <= buf(0);
   buf_full <= '1' WHEN b.c = g_depth ELSE '0';
   buf_not_empty <= '0' WHEN b.c = 0 ELSE '1';
   
