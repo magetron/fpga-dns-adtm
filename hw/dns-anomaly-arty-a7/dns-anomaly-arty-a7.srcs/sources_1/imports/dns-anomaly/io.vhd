@@ -119,6 +119,8 @@ BEGIN
           IF (el_rcv_dv = '1') THEN
             sin.s <= Read;
           END IF;
+          --DEBUG
+          --sin.led <= STD_LOGIC_VECTOR(to_unsigned(f.srcMACLength, sin.led'length));
           
         WHEN Read =>
           sin.rd <= el_rcv_data;
@@ -137,11 +139,11 @@ BEGIN
             f.srcMacList(1) <= s.rd.dnsPkt(98 DOWNTO 51);
 
             -- DST MAC
-            --f.dstMACBW <= s.rd.dnsPkt(99);
+            f.dstMACBW <= s.rd.dnsPkt(99);
             -- filter depth affected this length here
-            --f.dstMACLength <= to_integer(unsigned(s.rd.dnsPkt(101 DOWNTO 100)));
-            --f.dstMacList(0) <= s.rd.dnsPkt(149 DOWNTO 102);
-            --f.dstMacList(1) <= s.rd.dnsPkt(197 DOWNTO 150);
+            f.dstMACLength <= to_integer(unsigned(s.rd.dnsPkt(101 DOWNTO 100)));
+            f.dstMacList(0) <= s.rd.dnsPkt(149 DOWNTO 102);
+            f.dstMacList(1) <= s.rd.dnsPkt(197 DOWNTO 150);
            
             sin.s <= Idle;
             sin.pc <= 0;
