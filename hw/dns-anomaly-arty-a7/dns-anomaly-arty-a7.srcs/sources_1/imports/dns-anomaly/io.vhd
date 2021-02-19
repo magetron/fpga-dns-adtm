@@ -36,7 +36,8 @@ ARCHITECTURE rtl OF io IS
     CheckAdmin,
     
     -- Admin Stages
-    --UpdateFilter,
+    UpdateFilterSrcMAC,
+    UpdateFilterDstMAC,
     
     -- Filtering Stages
     FilterSrcMAC,
@@ -132,30 +133,35 @@ BEGIN
           
         WHEN CheckAdmin =>
           IF (s.rd.dstMAC = g_admin_mac) THEN
-            -- ALL filter elements shall be supplied, check against common.vhd
-
-            -- SRC MAC
-            f.srcMACBW <= s.rd.dnsPkt(0);
-            -- filter depth affected this length here
-            f.srcMACLength <= to_integer(unsigned(s.rd.dnsPkt(2 DOWNTO 1)));
-            f.srcMacList(0) <= s.rd.dnsPkt(50 DOWNTO 3);
-            f.srcMacList(1) <= s.rd.dnsPkt(98 DOWNTO 51);
-
-            -- DST MAC
-            f.dstMACBW <= s.rd.dnsPkt(99);
-            -- filter depth affected this length here
-            f.dstMACLength <= to_integer(unsigned(s.rd.dnsPkt(101 DOWNTO 100)));
-            f.dstMacList(0) <= s.rd.dnsPkt(149 DOWNTO 102);
-            f.dstMacList(1) <= s.rd.dnsPkt(197 DOWNTO 150);
-           
-            sin.s <= Idle;
-            sin.pc <= 0;
             -- SIGNALS recognition of admin pkt
-            sin.led <= x"f";
+            sin.led <= x"f";        
+            
+            sin.s <= UpdateFilterSrcMAC;
+            sin.pc <= 0;
+            sin.c <= 0;
           ELSE
             sin.s <= FilterSrcMAC;
             sin.c <= 0;
           END IF;
+          
+        WHEN UpdateFilterSrcMAC =>
+          -- ALL filter elements shall be supplied, check against common.vhd
+          -- SRC MAC
+          f.srcMACBW <= s.rd.dnsPkt(0);
+          -- filter depth affected this length here
+          f.srcMACLength <= to_integer(unsigned(s.rd.dnsPkt(2 DOWNTO 1)));
+          f.srcMacList(0) <= s.rd.dnsPkt(50 DOWNTO 3);
+          f.srcMacList(1) <= s.rd.dnsPkt(98 DOWNTO 51);
+          sin.s <= UpdateFilterDstMAC;
+      
+        WHEN UpdateFilterDstMAC =>
+          -- DST MAC
+          f.dstMACBW <= s.rd.dnsPkt(99);
+          -- filter depth affected this length here
+          f.dstMACLength <= to_integer(unsigned(s.rd.dnsPkt(101 DOWNTO 100)));
+          f.dstMacList(0) <= s.rd.dnsPkt(149 DOWNTO 102);
+          f.dstMacList(1) <= s.rd.dnsPkt(197 DOWNTO 150);
+          sin.s <= Idle;
 
         WHEN FilterSrcMAC =>
           IF (s.c = f.srcMACLength) THEN
