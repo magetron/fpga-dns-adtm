@@ -117,12 +117,14 @@ IP and UDP seem to have different bitwise endianess, bug fixed
 UDP -> 0xab0f -> receive order on MII baf0
 IP -> 0xab20 -> receive order ab20
 
+Feb 18th Log:
+Finish implementation of admin packet. It's only filtering on MAC address apparently. But the src mac filtering seems to work. Next we need to test dstmac as well.
+
 Feb 19th Log:
 Fixed a weird bug when changing various different IP address. This is due to the stale value on the wire / PHY gives 5, which accidentally collides with 5 as preamble. We need to reset the state of the parser on E_RX_DV invalid to make sure this edge case wouldn't go wrong. This is a obscure bug discovered trying various pkts as FCS last digit would be 5.
+
 
 TODO:
 
 Impl test bench for each of the moduels, and have integrated testing
-Impl core anamoly detection logic
-Fix? FIFO ring buffer.
-Distributed RAM / Block RAM / or even logic unit?
+Auth for admin packet
