@@ -12,6 +12,7 @@ ENTITY mac_rcv IS
     E_RXD : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Received Nibble.
     el_data : OUT rcv_data_t; -- Ethernet Receving Data.
     el_dv : OUT STD_LOGIC -- Data valid.
+    --led : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
   );
 END mac_rcv;
 
@@ -334,6 +335,9 @@ BEGIN
             rin.c <= 0;
 
         END CASE;
+      ELSE
+        rin.s <= Preamble;
+        rin.c <= 0;
       END IF;
     END IF;
   END PROCESS;

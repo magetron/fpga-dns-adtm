@@ -35,6 +35,9 @@ ARCHITECTURE rtl OF io IS
     Read,
     CheckAdmin,
     
+    -- Admin Stages
+    --UpdateFilter,
+    
     -- Filtering Stages
     FilterSrcMAC,
     FilterDstMAC,
