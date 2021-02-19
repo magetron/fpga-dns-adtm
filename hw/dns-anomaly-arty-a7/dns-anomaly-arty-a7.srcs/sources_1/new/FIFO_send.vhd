@@ -35,7 +35,8 @@ ARCHITECTURE rtl of FIFO_snd is
       ipChecksum => (OTHERS => '0'),
       srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
       udpLength => (OTHERS => '0'),
-      udpChecksum => (OTHERS => '0')));
+      udpChecksum => (OTHERS => '0'),
+      dnsPkt => (OTHERS => '0')));
   
   TYPE buf_state_t IS RECORD
     r_en_dcnt : NATURAL RANGE 0 TO g_sync_ratio - 1;

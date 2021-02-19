@@ -6,6 +6,9 @@ LIBRARY work;
 USE work.common.ALL;
 
 ENTITY io IS
+  GENERIC (
+    g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00"
+  );
   PORT (
     clk : IN STD_LOGIC;
     -- Data received.
@@ -24,10 +27,23 @@ END io;
 ARCHITECTURE rtl OF io IS
 
   TYPE state_t IS (
+    -- MINDFUL: must have odd number of stages to slip in an update
+    -- within TX clk cycles
+  
     Idle,
+    
+    Read,
+    CheckAdmin,
+    
+    -- Admin Stages
+    UpdateFilterSrcMAC,
+    UpdateFilterDstMAC,
+    
+    -- Filtering Stages
     FilterSrcMAC,
     FilterDstMAC,
-    Empty,
+    
+    -- Finalising Stages
     MetaInfo,
     ChecksumCalc,
     ChecksumPopulate,
@@ -55,8 +71,8 @@ ARCHITECTURE rtl OF io IS
   srcIP => (OTHERS => '0'), dstIP => (OTHERS => '0'),
   ipHeaderLength => 0, ipLength => 0,
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-  dnsLength => 0
-  --dns => (OTHERS => '1')
+  dnsLength => 0,
+  dnsPkt => (OTHERS => '0')
   ),
   sd => (
   srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
@@ -64,8 +80,8 @@ ARCHITECTURE rtl OF io IS
   ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
   ipChecksum => (OTHERS => '0'),
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-  udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0')
-  --dns => (OTHERS => '1')
+  udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0'),
+  dnsPkt => (OTHERS => '0')
   ),
   chksumbuf => x"00000000",
   led => x"0",
@@ -73,7 +89,6 @@ ARCHITECTURE rtl OF io IS
   c => 0
   );
   
-  -- TODO: avoid hardcode, set via admin packet
   SIGNAL f : filter_t
   := filter_t'(
     --whitelist only VMWare MAC
@@ -105,12 +120,48 @@ BEGIN
 
       CASE s.s IS
         WHEN Idle =>
-          IF el_rcv_dv = '1' THEN
-            el_rcv_ack <= '1';
-            sin.rd <= el_rcv_data;
+          IF (el_rcv_dv = '1') THEN
+            sin.s <= Read;
+          END IF;
+          --DEBUG
+          --sin.led <= STD_LOGIC_VECTOR(to_unsigned(f.srcMACLength, sin.led'length));
+          
+        WHEN Read =>
+          sin.rd <= el_rcv_data;
+          el_rcv_ack <= '1';
+          sin.s <= CheckAdmin;
+          
+        WHEN CheckAdmin =>
+          IF (s.rd.dstMAC = g_admin_mac) THEN
+            -- SIGNALS recognition of admin pkt
+            sin.led <= x"f";        
+            
+            sin.s <= UpdateFilterSrcMAC;
+            sin.pc <= 0;
+            sin.c <= 0;
+          ELSE
             sin.s <= FilterSrcMAC;
             sin.c <= 0;
           END IF;
+          
+        WHEN UpdateFilterSrcMAC =>
+          -- ALL filter elements shall be supplied, check against common.vhd
+          -- SRC MAC
+          f.srcMACBW <= s.rd.dnsPkt(0);
+          -- filter depth affected this length here
+          f.srcMACLength <= to_integer(unsigned(s.rd.dnsPkt(2 DOWNTO 1)));
+          f.srcMacList(0) <= s.rd.dnsPkt(50 DOWNTO 3);
+          f.srcMacList(1) <= s.rd.dnsPkt(98 DOWNTO 51);
+          sin.s <= UpdateFilterDstMAC;
+      
+        WHEN UpdateFilterDstMAC =>
+          -- DST MAC
+          f.dstMACBW <= s.rd.dnsPkt(99);
+          -- filter depth affected this length here
+          f.dstMACLength <= to_integer(unsigned(s.rd.dnsPkt(101 DOWNTO 100)));
+          f.dstMacList(0) <= s.rd.dnsPkt(149 DOWNTO 102);
+          f.dstMacList(1) <= s.rd.dnsPkt(197 DOWNTO 150);
+          sin.s <= Idle;
 
         WHEN FilterSrcMAC =>
           IF (s.c = f.srcMACLength) THEN
@@ -139,7 +190,7 @@ BEGIN
           
         WHEN FilterDstMAC =>
           IF (s.c = f.dstMACLength) THEN
-            sin.s <= Empty;
+            sin.s <= MetaInfo;
             sin.c <= 0;
           ELSE
             -- check if dstMAC is on list
@@ -161,10 +212,6 @@ BEGIN
               END IF;
             END IF;
           END IF;
-        
-        WHEN Empty =>
-          --Wait another clock cycle
-          sin.s <= MetaInfo;
 
         WHEN MetaInfo =>
           sin.sd.srcIP <= s.rd.dstIP;
@@ -209,6 +256,7 @@ BEGIN
         WHEN Finalise =>
           sin.sd.srcMAC <= x"000000350a00";
           sin.sd.dstMAC <= x"d3f0f3d6f694";
+          sin.sd.dnsPkt <= s.rd.dnsPkt;
           sin.s <= Send;
 
         WHEN Send =>

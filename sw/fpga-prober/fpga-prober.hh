@@ -1,8 +1,12 @@
 #pragma once
+#include <cstdlib>
+#include <cstdint>
+#include <arpa/inet.h>
 
 static const size_t BUFFER_SIZE = 65536;
 static const uint64_t SEC_IN_USEC = 1e6;
 static const uint64_t MS_IN_USEC = 1e3;
+static const uint8_t FILTER_DEPTH = 2;
 
 enum class e_ethertype : uint16_t {
   IPv4 = 0x0800
@@ -36,6 +40,15 @@ struct [[gnu::packed]] udp_port_t {
   uint16_t port;
 };
 
+struct filter_t {
+  unsigned srcMACBW : 1;
+  unsigned srcMACLength : 2; // 0,1,2 FILTER_DEPTH related
+  mac_addr_t srcMACList[2];
+  unsigned dstMACBW : 1;
+  unsigned dstMACLength : 2; // 0,1,2 FILTER_DEPTH related
+  mac_addr_t dstMACList[2];
+};
+
 static inline uint16_t IPchecksum(uint16_t *buff, int32_t _16bitword) {
   uint32_t sum;
   for (sum = 0; _16bitword > 0; _16bitword--) {
@@ -55,3 +68,4 @@ udp_port_t UDP_PORTS[2] = {12345, 23456};
 uint8_t PAYLOAD[BUFFER_SIZE];
 size_t PAYLOAD_LENGTH = 0;
 uint8_t PKTBUF[BUFFER_SIZE];
+char* WRITE_FILENAME;
