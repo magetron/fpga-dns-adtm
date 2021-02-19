@@ -1,0 +1,3 @@
+Run `make` to build useful toolkits for this project.
+
+Including a probing packet sender, an admin packet builder and a Ethernet crc checker.
