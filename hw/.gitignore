@@ -10,3 +10,5 @@
 !*.zip
 !*.xdc
 !.gitignore
+!README
+!*.xpr
