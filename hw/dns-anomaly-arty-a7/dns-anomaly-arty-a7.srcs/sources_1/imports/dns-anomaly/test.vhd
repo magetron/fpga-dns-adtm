@@ -120,6 +120,7 @@ BEGIN
     WAIT FOR clk_period * 10;
 
     -- insert stimulus here
+    
 
     WAIT;
   END PROCESS;
