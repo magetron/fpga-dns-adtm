@@ -1,5 +1,3 @@
-
-
 #include "fpga-prober.hh"
 #include "parser.hh"
 
@@ -79,12 +77,12 @@ int main (int argc, char** argv) {
   f.dstMACBW = 0;
   f.dstMACLength = 1;
 
-  f.dstMACList[0].byte[0] = 0xff;
-  f.dstMACList[0].byte[1] = 0xff;
-  f.dstMACList[0].byte[2] = 0xff;
-  f.dstMACList[0].byte[3] = 0x35;
-  f.dstMACList[0].byte[4] = 0x0a;
-  f.dstMACList[0].byte[5] = 0x00;
+  f.dstMACList[0].byte[0] = 0x00;
+  f.dstMACList[0].byte[1] = 0x0a;
+  f.dstMACList[0].byte[2] = 0x35;
+  f.dstMACList[0].byte[3] = 0x11;
+  f.dstMACList[0].byte[4] = 0x11;
+  f.dstMACList[0].byte[5] = 0x11;
   for (size_t i = 1; i < FILTER_DEPTH; i++) {
     for (size_t j = 0; j < 6; j++) f.dstMACList[i].byte[j] = 0x00;
   }
