@@ -368,14 +368,14 @@ PACKAGE BODY test_pkts IS
      SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0) ) IS
   BEGIN
     -- Ethernet CRC Empty
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period; 
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period; 
+    E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"b"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"d"; WAIT FOR E_RX_CLK_period; 
+    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"1"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"2"; WAIT FOR E_RX_CLK_period; 
   END receive_ethernet_crc;
 
   PROCEDURE receive_admin_ethernet_header
@@ -476,6 +476,74 @@ PACKAGE BODY test_pkts IS
     
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+  
   END receive_admin_payload;
 
   PROCEDURE receive_normal_pkt

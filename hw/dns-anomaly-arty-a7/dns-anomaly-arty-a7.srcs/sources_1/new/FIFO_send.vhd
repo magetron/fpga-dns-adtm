@@ -26,7 +26,7 @@ END FIFO_snd;
 
 ARCHITECTURE rtl of FIFO_snd is
     
-  TYPE buf_t IS ARRAY (0 TO g_depth) of snd_data_t;
+  TYPE buf_t IS ARRAY (0 TO g_depth - 1) of snd_data_t;
   
   SIGNAL buf : buf_t := (OTHERS => (
       srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
@@ -62,7 +62,7 @@ BEGIN
       -- avoid slow clk in PHY affect the FIFO and causing 4 times more writes
       IF (r_en = '1' and b.r_en_dcnt = 0) THEN
         bin.r_en_dcnt <= g_sync_ratio - 1;
-      ELSE
+      ELSIF (b.r_en_dcnt > 0) THEN
         bin.r_en_dcnt <= b.r_en_dcnt - 1;
       END IF;
  
