@@ -59,7 +59,7 @@ BEGIN
   BEGIN
     IF (rising_edge(clk)) THEN
     
-      -- avoid slow clk in PHY affect the FIFO and causing 4 times more writes
+      -- avoid slow clk in PHY affect the FIFO and causing 4 times more reads
       IF (r_en = '1' and b.r_en_dcnt = 0) THEN
         bin.r_en_dcnt <= g_sync_ratio - 1;
       ELSIF (b.r_en_dcnt > 0) THEN
