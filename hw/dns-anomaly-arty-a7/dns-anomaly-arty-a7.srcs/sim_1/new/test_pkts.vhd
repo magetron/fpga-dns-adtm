@@ -9,6 +9,10 @@ PROCEDURE receive_normal_pkt
   (E_RX_CLK_period : IN TIME;
    SIGNAL E_RX_DV : OUT STD_LOGIC;
    SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0) );
+PROCEDURE receive_bogus_admin_pkt
+  (E_RX_CLK_period : IN TIME;
+   SIGNAL E_RX_DV : OUT STD_LOGIC;
+   SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0) );
 PROCEDURE receive_admin_pkt
   (E_RX_CLK_period : IN TIME;
    SIGNAL E_RX_DV : OUT STD_LOGIC;
@@ -566,7 +570,27 @@ PACKAGE BODY test_pkts IS
     -- Interframe Gap
     WAIT FOR E_RX_CLK_period * 24;
   END receive_normal_pkt;
-  
+
+  PROCEDURE receive_bogus_admin_pkt
+    (E_RX_CLK_period : IN TIME;
+     SIGNAL E_RX_DV : OUT STD_LOGIC;
+     SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0) ) IS
+  BEGIN
+    E_RX_DV <= '1';
+    
+    receive_preamble(E_RX_CLK_period, E_RX_DV, E_RXD);
+    receive_ethernet_header(E_RX_CLK_period, E_RX_DV, E_RXD);
+    receive_ip_header(E_RX_CLK_period, E_RX_DV, E_RXD);
+    receive_udp_header(E_RX_CLK_period, E_RX_DV, E_RXD);
+    receive_admin_payload(E_RX_CLK_period, E_RX_DV, E_RXD);
+    receive_ethernet_crc(E_RX_CLK_period, E_RX_DV, E_RXD);
+
+    -- END OF PACKET
+    E_RX_DV <= '0'; 
+
+    -- Interframe Gap
+    WAIT FOR E_RX_CLK_period * 24;
+  END receive_bogus_admin_pkt; 
   
   PROCEDURE receive_admin_pkt
     (E_RX_CLK_period : IN TIME;

@@ -93,6 +93,14 @@ BEGIN
     receive_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
     -- NEXT PKT
     WAIT FOR E_RX_CLK_period * 200;
+    
+    receive_bogus_admin_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
+    -- NEXT PKT
+    WAIT FOR E_RX_CLK_period * 200;
+    
+    receive_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
+    -- NEXT PKT
+    WAIT FOR E_RX_CLK_period * 200;
       
     receive_admin_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
     -- NEXT PKT

@@ -45,23 +45,26 @@ ARCHITECTURE rtl OF mac_rcv IS
 
   TYPE rcv_t IS RECORD
     s : state_t; -- Receiver Parse State
-    d : rcv_data_t; -- Parse Data
     c : NATURAL RANGE 0 TO 65535; -- Counter MAX 65535
+    ipc : NATURAL RANGE 0 TO 65535;
     udpc : NATURAL RANGE 0 TO 65535;
   END RECORD;
-
-  SIGNAL r, rin : rcv_t
-  := rcv_t'(
-  s => Preamble,
-  d => (
+  
+  SIGNAL d : rcv_data_t
+  := rcv_data_t'(
   srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
   srcIP => (OTHERS => '0'), dstIP => (OTHERS => '0'),
   ipHeaderLength => 0, ipLength => 0,
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
   dnsLength => 0,
   dnsPkt => (OTHERS => '0')
-  ),
+  );
+
+  SIGNAL r, rin : rcv_t
+  := rcv_t'(
+  s => Preamble,
   c => 0,
+  ipc => 0,
   udpc => 0
   );
 
@@ -97,7 +100,7 @@ BEGIN
 
             -- Ethernet II - MAC DST and MAC SRC
           WHEN EtherMACDST =>
-            rin.d.dstMAC((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            d.dstMAC((r.c + 3) DOWNTO (r.c)) <= E_RXD;
             IF r.c = 44 THEN
               rin.c <= 0;
               rin.s <= EtherMACSRC;
@@ -106,7 +109,7 @@ BEGIN
             END IF;
 
           WHEN EtherMACSRC =>
-            rin.d.srcMAC((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            d.srcMAC((r.c + 3) DOWNTO (r.c)) <= E_RXD;
             IF r.c = 44 THEN
               rin.c <= 0;
               rin.s <= EtherType;
@@ -127,7 +130,7 @@ BEGIN
               IF r.c = 3 THEN
                 rin.c <= 0;
                 rin.s <= IPIHL;
-                rin.d.ipHeaderLength <= 0;
+                d.ipHeaderLength <= 0;
               ELSIF r.c = 0 THEN
                 rin.c <= 0;
                 rin.s <= Preamble;
@@ -141,13 +144,13 @@ BEGIN
 
             -- IP - IHL 0x5
           WHEN IPIHL =>
-            rin.d.ipHeaderLength <= to_integer(unsigned(E_RXD));
+            d.ipHeaderLength <= to_integer(unsigned(E_RXD));
             IF (E_RXD >= x"5") THEN
               rin.c <= 0;
               rin.s <= IPVersion;
             ELSE
               rin.c <= 0;
-              rin.d.ipHeaderLength <= 0;
+              d.ipHeaderLength <= 0;
               rin.s <= Preamble;
             END IF;
 
@@ -166,14 +169,14 @@ BEGIN
             IF r.c = 1 THEN
               rin.c <= 0;
               rin.s <= IPLength;
-              rin.d.ipLength <= 0;
+              rin.ipc <= 0;
             ELSE
               rin.c <= r.c + 1;
             END IF;
 
             -- IP - Length
           WHEN IPLength =>
-            rin.d.ipLength <= r.d.ipLength * 16 + to_integer(unsigned(E_RXD));
+            rin.ipc <= r.ipc * 16 + to_integer(unsigned(E_RXD));
             IF r.c = 3 THEN
               rin.c <= 0;
               rin.s <= IPID;
@@ -186,6 +189,7 @@ BEGIN
             IF r.c = 3 THEN
               rin.c <= 0;
               rin.s <= IPFlagsFragment;
+              d.ipLength <= r.ipc;
             ELSE
               rin.c <= r.c + 1;
             END IF;
@@ -238,7 +242,7 @@ BEGIN
 
             -- IP addr src
           WHEN IPAddrSRC =>
-            rin.d.srcIP((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            d.srcIP((r.c + 3) DOWNTO (r.c)) <= E_RXD;
             IF r.c = 28 THEN
               rin.c <= 0;
               rin.s <= IPAddrDST;
@@ -248,10 +252,10 @@ BEGIN
 
             -- IP addr dst
           WHEN IPAddrDST =>
-            rin.d.dstIP((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            d.dstIP((r.c + 3) DOWNTO (r.c)) <= E_RXD;
             IF r.c = 28 THEN
               rin.c <= 0;
-              IF r.d.ipHeaderLength = 5 THEN
+              IF d.ipHeaderLength = 5 THEN
                 rin.s <= UDPPortSRC;
               ELSE
                 rin.s <= IPOptions;
@@ -262,7 +266,7 @@ BEGIN
 
             -- IP Options, dependent on IPIHL > 5
           WHEN IPOptions =>
-            IF (r.c = (r.d.ipHeaderLength - 5) * 8 - 1) THEN
+            IF (r.c = (d.ipHeaderLength - 5) * 8 - 1) THEN
               rin.c <= 0;
               rin.s <= UDPPortSRC;
             ELSE
@@ -271,7 +275,7 @@ BEGIN
 
             -- UDP port src
           WHEN UDPPortSRC =>
-            rin.d.srcPort((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            d.srcPort((r.c + 3) DOWNTO (r.c)) <= E_RXD;
             IF r.c = 12 THEN
               rin.c <= 0;
               rin.s <= UDPPortDST;
@@ -281,11 +285,11 @@ BEGIN
 
             -- UDP port dst
           WHEN UDPPortDST =>
-            rin.d.dstPort((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            d.dstPort((r.c + 3) DOWNTO (r.c)) <= E_RXD;
             IF r.c = 12 THEN
               rin.c <= 0;
               rin.s <= UDPLength;
-              rin.d.dnsLength <= 0;
+              rin.udpc <= 0;
             ELSE
               rin.c <= r.c + 4;
             END IF;
@@ -293,11 +297,11 @@ BEGIN
             -- UDP payload length
           WHEN UDPLength =>
             IF r.c = 0 or r.c = 2 THEN
-              rin.d.dnsLength <= r.d.dnsLength + to_integer(unsigned(E_RXD));
+              rin.udpc <= r.udpc + to_integer(unsigned(E_RXD));
             ELSIF r.c = 1 THEN
-              rin.d.dnsLength <= (r.d.dnsLength + to_integer(unsigned(E_RXD)) * 16) * 256;
+              rin.udpc <= (r.udpc + to_integer(unsigned(E_RXD)) * 16) * 256;
             ELSE
-              rin.d.dnsLength <= r.d.dnsLength + to_integer(unsigned(E_RXD)) * 16 - 8;
+              rin.udpc <= r.udpc + to_integer(unsigned(E_RXD)) * 16 - 8;
             END IF;
             IF r.c = 3 THEN
               rin.c <= 0;
@@ -310,7 +314,9 @@ BEGIN
           WHEN UDPChecksum =>
             IF r.c = 3 THEN
               rin.c <= 0;
-              rin.udpc <= r.d.dnsLength * 8 - 4;
+              d.dnsLength <= r.udpc;
+              rin.udpc <= r.udpc * 8 - 4;
+              d.dnsPkt <= (OTHERS => '0');
               rin.s <= DNSMsg;
             ELSE
               rin.c <= r.c + 1;
@@ -319,7 +325,7 @@ BEGIN
             -- DNS Msg
           WHEN DNSMsg =>
             IF r.c <= 508 THEN
-              rin.d.dnsPkt((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+              d.dnsPkt((r.c + 3) DOWNTO (r.c)) <= E_RXD;
             END IF;
             IF r.c = r.udpc THEN
               rin.c <= 0;
@@ -342,7 +348,7 @@ BEGIN
     END IF;
   END PROCESS;
 
-  el_data <= r.d;
+  el_data <= d;
 
   snd_reg : PROCESS (E_RX_CLK)
   BEGIN
