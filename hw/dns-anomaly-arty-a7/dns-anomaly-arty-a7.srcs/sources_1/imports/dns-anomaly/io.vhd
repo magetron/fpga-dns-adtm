@@ -40,8 +40,12 @@ ARCHITECTURE rtl OF io IS
     UpdateFilterDstMAC,
     
     -- Filtering Stages
-    FilterSrcMAC,
-    FilterDstMAC,
+    CheckSrcMAC,
+    FilterSrcMACMatch,
+    FilterSrcMACUnMatch,
+    CheckDstMAC,
+    FilterDstMACMatch,
+    FilterDstMACUnMatch,
     
     -- Finalising Stages
     MetaInfo,
@@ -140,7 +144,7 @@ BEGIN
             sin.pc <= 0;
             sin.c <= 0;
           ELSE
-            sin.s <= FilterSrcMAC;
+            sin.s <= CheckSrcMAC;
             sin.c <= 0;
           END IF;
           
@@ -153,7 +157,8 @@ BEGIN
           f.srcMacList(0) <= s.rd.dnsPkt(50 DOWNTO 3);
           f.srcMacList(1) <= s.rd.dnsPkt(98 DOWNTO 51);
           sin.s <= UpdateFilterDstMAC;
-      
+          --sin.s <= Idle;
+
         WHEN UpdateFilterDstMAC =>
           -- DST MAC
           f.dstMACBW <= s.rd.dnsPkt(99);
@@ -161,56 +166,76 @@ BEGIN
           f.dstMACLength <= to_integer(unsigned(s.rd.dnsPkt(101 DOWNTO 100)));
           f.dstMacList(0) <= s.rd.dnsPkt(149 DOWNTO 102);
           f.dstMacList(1) <= s.rd.dnsPkt(197 DOWNTO 150);
-          sin.s <= Idle;
+          sin.s <= Idle; 
 
-        WHEN FilterSrcMAC =>
+        WHEN CheckSrcMAC =>
           IF (s.c = f.srcMACLength) THEN
-            sin.s <= FilterDstMAC;
+            sin.s <= CheckDstMAC;
             sin.c <= 0;
           ELSE
             -- check if srcMAC is on list
             IF (s.rd.srcMAC = f.srcMACList(s.c)) THEN
-              IF (f.srcMACBW = '0') THEN
-                --it's on blacklist
-                sin.s <= Idle;
-                sin.c <= 0;
-              ELSE 
-                sin.c <= s.c + 1;
-              END IF;
+              sin.s <= FilterSrcMACMatch;
             ELSE
-              IF (f.srcMACBW = '0') THEN
-                --it's not on blacklist
-                sin.c <= s.c + 1;
-              ELSE
-                sin.s <= Idle;
-                sin.c <= 0;
-              END IF;
+              sin.s <= FilterSrcMACUnMatch;
             END IF;
+          END IF;   
+
+        WHEN FilterSrcMACMatch =>
+          IF (f.srcMACBW = '0') THEN
+            --it's on blacklist
+            sin.s <= Idle;
+            sin.c <= 0;
+          ELSE
+            --it's on whitelist
+            sin.c <= s.c + 1;
+            sin.s <= CheckSrcMAC;
+          END IF;
+        
+        WHEN FilterSrcMACUnMatch =>
+          IF (f.srcMACBW = '0') THEN
+            --it's not on blacklist
+            sin.c <= s.c + 1;
+            sin.s <= CheckSrcMAC;
+          ELSE
+            --it's not on whitelist;
+            sin.s <= Idle;
+            sin.c <= 0;
           END IF;
           
-        WHEN FilterDstMAC =>
+        WHEN CheckDstMAC =>
           IF (s.c = f.dstMACLength) THEN
             sin.s <= MetaInfo;
             sin.c <= 0;
           ELSE
             -- check if dstMAC is on list
             IF (s.rd.dstMAC = f.dstMACList(s.c)) THEN
-              IF (f.dstMACBW = '0') THEN
-                --it's on blacklist
-                sin.s <= Idle;
-                sin.c <= 0;
-              ELSE 
-                sin.c <= s.c + 1;
-              END IF;
+              sin.s <= FilterDstMACMatch;
             ELSE
-              IF (f.dstMACBW = '0') THEN
-                --it's not on blacklist
-                sin.c <= s.c + 1;
-              ELSE
-                sin.s <= Idle;
-                sin.c <= 0;
-              END IF;
+              sin.s <= FilterDstMACUnMatch;
             END IF;
+          END IF;
+          
+        WHEN FilterDstMACMatch =>
+          IF (f.dstMACBW = '0') THEN
+            --it's on blacklist
+            sin.s <= Idle;
+            sin.c <= 0;
+          ELSE
+            --it's on whitelist
+            sin.c <= s.c + 1;
+            sin.s <= CheckDstMAC;
+          END IF;
+          
+        WHEN FilterDstMACUnMatch =>
+          IF (f.dstMACBW = '0') THEN
+            --it's not on blacklist
+            sin.c <= s.c + 1;
+            sin.s <= CheckDstMAC;
+          ELSE
+            --it's not on whitelist
+            sin.s <= Idle;
+            sin.c <= 0;
           END IF;
 
         WHEN MetaInfo =>
