@@ -9,7 +9,7 @@ USE work.common.ALL;
 ENTITY FIFO_snd IS
   GENERIC (
     g_depth : NATURAL := 4;
-    g_sync_ratio : NATURAL := 4
+    g_sync_ratio : NATURAL := 2
   );
   PORT (
     clk : IN STD_LOGIC; -- FIFO buffer Clock

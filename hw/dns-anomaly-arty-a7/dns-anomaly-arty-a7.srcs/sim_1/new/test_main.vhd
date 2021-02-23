@@ -110,9 +110,31 @@ BEGIN
     -- NEXT PKT
     WAIT FOR E_RX_CLK_period * 200;     
     
+    -- test common packet FIFO 8 packets
     receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
     -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;  
+    WAIT FOR E_RX_CLK_period * 150;
+    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
+    -- NEXT PKT
+    WAIT FOR E_RX_CLK_period * 150;
+    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
+    -- NEXT PKT
+    WAIT FOR E_RX_CLK_period * 150;
+    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
+    -- NEXT PKT
+    WAIT FOR E_RX_CLK_period * 150;
+    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
+    -- NEXT PKT
+    WAIT FOR E_RX_CLK_period * 150;
+    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
+    -- NEXT PKT
+    WAIT FOR E_RX_CLK_period * 150;
+    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
+    -- NEXT PKT
+    WAIT FOR E_RX_CLK_period * 150;
+    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
+    -- NEXT PKT
+    WAIT FOR E_RX_CLK_period * 150;  
     
   END PROCESS;
 
