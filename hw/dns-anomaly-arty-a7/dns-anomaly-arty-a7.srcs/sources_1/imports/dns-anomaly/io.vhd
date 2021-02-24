@@ -186,10 +186,10 @@ BEGIN
           --f.srcMACList(0) <= rd.dnsPkt(50 DOWNTO 3); --f.srcMACList(1) <= rd.dnsPkt(98 DOWNTO 51);
           -- 50 DOWNTO 3, 98 DOWNTO 51, s.c < 2 here is constant, filter_depth
           IF (s.c = 0) THEN 
-            f.srcMACList(s.c) <= rd.dnsPkt(50 DOWNTO 3);
+            f.srcMACList(0) <= rd.dnsPkt(50 DOWNTO 3);
             sin.c <= s.c + 1;
           ELSIF (s.c = 1) THEN
-            f.srcMACList(s.c) <= rd.dnsPkt(98 DOWNTO 51);
+            f.srcMACList(1) <= rd.dnsPkt(98 DOWNTO 51);
             sin.c <= s.c + 1;
           ELSE
             sin.s <= UpdateFilterDstMACMeta;
@@ -208,10 +208,10 @@ BEGIN
           --f.dstMACList(0) <= rd.dnsPkt(149 DOWNTO 102); --f.dstMACList(1) <= rd.dnsPkt(197 DOWNTO 150);
           -- 149 DOWNTO 102, 197 DOWNTO 150, s.c < 2 here is constant, filter_depth
           IF (s.c = 0) THEN 
-            f.dstMACList(s.c) <= rd.dnsPkt(149 DOWNTO 102);
+            f.dstMACList(0) <= rd.dnsPkt(149 DOWNTO 102);
             sin.c <= s.c + 1;
           ELSIF (s.c = 1) THEN
-            f.dstMACList(s.c) <= rd.dnsPkt(197 DOWNTO 150);
+            f.dstMACList(1) <= rd.dnsPkt(197 DOWNTO 150);
             sin.c <= s.c + 1;
           ELSE
             sin.s <= UpdateFilterSrcIPMeta;
@@ -230,10 +230,10 @@ BEGIN
           --f.srcIPList(0) <= rd.dnsPkt(232 DOWNTO 201); --f.srcIPList(1) <= rd.dnsPkt(264 DOWNTO 233);
           -- 232 DOWNTO 201, 264 DOWNTO 233, s.c < 2 here is constant, filter_depth
           IF (s.c = 0) THEN 
-            f.srcIPList(s.c) <= rd.dnsPkt(232 DOWNTO 201);
+            f.srcIPList(0) <= rd.dnsPkt(232 DOWNTO 201);
             sin.c <= s.c + 1;
           ELSIF (s.c = 1) THEN
-            f.srcIPList(s.c) <= rd.dnsPkt(264 DOWNTO 233);
+            f.srcIPList(1) <= rd.dnsPkt(264 DOWNTO 233);
             sin.c <= s.c + 1;           
           ELSE
             sin.s <= UpdateFilterDstIPMeta;
@@ -252,10 +252,10 @@ BEGIN
           --f.dstIPList(0) <= rd.dnsPkt(299 DOWNTO 268); --f.dstIPList(1) <= rd.dnsPkt(331 DOWNTO 300);
           -- 299 DOWNTO 268, 331 DOWNTO 300, s.c < 2 here is constant, filter_depth
           IF (s.c = 0) THEN 
-            f.dstIPList(s.c) <= rd.dnsPkt(299 DOWNTO 268);
+            f.dstIPList(0) <= rd.dnsPkt(299 DOWNTO 268);
             sin.c <= s.c + 1;
           ELSIF (s.c = 1) THEN
-            f.dstIPList(s.c) <= rd.dnsPkt(331 DOWNTO 300);
+            f.dstIPList(1) <= rd.dnsPkt(331 DOWNTO 300);
             sin.c <= s.c + 1;
           ELSE
             sin.s <= Idle;
