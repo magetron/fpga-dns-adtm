@@ -8,15 +8,14 @@ USE work.common.ALL;
 
 ENTITY FIFO_rcv IS
   GENERIC (
-    g_depth : NATURAL := 1;
-    g_sync_ratio : NATURAL := 2
+    g_depth : NATURAL := 4
   );
   PORT (
-    clk : IN STD_LOGIC; -- FIFO buffer Clock
+    wclk : IN STD_LOGIC; -- Write Clock
+    rclk : IN STD_LOGIC; -- Read Clock
     
     w_en : IN STD_LOGIC; -- Write Enable
     w_data : IN rcv_data_t; -- Ethernet Receving Data in
-    buf_full : OUT STD_LOGIC; -- Buffer Full
     
     r_en : IN STD_LOGIC; -- Read Enable
     r_data : OUT rcv_data_t; -- Ethernet Receving Data out
@@ -34,76 +33,62 @@ ARCHITECTURE rtl of FIFO_rcv is
       ipHeaderLength => 0, ipLength => 0,
       srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
       dnsLength => 0, dnsPkt => (OTHERS => '0')));
-  
-  TYPE buf_state_t IS RECORD
-    w_en_dcnt : NATURAL RANGE 0 TO g_sync_ratio - 1;
---    w_index : NATURAL RANGE 0 TO g_depth - 1;
---    r_index : NATURAL RANGE 0 TO g_depth - 1;
-    c : INTEGER RANGE 0 TO g_depth;
-  END RECORD;
     
-  SIGNAL b, bin : buf_state_t 
-  := buf_state_t'(
-  w_en_dcnt => 0,
---  w_index => 0,
---  r_index => 0,
-  c => 0
-  );
-    
+  SIGNAL w_index, win_index : NATURAL RANGE 0 TO g_depth - 1 := 0;
+  SIGNAL r_index, rin_index : NATURAL RANGE 0 TO g_depth - 1 := 0;
+
 BEGIN
 
-  fifo_nsl : PROCESS(clk)
+  fifo_wnsl : PROCESS(wclk)
   BEGIN
-    IF (rising_edge(clk)) THEN
-
-      -- avoid slow clk in PHY affect the FIFO and causing 4 times more writes
-      IF (w_en = '1' and b.w_en_dcnt = 0) THEN
-        bin.w_en_dcnt <= g_sync_ratio - 1;
-      ELSIF (b.w_en_dcnt > 0) THEN
-        bin.w_en_dcnt <= b.w_en_dcnt - 1;
-      END IF;
+    IF (rising_edge(wclk)) THEN
  
-      IF (w_en = '1' and b.w_en_dcnt = 0 and r_en = '0' and b.c < g_depth) THEN
-        bin.c <= b.c + 1;
-      ELSIF ((w_en = '0' or b.w_en_dcnt > 0) and r_en = '1' and b.c > 0) THEN
-        bin.c <= b.c - 1;
+      IF (w_en = '1') THEN
+        buf(w_index) <= w_data;
+        IF (w_index = g_depth - 1) THEN
+          win_index <= 0;
+        ELSE
+          win_index <= w_index + 1;
+        END IF;
+      ELSE
+        win_index <= w_index;
       END IF;
-      
-      IF (w_en = '1' and b.w_en_dcnt = 0) THEN
-        buf(0) <= w_data;
---        buf(b.w_index) <= w_data;
---        IF (b.w_index = g_depth - 1) THEN
---          bin.w_index <= 0;
---        ELSE
---          bin.w_index <= b.w_index + 1;
---        END IF;
---      ELSE
---        bin.w_index <= b.w_index;
-      END IF;
-      
---      IF (r_en = '1') THEN
---        IF (b.r_index = g_depth - 1) THEN
---          bin.r_index <= 0;
---        ELSE
---          bin.r_index <= b.r_index + 1;
---        END IF;
---      ELSE
---        bin.r_index <= b.r_index;
---      END IF;
 
     END IF;
   END PROCESS;
   
---  r_data <= buf(b.r_index);
-  r_data <= buf(0);
-  buf_full <= '1' WHEN b.c = g_depth ELSE '0';
-  buf_not_empty <= '0' WHEN b.c = 0 ELSE '1';
-  
-  fifo_reg : PROCESS (clk)
+  fifo_wreg : PROCESS (wclk)
   BEGIN
-    IF falling_edge(clk) THEN
-      b <= bin;
+    IF falling_edge(wclk) THEN
+      w_index <= win_index;
+    END IF;
+  END PROCESS;
+
+  r_data <= buf(r_index);
+
+  fifo_rnsl : PROCESS(rclk)
+  BEGIN
+    IF (rising_edge(rclk)) THEN
+ 
+      IF (r_en = '1') THEN
+        IF (r_index = g_depth - 1) THEN
+          rin_index <= 0;
+        ELSE
+          rin_index <= r_index + 1;
+        END IF;
+      ELSE
+        rin_index <= r_index;
+      END IF;
     END IF;
   END PROCESS;
   
+  fifo_rreg : PROCESS (rclk)
+  BEGIN
+    IF falling_edge(rclk) THEN
+      r_index <= rin_index;
+    END IF;
+  END PROCESS;
+  
+  buf_not_empty <= '0' WHEN w_index = r_index ELSE '1'; 
+
 END rtl;
