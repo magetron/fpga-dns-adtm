@@ -36,8 +36,14 @@ ARCHITECTURE rtl OF io IS
     CheckAdmin,
     
     -- Admin Stages
-    UpdateFilterSrcMAC,
-    UpdateFilterDstMAC,
+    UpdateFilterSrcMACMeta,
+    UpdateFilterSrcMACList,
+    UpdateFilterDstMACMeta,
+    UpdateFilterDstMACList,
+    UpdateFilterSrcIPMeta,
+    UpdateFilterSrcIPList,
+    UpdateFilterDstIPMeta,
+    UpdateFilterDstIPList,
     
     -- Filtering Stages
     CheckSrcMAC,
@@ -70,7 +76,7 @@ ARCHITECTURE rtl OF io IS
     chksumbuf : UNSIGNED(31 DOWNTO 0);
     led : STD_LOGIC_VECTOR(3 DOWNTO 0); -- LED register.
     pc : NATURAL RANGE 0 TO 15; -- packet counter
-    c : NATURAL RANGE 0 TO 255; -- general purpose array counter 
+    c : NATURAL RANGE 0 TO 1023; -- general purpose array counter 
   END RECORD;
 
   SIGNAL s, sin : iostate_t
@@ -158,7 +164,7 @@ BEGIN
             -- SIGNALS recognition of admin pkt
             sin.led <= x"f";        
             
-            sin.s <= UpdateFilterSrcMAC;
+            sin.s <= UpdateFilterSrcMACMeta;
             sin.pc <= 0;
             sin.c <= 0;
           ELSE
@@ -167,26 +173,94 @@ BEGIN
           END IF;
 
         --------ADMIN ROUTE--------          
-        WHEN UpdateFilterSrcMAC =>
+        WHEN UpdateFilterSrcMACMeta =>
           -- ALL filter elements shall be supplied, check against common.vhd
           -- SRC MAC
           f.srcMACBW <= rd.dnsPkt(0);
           -- filter depth affected this length here
           f.srcMACLength <= to_integer(unsigned(rd.dnsPkt(2 DOWNTO 1)));
-          f.srcMacList(0) <= rd.dnsPkt(50 DOWNTO 3);
-          f.srcMacList(1) <= rd.dnsPkt(98 DOWNTO 51);
-          sin.s <= UpdateFilterDstMAC;
-          --sin.s <= Idle;
+          sin.s <= UpdateFilterSrcMACList;
+          sin.c <= 0;
+          
+        WHEN UpdateFilterSrcMACList =>
+          --f.srcMACList(0) <= rd.dnsPkt(50 DOWNTO 3); --f.srcMACList(1) <= rd.dnsPkt(98 DOWNTO 51);
+          -- 50 DOWNTO 3, 98 DOWNTO 51, s.c < 2 here is constant, filter_depth
+          IF (s.c = 0) THEN 
+            f.srcMACList(s.c) <= rd.dnsPkt(50 DOWNTO 3);
+            sin.c <= s.c + 1;
+          ELSIF (s.c = 1) THEN
+            f.srcMACList(s.c) <= rd.dnsPkt(98 DOWNTO 51);
+            sin.c <= s.c + 1;
+          ELSE
+            sin.s <= UpdateFilterDstMACMeta;
+            sin.c <= 0;
+          END IF;
 
-        WHEN UpdateFilterDstMAC =>
+        WHEN UpdateFilterDstMACMeta =>
           -- DST MAC
           f.dstMACBW <= rd.dnsPkt(99);
           -- filter depth affected this length here
           f.dstMACLength <= to_integer(unsigned(rd.dnsPkt(101 DOWNTO 100)));
-          f.dstMacList(0) <= rd.dnsPkt(149 DOWNTO 102);
-          f.dstMacList(1) <= rd.dnsPkt(197 DOWNTO 150);
-          sin.s <= Idle; 
+          sin.s <= UpdateFilterDstMACList;
+          sin.c <= 0;
+        
+        WHEN UpdateFilterDstMACList =>
+          --f.dstMACList(0) <= rd.dnsPkt(149 DOWNTO 102); --f.dstMACList(1) <= rd.dnsPkt(197 DOWNTO 150);
+          -- 149 DOWNTO 102, 197 DOWNTO 150, s.c < 2 here is constant, filter_depth
+          IF (s.c = 0) THEN 
+            f.dstMACList(s.c) <= rd.dnsPkt(149 DOWNTO 102);
+            sin.c <= s.c + 1;
+          ELSIF (s.c = 1) THEN
+            f.dstMACList(s.c) <= rd.dnsPkt(197 DOWNTO 150);
+            sin.c <= s.c + 1;
+          ELSE
+            sin.s <= UpdateFilterSrcIPMeta;
+            sin.c <= 0;
+          END IF;      
+        
+        WHEN UpdateFilterSrcIPMeta =>
+          -- SRC IP
+          f.srcIPBW <= rd.dnsPkt(198);
+          -- filter depth affected this length here
+          f.srcIPLength <= to_integer(unsigned(rd.dnsPkt(200 DOWNTO 199)));
+          sin.s <= UpdateFilterSrcIPList;
+          sin.c <= 0;
+        
+        WHEN UpdateFilterSrcIPList =>
+          --f.srcIPList(0) <= rd.dnsPkt(232 DOWNTO 201); --f.srcIPList(1) <= rd.dnsPkt(264 DOWNTO 233);
+          -- 232 DOWNTO 201, 264 DOWNTO 233, s.c < 2 here is constant, filter_depth
+          IF (s.c = 0) THEN 
+            f.srcIPList(s.c) <= rd.dnsPkt(232 DOWNTO 201);
+            sin.c <= s.c + 1;
+          ELSIF (s.c = 1) THEN
+            f.srcIPList(s.c) <= rd.dnsPkt(264 DOWNTO 233);
+            sin.c <= s.c + 1;           
+          ELSE
+            sin.s <= UpdateFilterDstIPMeta;
+            sin.c <= 0;
+          END IF;  
 
+        WHEN UpdateFilterDstIPMeta =>
+          -- DST IP
+          f.dstIPBW <= rd.dnsPkt(265);
+          -- filter depth affected this length here
+          f.dstIPLength <= to_integer(unsigned(rd.dnsPkt(267 DOWNTO 266)));
+          sin.s <= UpdateFilterDstIPList;
+          sin.c <= 0;
+        
+        WHEN UpdateFilterDstIPList =>
+          --f.dstIPList(0) <= rd.dnsPkt(299 DOWNTO 268); --f.dstIPList(1) <= rd.dnsPkt(331 DOWNTO 300);
+          -- 299 DOWNTO 268, 331 DOWNTO 300, s.c < 2 here is constant, filter_depth
+          IF (s.c = 0) THEN 
+            f.dstIPList(s.c) <= rd.dnsPkt(299 DOWNTO 268);
+            sin.c <= s.c + 1;
+          ELSIF (s.c = 1) THEN
+            f.dstIPList(s.c) <= rd.dnsPkt(331 DOWNTO 300);
+            sin.c <= s.c + 1;
+          ELSE
+            sin.s <= Idle;
+            sin.c <= 0;
+          END IF; 
 
         --------FILTER ROUTE--------
         --SRCMAC
