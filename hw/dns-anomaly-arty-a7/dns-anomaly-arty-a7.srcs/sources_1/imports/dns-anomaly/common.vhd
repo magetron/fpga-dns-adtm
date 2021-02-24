@@ -34,7 +34,7 @@ PACKAGE common IS
   
   CONSTANT filter_depth : NATURAL := 2;
   TYPE macfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(47 DOWNTO 0);
-  ---TYPE ipfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
+  TYPE ipfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
 
   -- BW, Blacklist = 0, Whitelist = 1, Blacklist is default behaviour
   TYPE filter_t IS RECORD
@@ -44,10 +44,12 @@ PACKAGE common IS
     dstMACBW : STD_LOGIC;
     dstMACLength : NATURAL RANGE 0 TO filter_depth;
     dstMACList : macfilter_list_t;
-    --srcIPBW : STD_LOGIC;
-    --srcIPList: ipfilter_list_t;
-    --dstIPBW : STD_LOGIC;
-    --dstIPList: ipfilter_list_t;
+    srcIPBW : STD_LOGIC;
+    srcIPLength : NATURAL RANGE 0 TO filter_depth;
+    srcIPList: ipfilter_list_t;
+    dstIPBW : STD_LOGIC;
+    dstIPLength : NATURAL RANGE 0 TO filter_depth;
+    dstIPList: ipfilter_list_t;
   END RECORD;
 
 END common;
