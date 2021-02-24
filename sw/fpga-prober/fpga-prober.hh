@@ -47,6 +47,12 @@ struct filter_t {
   unsigned dstMACBW : 1;
   unsigned dstMACLength : 2; // 0,1,2 FILTER_DEPTH related
   mac_addr_t dstMACList[2];
+  unsigned srcIPBW : 1;
+  unsigned srcIPLength : 2; // 0,1,2 FILTER_DEPTH related
+  ip_addr_t srcIPList[2];
+  unsigned dstIPBW : 1;
+  unsigned dstIPLength : 2; // 0,1,2 FILTER_DEPTH related
+  ip_addr_t dstIPList[2];
 };
 
 static inline uint16_t IPchecksum(uint16_t *buff, int32_t _16bitword) {

@@ -123,6 +123,20 @@ Finish implementation of admin packet. It's only filtering on MAC address appare
 Feb 19th Log:
 Fixed a weird bug when changing various different IP address. This is due to the stale value on the wire / PHY gives 5, which accidentally collides with 5 as preamble. We need to reset the state of the parser on E_RX_DV invalid to make sure this edge case wouldn't go wrong. This is a obscure bug discovered trying various pkts as FCS last digit would be 5.
 
+Feb 22nd Log:
+Pretty evident progress on testbench. Supports multiple types of pkts.
+
+Feb 24th Log:
+
+slower / faster clk can be shifting for an arbitrary amount
+And then, can be fixed via Using dual clock FIFO, which crosses clock domain, the count syncing wouldn't work so well and caused numerous issues over in the development
+
+Black whitelist logic is now fixed and should perform well, as well prolonged all pipelines to fit in timing.
+
+* Key optimisation, only stateful signals that relies on previous value, like counter, is necessary in states, other stuff can be set as buffer and seperate one-go signals to save resources and syn and impl time.
+
+Now supports IP-based filtering
+
 
 TODO:
 
