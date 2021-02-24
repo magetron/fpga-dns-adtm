@@ -13,15 +13,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="450166666fs"></ZoomStartTime>
-      <ZoomEndTime time="595166667fs"></ZoomEndTime>
-      <Cursor1Time time="571000000fs"></Cursor1Time>
+      <ZoomStartTime time="8410567fs"></ZoomStartTime>
+      <ZoomEndTime time="8555868fs"></ZoomEndTime>
+      <Cursor1Time time="8475467fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="474"></NameColumnWidth>
-      <ValueColumnWidth column_width="208"></ValueColumnWidth>
+      <ValueColumnWidth column_width="202"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="29" />
+   <WVObjectSize size="15" />
    <wvobject fp_name="/test_main/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -78,65 +78,10 @@
    <wvobject fp_name="/test_main/uut/core/rd" type="array">
       <obj_property name="ElementShortName">rd</obj_property>
       <obj_property name="ObjectShortName">rd</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject fp_name="/test_main/uut/core/sd" type="array">
       <obj_property name="ElementShortName">sd</obj_property>
       <obj_property name="ObjectShortName">sd</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/wclk" type="logic">
-      <obj_property name="ElementShortName">wclk</obj_property>
-      <obj_property name="ObjectShortName">wclk</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/rclk" type="logic">
-      <obj_property name="ElementShortName">rclk</obj_property>
-      <obj_property name="ObjectShortName">rclk</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/w_en" type="logic">
-      <obj_property name="ElementShortName">w_en</obj_property>
-      <obj_property name="ObjectShortName">w_en</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/w_data" type="array">
-      <obj_property name="ElementShortName">w_data</obj_property>
-      <obj_property name="ObjectShortName">w_data</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/r_en" type="logic">
-      <obj_property name="ElementShortName">r_en</obj_property>
-      <obj_property name="ObjectShortName">r_en</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/r_data" type="array">
-      <obj_property name="ElementShortName">r_data</obj_property>
-      <obj_property name="ObjectShortName">r_data</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/buf_not_empty" type="logic">
-      <obj_property name="ElementShortName">buf_not_empty</obj_property>
-      <obj_property name="ObjectShortName">buf_not_empty</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/buf" type="array">
-      <obj_property name="ElementShortName">buf[0:3]</obj_property>
-      <obj_property name="ObjectShortName">buf[0:3]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/w_index" type="other">
-      <obj_property name="ElementShortName">w_index</obj_property>
-      <obj_property name="ObjectShortName">w_index</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/win_index" type="other">
-      <obj_property name="ElementShortName">win_index</obj_property>
-      <obj_property name="ObjectShortName">win_index</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/r_index" type="other">
-      <obj_property name="ElementShortName">r_index</obj_property>
-      <obj_property name="ObjectShortName">r_index</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/rin_index" type="other">
-      <obj_property name="ElementShortName">rin_index</obj_property>
-      <obj_property name="ObjectShortName">rin_index</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/g_depth" type="other">
-      <obj_property name="ElementShortName">g_depth</obj_property>
-      <obj_property name="ObjectShortName">g_depth</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/fifo_receive/g_sync_ratio" type="other">
-      <obj_property name="ElementShortName">g_sync_ratio</obj_property>
-      <obj_property name="ObjectShortName">g_sync_ratio</obj_property>
    </wvobject>
 </wave_config>

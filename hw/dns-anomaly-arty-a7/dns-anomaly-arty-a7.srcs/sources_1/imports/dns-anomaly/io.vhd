@@ -41,17 +41,17 @@ ARCHITECTURE rtl OF io IS
     
     -- Filtering Stages
     CheckSrcMAC,
+    CmpSrcMAC,
     FilterSrcMACMatch,
-    FilterSrcMACUnMatch,
     CheckDstMAC,
+    CmpDstMAC,
     FilterDstMACMatch,
-    FilterDstMACUnMatch,
     CheckSrcIP,
+    CmpSrcIP,
     FilterSrcIPMatch,
-    FilterSrcIPUnMatch,
     CheckDstIP,
+    CmpDstIP,
     FilterDstIPMatch,
-    FilterDstIPUnMatch,
     
     -- Finalising Stages
     MetaInfo,
@@ -165,7 +165,8 @@ BEGIN
             sin.s <= CheckSrcMAC;
             sin.c <= 0;
           END IF;
-          
+
+        --------ADMIN ROUTE--------          
         WHEN UpdateFilterSrcMAC =>
           -- ALL filter elements shall be supplied, check against common.vhd
           -- SRC MAC
@@ -186,18 +187,34 @@ BEGIN
           f.dstMacList(1) <= rd.dnsPkt(197 DOWNTO 150);
           sin.s <= Idle; 
 
+
+        --------FILTER ROUTE--------
+        --SRCMAC
         WHEN CheckSrcMAC =>
           IF (s.c = f.srcMACLength) THEN
-            sin.s <= CheckDstMAC;
-            sin.c <= 0;
-          ELSE
-            -- check if srcMAC is on list
-            IF (rd.srcMAC = f.srcMACList(s.c)) THEN
-              sin.s <= FilterSrcMACMatch;
+            IF (f.srcMACBW = '0') THEN
+              -- exhaust blacklist, no ban
+              sin.s <= CheckDstMAC;
+              sin.c <= 0;
             ELSE
-              sin.s <= FilterSrcMACUnMatch;
+              -- exhaust whitelist, ban
+              sin.s <= Idle;
+              sin.c <= 0;
             END IF;
-          END IF;   
+          ELSE
+            sin.s <= CmpSrcMAC;
+            sin.c <= s.c;
+          END IF; 
+          
+        WHEN CmpSrcMAC =>
+          -- check if srcMAC is on list
+          IF (rd.srcMAC = f.srcMACList(s.c)) THEN
+            sin.s <= FilterSrcMACMatch;
+            sin.c <= s.c;
+          ELSE
+            sin.s <= CheckSrcMAC;
+            sin.c <= s.c + 1;
+          END IF;
 
         WHEN FilterSrcMACMatch =>
           IF (f.srcMACBW = '0') THEN
@@ -209,122 +226,121 @@ BEGIN
             sin.c <= 0;
             sin.s <= CheckDstMAC;
           END IF;
-        
-        WHEN FilterSrcMACUnMatch =>
-          IF (f.srcMACBW = '0') THEN
-            --it's not on blacklist, check against other blacklist
-            sin.c <= s.c + 1;
-            sin.s <= CheckSrcMAC;
-          ELSE
-            --it's not on whitelist;
-            sin.s <= Idle;
-            sin.c <= 0;
-          END IF;
           
+        --DSTMAC
         WHEN CheckDstMAC =>
           IF (s.c = f.dstMACLength) THEN
-            sin.s <= CheckSrcIP;
-            sin.c <= 0;
-          ELSE
-            -- check if dstMAC is on list
-            IF (rd.dstMAC = f.dstMACList(s.c)) THEN
-              sin.s <= FilterDstMACMatch;
+            IF (f.dstMACBW = '0') THEN
+              -- exhaust blacklist, no ban
+              sin.s <= CheckSrcIP;
+              sin.c <= 0;
             ELSE
-              sin.s <= FilterDstMACUnMatch;
+              -- exhaust whitelist, ban
+              sin.s <= Idle;
+              sin.c <= 0;
             END IF;
-          END IF;
+          ELSE
+            sin.s <= CmpDstMAC;
+            sin.c <= s.c;
+          END IF; 
           
+        WHEN CmpDstMAC =>
+          -- check if srcMAC is on list
+          IF (rd.dstMAC = f.dstMACList(s.c)) THEN
+            sin.s <= FilterDstMACMatch;
+            sin.c <= s.c;
+          ELSE
+            sin.s <= CheckDstMAC;
+            sin.c <= s.c + 1;
+          END IF;
+
         WHEN FilterDstMACMatch =>
           IF (f.dstMACBW = '0') THEN
             --it's on blacklist
             sin.s <= Idle;
             sin.c <= 0;
           ELSE
-            --it's on whitelist, move on
+            --it's on whitelist, move on to next step
             sin.c <= 0;
             sin.s <= CheckSrcIP;
           END IF;
           
-        WHEN FilterDstMACUnMatch =>
-          IF (f.dstMACBW = '0') THEN
-            --it's not on blacklist, check against other blacklist
-            sin.c <= s.c + 1;
-            sin.s <= CheckDstMAC;
-          ELSE
-            --it's not on whitelist
-            sin.s <= Idle;
-            sin.c <= 0;
-          END IF;
-          
+        --SRCIP
         WHEN CheckSrcIP =>
           IF (s.c = f.srcIPLength) THEN
-            sin.s <= CheckDstIP;
-            sin.c <= 0;
-          ELSE
-            -- check if srcIP is on list
-            IF (rd.srcIP = f.srcIPList(s.c)) THEN
-              sin.s <= FilterSrcIPMatch;
+            IF (f.srcIPBW = '0') THEN
+              -- exhaust blacklist, no ban
+              sin.s <= CheckDstIP;
+              sin.c <= 0;
             ELSE
-              sin.s <= FilterSrcIPUnMatch;
+              -- exhaust whitelist, ban
+              sin.s <= Idle;
+              sin.c <= 0;
             END IF;
-          END IF;
+          ELSE
+            sin.s <= CmpSrcIP;
+            sin.c <= s.c;
+          END IF; 
           
+        WHEN CmpSrcIP =>
+          -- check if srcIP is on list
+          IF (rd.srcIP = f.srcIPList(s.c)) THEN
+            sin.s <= FilterSrcIPMatch;
+            sin.c <= s.c;
+          ELSE
+            sin.s <= CheckSrcIP;
+            sin.c <= s.c + 1;
+          END IF;
+
         WHEN FilterSrcIPMatch =>
           IF (f.srcIPBW = '0') THEN
             --it's on blacklist
             sin.s <= Idle;
             sin.c <= 0;
           ELSE
-            --it's on whitelist, move on
+            --it's on whitelist, move on to next step
             sin.c <= 0;
             sin.s <= CheckDstIP;
           END IF;
           
-        WHEN FilterSrcIPUnMatch =>
-          IF (f.srcIPBW = '0') THEN
-            --it's not on blacklist, check against other blacklist
-            sin.c <= s.c + 1;
-            sin.s <= CheckSrcIP;
-          ELSE
-            --it's not on whitelist
-            sin.s <= Idle;
-            sin.c <= 0;
-          END IF;
-          
-         WHEN CheckDstIP =>
+        --DSTIP
+        WHEN CheckDstIP =>
           IF (s.c = f.dstIPLength) THEN
-            sin.s <= MetaInfo;
-            sin.c <= 0;
-          ELSE
-            -- check if dstIP is on list
-            IF (rd.dstIP = f.dstIPList(s.c)) THEN
-              sin.s <= FilterDstIPMatch;
+            IF (f.dstIPBW = '0') THEN
+              -- exhaust blacklist, no ban
+              sin.s <= MetaInfo;
+              sin.c <= 0;
             ELSE
-              sin.s <= FilterDstIPUnMatch;
+              -- exhaust whitelist, ban
+              sin.s <= Idle;
+              sin.c <= 0;
             END IF;
-          END IF;
+          ELSE
+            sin.s <= CmpDstIP;
+            sin.c <= s.c;
+          END IF; 
           
+        WHEN CmpDstIP =>
+          -- check if dstIP is on list
+          IF (rd.dstIP = f.dstIPList(s.c)) THEN
+            sin.s <= FilterDstIPMatch;
+            sin.c <= s.c;
+          ELSE
+            sin.s <= CheckDstIP;
+            sin.c <= s.c + 1;
+          END IF;
+
         WHEN FilterDstIPMatch =>
           IF (f.dstIPBW = '0') THEN
             --it's on blacklist
             sin.s <= Idle;
             sin.c <= 0;
           ELSE
-            --it's on whitelist, move on
+            --it's on whitelist, move on to next step
             sin.c <= 0;
             sin.s <= MetaInfo;
-          END IF;
+          END IF;          
           
-        WHEN FilterDstIPUnMatch =>
-          IF (f.dstIPBW = '0') THEN
-            --it's not on blacklist, check against other blacklist
-            sin.c <= s.c + 1;
-            sin.s <= CheckDstIP;
-          ELSE
-            --it's not on whitelist
-            sin.s <= Idle;
-            sin.c <= 0;
-          END IF;
 
         WHEN MetaInfo =>
           sd.srcIP <= rd.dstIP;
