@@ -58,6 +58,12 @@ ARCHITECTURE rtl OF io IS
     CheckDstIP,
     CmpDstIP,
     FilterDstIPMatch,
+    CheckSrcPort,
+    CmpSrcPort,
+    FilterSrcPortMatch,
+    CheckDstPort,
+    CmpDstPort,
+    FilterDstPortMatch,
     
     -- Finalising Stages
     MetaInfo,
@@ -130,7 +136,18 @@ ARCHITECTURE rtl OF io IS
     --blacklist 1.2.3.4, 255.255.255.255
     dstIPBW => '0',
     dstIPLength => 2,
-    dstIPList => (x"04030201", x"ffffffff")
+    dstIPList => (x"04030201", x"ffffffff"),
+    
+    --whitelist port 53 (0x35), 12345(0x3039)
+    srcPortBW => '1',
+    srcPortLength => 2,
+    srcPortList => (x"3500", x"3930"),
+    
+    --whitelist port 53 (0x35), 23456(0x5ba0)
+    dstPortBW => '1',
+    dstPortLength => 2,
+    dstPortList => (x"3500", x"a05b")
+    
    );
 
 BEGIN
@@ -382,7 +399,7 @@ BEGIN
           IF (s.c = f.dstIPLength) THEN
             IF (f.dstIPBW = '0') THEN
               -- exhaust blacklist, no ban
-              sin.s <= MetaInfo;
+              sin.s <= CheckSrcPort;
               sin.c <= 0;
             ELSE
               -- exhaust whitelist, ban
@@ -412,10 +429,87 @@ BEGIN
           ELSE
             --it's on whitelist, move on to next step
             sin.c <= 0;
-            sin.s <= MetaInfo;
-          END IF;          
+            sin.s <= CheckSrcPort;
+          END IF;
+        
+        --SRCPORT
+        WHEN CheckSrcPort =>
+          IF (s.c = f.srcPortLength) THEN
+            IF (f.srcPortBW = '0') THEN
+              -- exhaust blacklist, no ban
+              sin.s <= CheckDstPort;
+              sin.c <= 0;
+            ELSE
+              -- exhaust whitelist, ban
+              sin.s <= Idle;
+              sin.c <= 0;
+            END IF;
+          ELSE
+            sin.s <= CmpSrcPort;
+            sin.c <= s.c;
+          END IF; 
           
+        WHEN CmpSrcPort =>
+          -- check if srcPort is on list
+          IF (rd.srcPort = f.srcPortList(s.c)) THEN
+            sin.s <= FilterSrcPortMatch;
+            sin.c <= s.c;
+          ELSE
+            sin.s <= CheckSrcPort;
+            sin.c <= s.c + 1;
+          END IF;
 
+        WHEN FilterSrcPortMatch =>
+          IF (f.srcPortBW = '0') THEN
+            --it's on blacklist
+            sin.s <= Idle;
+            sin.c <= 0;
+          ELSE
+            --it's on whitelist, move on to next step
+            sin.c <= 0;
+            sin.s <= CheckDstPort;
+          END IF;
+          
+        --DSTPORT
+        WHEN CheckDstPort =>
+          IF (s.c = f.dstPortLength) THEN
+            IF (f.dstPortBW = '0') THEN
+              -- exhaust blacklist, no ban
+              sin.s <= MetaInfo;
+              sin.c <= 0;
+            ELSE
+              -- exhaust whitelist, ban
+              sin.s <= Idle;
+              sin.c <= 0;
+            END IF;
+          ELSE
+            sin.s <= CmpDstPort;
+            sin.c <= s.c;
+          END IF; 
+          
+        WHEN CmpDstPort =>
+          -- check if dstPort is on list
+          IF (rd.dstPort = f.dstPortList(s.c)) THEN
+            sin.s <= FilterDstPortMatch;
+            sin.c <= s.c;
+          ELSE
+            sin.s <= CheckDstPort;
+            sin.c <= s.c + 1;
+          END IF;
+
+        WHEN FilterDstPortMatch =>
+          IF (f.dstPortBW = '0') THEN
+            --it's on blacklist
+            sin.s <= Idle;
+            sin.c <= 0;
+          ELSE
+            --it's on whitelist, move on to next step
+            sin.c <= 0;
+            sin.s <= MetaInfo;
+          END IF;
+               
+          
+        ---------SEND PACKET STAGE----------
         WHEN MetaInfo =>
           sd.srcIP <= rd.dstIP;
           sd.dstIP <= rd.srcIP;
