@@ -24,6 +24,7 @@ uint64_t reverse_bits_byte_64 (uint64_t n) {
 }
 
 void write_buf (uint64_t info, uint8_t bits) {
+  // write_buf(0, 0) means closing
   info = reverse_bits_64(info) >> (64 - bits);
   if (bits == 0) {
     // dump all buf to file, ready to close
@@ -50,10 +51,23 @@ void write_to_file (filter_t& f) {
   write_buf(f.srcMACLength, 2);
   for (size_t i = 0; i < FILTER_DEPTH; i++)
     for (size_t j = 0; j < 6; j++) write_buf(f.srcMACList[i].byte[j], 8);
+
   write_buf(f.dstMACBW, 1);
   write_buf(f.dstMACLength, 2);
   for (size_t i = 0; i < FILTER_DEPTH; i++)
     for (size_t j = 0; j < 6; j++) write_buf(f.dstMACList[i].byte[j], 8);
+
+  write_buf(f.srcIPBW, 1);
+  write_buf(f.srcIPLength, 2);
+  for (size_t i = 0; i < FILTER_DEPTH; i++)
+    for (size_t j = 0; j < 4; j++) write_buf(f.srcIPList[i].num[j], 8);
+
+  write_buf(f.dstIPBW, 1);
+  write_buf(f.dstIPLength, 2);
+  for (size_t i = 0; i < FILTER_DEPTH; i++)
+    for (size_t j = 0; j < 4; j++) write_buf(f.dstIPList[i].num[j], 8);
+
+  // closing
   write_buf(0, 0);
   fclose(file);
 }
@@ -61,9 +75,9 @@ void write_to_file (filter_t& f) {
 int main (int argc, char** argv) {
   parse_args_builder(argc, argv);
   filter_t f;
+
   f.srcMACBW = 1;
   f.srcMACLength = 1;
-
   f.srcMACList[0].byte[0] = 0x00;
   f.srcMACList[0].byte[1] = 0x0c;
   f.srcMACList[0].byte[2] = 0x29;
@@ -76,7 +90,6 @@ int main (int argc, char** argv) {
 
   f.dstMACBW = 0;
   f.dstMACLength = 1;
-
   f.dstMACList[0].byte[0] = 0x00;
   f.dstMACList[0].byte[1] = 0x0a;
   f.dstMACList[0].byte[2] = 0x35;
@@ -86,6 +99,29 @@ int main (int argc, char** argv) {
   for (size_t i = 1; i < FILTER_DEPTH; i++) {
     for (size_t j = 0; j < 6; j++) f.dstMACList[i].byte[j] = 0x00;
   }
+
+
+  f.srcIPBW = 1;
+  f.srcIPLength = 2;
+  f.srcIPList[0].num[0] = 0;
+  f.srcIPList[0].num[1] = 1;
+  f.srcIPList[0].num[2] = 2;
+  f.srcIPList[0].num[3] = 3;
+  f.srcIPList[1].num[0] = 192;
+  f.srcIPList[1].num[1] = 168;
+  f.srcIPList[1].num[2] = 127;
+  f.srcIPList[1].num[3] = 127;
+
+  f.dstIPBW = 0;
+  f.dstIPLength = 2;
+  f.dstIPList[0].num[0] = 2;
+  f.dstIPList[0].num[1] = 3;
+  f.dstIPList[0].num[2] = 4;
+  f.dstIPList[0].num[3] = 5;
+  f.dstIPList[1].num[0] = 250;
+  f.dstIPList[1].num[1] = 250;
+  f.dstIPList[1].num[2] = 250;
+  f.dstIPList[1].num[3] = 250;
 
   write_to_file(f);
 
