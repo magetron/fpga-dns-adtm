@@ -12,3 +12,4 @@
 !.gitignore
 !README
 !*.xpr
+!*.wcfg

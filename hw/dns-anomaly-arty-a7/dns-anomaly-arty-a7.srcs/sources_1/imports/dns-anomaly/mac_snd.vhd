@@ -41,6 +41,7 @@ ARCHITECTURE rtl OF mac_snd IS
 
   TYPE state_t IS (
     Idle, -- Wait for signal en.
+    Read, -- Read from FIFO
     Preamble, -- 55 55 55 55 55 55 55 5
     StartOfFrame, -- d
     --EtherUpper, -- 6 Byte MAC address Upper nibble
@@ -70,16 +71,12 @@ ARCHITECTURE rtl OF mac_snd IS
 
   TYPE snd_t IS RECORD
     s : state_t;
-    d : snd_data_t;
     crc : STD_LOGIC_VECTOR(31 DOWNTO 0); -- CRC32 latch.
     c : NATURAL RANGE 0 TO 511; -- Max Value 511
-
   END RECORD;
 
-  SIGNAL s, sin : snd_t
-  := snd_t'(
-  s => Idle,
-  d => (
+  SIGNAL d : snd_data_t
+  := snd_data_t'(
   srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
   srcIP => (OTHERS => '0'), dstIP => (OTHERS => '0'),
   ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
@@ -88,7 +85,11 @@ ARCHITECTURE rtl OF mac_snd IS
   udpLength => (OTHERS => '0'),
   udpChecksum => (OTHERS => '0'),
   dnsPkt => (OTHERS => '0')
-  ),
+  );
+
+  SIGNAL s, sin : snd_t
+  := snd_t'(
+  s => Idle,
   crc => x"ffffffff",
   c => 0
   );
@@ -107,10 +108,13 @@ BEGIN
         WHEN Idle =>
           IF el_snd_en = '1' THEN
             sin.c <= 0;
-            sin.s <= Preamble;
-            sin.d <= el_data;
-            el_snd_ack <= '1';
+            sin.s <= Read;
           END IF;
+          
+        WHEN Read =>
+          d <= el_data;
+          el_snd_ack <= '1';
+          sin.s <= Preamble;
 
           -- Preamble, 15 5s (including nibble for start of frame)
         WHEN Preamble =>
@@ -134,9 +138,9 @@ BEGIN
 
           -- Ethernet DST MAC
         WHEN EtherMACDST =>
-          E_TXD <= s.d.dstMAC((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.dstMAC((s.c + 3) DOWNTO (s.c));
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.dstMAC((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.dstMAC((s.c + 3) DOWNTO (s.c)), s.crc);
           IF s.c = 44 THEN
             sin.c <= 0;
             sin.s <= EtherMACSRC;
@@ -146,9 +150,9 @@ BEGIN
 
           -- Ethernet SRC MAC
         WHEN EtherMACSRC =>
-          E_TXD <= s.d.srcMAC((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.srcMAC((s.c + 3) DOWNTO (s.c));
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.srcMAC((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.srcMAC((s.c + 3) DOWNTO (s.c)), s.crc);
           IF s.c = 44 THEN
             sin.c <= 0;
             sin.s <= EtherType;
@@ -205,9 +209,9 @@ BEGIN
 
           -- IPLength, WRONG byte order! FIX ME!
         WHEN IPLength =>
-          E_TXD <= s.d.ipLength((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.ipLength((s.c + 3) DOWNTO (s.c));
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.ipLength((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.ipLength((s.c + 3) DOWNTO (s.c)), s.crc);
           IF s.c = 12 THEN
             sin.c <= 0;
             sin.s <= IPID;
@@ -241,9 +245,9 @@ BEGIN
 
           -- IP TTL
         WHEN IPTTL =>
-          E_TXD <= s.d.ipTTL((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.ipTTL((s.c + 3) DOWNTO (s.c));
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.ipTTL((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.ipTTL((s.c + 3) DOWNTO (s.c)), s.crc);
           IF s.c = 4 THEN
             sin.c <= 0;
             sin.s <= IPProtocol;
@@ -265,10 +269,10 @@ BEGIN
 
           -- IPChecksum
         WHEN IPChecksum =>
-          E_TXD <= s.d.ipChecksum((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.ipChecksum((s.c + 3) DOWNTO (s.c));
           --E_TXD <= x"0";
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.ipChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.ipChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
           --sin.crc <= nextCRC32_D4(x"0", s.crc);
           IF s.c = 12 THEN
             sin.c <= 0;
@@ -279,9 +283,9 @@ BEGIN
 
           -- IP Addr SRC
         WHEN IPAddrSRC =>
-          E_TXD <= s.d.srcIP((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.srcIP((s.c + 3) DOWNTO (s.c));
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.srcIP((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.srcIP((s.c + 3) DOWNTO (s.c)), s.crc);
           IF s.c = 28 THEN
             sin.c <= 0;
             sin.s <= IPAddrDST;
@@ -291,9 +295,9 @@ BEGIN
 
           -- IP Addr DST
         WHEN IPAddrDST =>
-          E_TXD <= s.d.dstIP((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.dstIP((s.c + 3) DOWNTO (s.c));
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.dstIP((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.dstIP((s.c + 3) DOWNTO (s.c)), s.crc);
           IF s.c = 28 THEN
             sin.c <= 0;
             sin.s <= UDPPortSRC;
@@ -303,9 +307,9 @@ BEGIN
 
           -- UDP Port SRC
         WHEN UDPPortSRC =>
-          E_TXD <= s.d.srcPort((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.srcPort((s.c + 3) DOWNTO (s.c));
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.srcPort((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.srcPort((s.c + 3) DOWNTO (s.c)), s.crc);
           IF s.c = 12 THEN
             sin.c <= 0;
             sin.s <= UDPPortDST;
@@ -315,9 +319,9 @@ BEGIN
 
           -- UDP Port DST
         WHEN UDPPortDST =>
-          E_TXD <= s.d.dstPort((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.dstPort((s.c + 3) DOWNTO (s.c));
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.dstPort((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.dstPort((s.c + 3) DOWNTO (s.c)), s.crc);
           IF s.c = 12 THEN
             sin.c <= 0;
             sin.s <= UDPLength;
@@ -327,9 +331,9 @@ BEGIN
 
           -- UDP Length
         WHEN UDPLength =>
-          E_TXD <= s.d.udpLength((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.udpLength((s.c + 3) DOWNTO (s.c));
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.udpLength((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.udpLength((s.c + 3) DOWNTO (s.c)), s.crc);
           IF s.c = 12 THEN
             sin.c <= 0;
             sin.s <= UDPChecksum;
@@ -339,9 +343,9 @@ BEGIN
 
           -- UDP checksum
         WHEN UDPChecksum =>
-          E_TXD <= s.d.udpChecksum((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.udpChecksum((s.c + 3) DOWNTO (s.c));
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.udpChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.udpChecksum((s.c + 3) DOWNTO (s.c)), s.crc);
           IF s.c = 12 THEN
             sin.c <= 0;
             sin.s <= DNSMsg;
@@ -351,10 +355,10 @@ BEGIN
 
           -- DNS Message
         WHEN DNSMsg =>
-          E_TXD <= s.d.dnsPkt((s.c + 3) DOWNTO (s.c));
+          E_TXD <= d.dnsPkt((s.c + 3) DOWNTO (s.c));
           --E_TXD <= x"0";
           E_TX_EN <= '1';
-          sin.crc <= nextCRC32_D4(s.d.dnsPkt((s.c + 3) DOWNTO (s.c)), s.crc);
+          sin.crc <= nextCRC32_D4(d.dnsPkt((s.c + 3) DOWNTO (s.c)), s.crc);
           --sin.crc <= nextCRC32_D4(x"0", s.crc);
           IF s.c = 508 THEN
             sin.c <= 0;

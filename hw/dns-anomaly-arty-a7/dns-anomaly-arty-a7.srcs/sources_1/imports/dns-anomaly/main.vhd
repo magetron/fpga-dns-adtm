@@ -50,10 +50,10 @@ ARCHITECTURE rtl OF main IS
   
   COMPONENT fifo_rcv IS
     PORT (
-      clk : IN STD_LOGIC; -- FIFO buffer Clock
+      wclk : IN STD_LOGIC; -- Write Clock
+      rclk : IN STD_LOGIC; -- Read Clock
       w_en : IN STD_LOGIC; -- Write Enable
       w_data : IN rcv_data_t; -- Ethernet Receving Data in
-      buf_full : OUT STD_LOGIC; -- Buffer Full
       r_en : IN STD_LOGIC; -- Read Enable
       r_data : OUT rcv_data_t; -- Ethernet Receving Data out
       buf_not_empty : OUT STD_LOGIC -- Buffer NOT Empty
@@ -73,12 +73,10 @@ ARCHITECTURE rtl OF main IS
 
   COMPONENT fifo_snd IS
     PORT (
-      clk : IN STD_LOGIC; -- FIFO buffer Clock
-    
+      wclk : IN STD_LOGIC; -- Write Clock
+      rclk : IN STD_LOGIC; -- Read Clock
       w_en : IN STD_LOGIC; -- Write Enable
       w_data : IN snd_data_t; -- Ethernet Send Data in
-      buf_full : OUT STD_LOGIC; -- Buffer Full
-    
       r_en : IN STD_LOGIC; -- Read Enable
       r_data : OUT snd_data_t; -- Ethernet Send Data out
       buf_not_empty : OUT STD_LOGIC -- Buffer NOT Empty
@@ -137,10 +135,10 @@ BEGIN
   );
   
   fifo_receive : fifo_rcv PORT MAP(
-    clk => clk,
+    wclk => E_RX_CLK,
+    rclk => clk,
     w_en => el_rcv_dv_phy,
     w_data => el_rcv_data_phy,
-    buf_full => OPEN,
     r_en => el_rcv_ack_buf,
     r_data => el_rcv_data_buf,
     buf_not_empty => el_rcv_dv_buf
@@ -156,10 +154,10 @@ BEGIN
   );
   
   fifo_send : fifo_snd PORT MAP(
-    clk => clk,
+    wclk => clk,
+    rclk => E_TX_CLK,
     w_en => el_snd_en_buf,
     w_data => el_snd_data_buf,
-    buf_full => OPEN,
     r_en => el_snd_ack_phy,
     r_data => el_snd_data_phy,
     buf_not_empty => el_snd_en_phy
