@@ -67,6 +67,16 @@ void write_to_file (filter_t& f) {
   for (size_t i = 0; i < FILTER_DEPTH; i++)
     for (size_t j = 0; j < 4; j++) write_buf(f.dstIPList[i].num[j], 8);
 
+  write_buf(f.srcPortBW, 1);
+  write_buf(f.srcPortLength, 2);
+  for (size_t i = 0; i < FILTER_DEPTH; i++)
+    write_buf(f.srcPortList[i].port, 16);
+
+  write_buf(f.dstPortBW, 1);
+  write_buf(f.dstPortLength, 2);
+  for (size_t i = 0; i < FILTER_DEPTH; i++)
+    write_buf(f.dstPortList[i].port, 16);
+
   // closing
   write_buf(0, 0);
   fclose(file);
@@ -100,7 +110,6 @@ int main (int argc, char** argv) {
     for (size_t j = 0; j < 6; j++) f.dstMACList[i].byte[j] = 0x00;
   }
 
-
   f.srcIPBW = 1;
   f.srcIPLength = 2;
   f.srcIPList[0].num[0] = 0;
@@ -122,6 +131,16 @@ int main (int argc, char** argv) {
   f.dstIPList[1].num[1] = 250;
   f.dstIPList[1].num[2] = 250;
   f.dstIPList[1].num[3] = 250;
+
+  f.srcPortBW = 0;
+  f.srcPortLength = 2;
+  f.srcPortList[0].port = __bswap_16(12345);
+  f.srcPortList[1].port = __bswap_16(55553);
+
+  f.dstPortBW = 0;
+  f.dstPortLength = 0;
+  f.dstPortList[0].port = __bswap_16(0);
+  f.dstPortList[1].port = __bswap_16(0);
 
   write_to_file(f);
 

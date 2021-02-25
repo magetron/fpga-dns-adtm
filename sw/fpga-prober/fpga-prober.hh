@@ -53,6 +53,12 @@ struct filter_t {
   unsigned dstIPBW : 1;
   unsigned dstIPLength : 2; // 0,1,2 FILTER_DEPTH related
   ip_addr_t dstIPList[2];
+  unsigned srcPortBW : 1;
+  unsigned srcPortLength : 2;
+  udp_port_t srcPortList[2];
+  unsigned dstPortBW : 1;
+  unsigned dstPortLength : 2;
+  udp_port_t dstPortList[2];
 };
 
 static inline uint16_t IPchecksum(uint16_t *buff, int32_t _16bitword) {
