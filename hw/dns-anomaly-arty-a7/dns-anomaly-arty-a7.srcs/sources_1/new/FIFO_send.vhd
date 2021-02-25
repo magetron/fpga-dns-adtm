@@ -8,7 +8,7 @@ USE work.common.ALL;
 
 ENTITY FIFO_snd IS
   GENERIC (
-    g_depth : NATURAL := 4
+    g_depth : NATURAL := 8
   );
   PORT (
     wclk : IN STD_LOGIC; -- Write Clock

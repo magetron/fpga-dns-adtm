@@ -8,7 +8,7 @@ USE work.common.ALL;
 
 ENTITY FIFO_rcv IS
   GENERIC (
-    g_depth : NATURAL := 4
+    g_depth : NATURAL := 8
   );
   PORT (
     wclk : IN STD_LOGIC; -- Write Clock
@@ -69,7 +69,6 @@ BEGIN
   fifo_rnsl : PROCESS(rclk)
   BEGIN
     IF (rising_edge(rclk)) THEN
- 
       IF (r_en = '1') THEN
         IF (r_index = g_depth - 1) THEN
           rin_index <= 0;
