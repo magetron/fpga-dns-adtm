@@ -218,6 +218,3 @@ set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports {E_TXD[3]}]
 create_clock -period 40.000 -name E_RX_CLK -waveform {0.000 20.000} [get_ports E_RX_CLK]
 create_clock -period 40.000 -name E_TX_CLK -waveform {0.000 20.000} [get_ports E_TX_CLK]
 
-set_property MARK_DEBUG true [get_nets fifo_receive_n_224]
-connect_debug_port u_ila_0/probe2 [get_nets [list fifo_receive_n_224]]
-
