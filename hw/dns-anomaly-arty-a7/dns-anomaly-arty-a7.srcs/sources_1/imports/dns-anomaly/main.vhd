@@ -136,7 +136,7 @@ BEGIN
   
   fifo_receive : fifo_rcv PORT MAP(
     wclk => E_RX_CLK,
-    rclk => clk50,
+    rclk => clk,
     w_en => el_rcv_dv_phy,
     w_data => el_rcv_data_phy,
     r_en => el_rcv_ack_buf,
@@ -154,7 +154,7 @@ BEGIN
   );
   
   fifo_send : fifo_snd PORT MAP(
-    wclk => clk50,
+    wclk => clk,
     rclk => E_TX_CLK,
     w_en => el_snd_en_buf,
     w_data => el_snd_data_buf,
@@ -164,7 +164,7 @@ BEGIN
   );
 
   core : io PORT MAP(
-    clk => clk50,
+    clk => clk,
     -- Data received.
     el_rcv_data => el_rcv_data_buf,
     el_rcv_dv => el_rcv_dv_buf,
