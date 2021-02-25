@@ -44,6 +44,10 @@ ARCHITECTURE rtl OF io IS
     UpdateFilterSrcIPList,
     UpdateFilterDstIPMeta,
     UpdateFilterDstIPList,
+    UpdateFilterSrcPortMeta,
+    UpdateFilterSrcPortList,
+    UpdateFilterDstPortMeta,
+    UpdateFilterDstPortList,
     
     -- Filtering Stages
     CheckSrcMAC,
@@ -84,7 +88,7 @@ ARCHITECTURE rtl OF io IS
     pc : NATURAL RANGE 0 TO 15; -- packet counter
     amc : NATURAL RANGE 0 TO 15; -- admin MAC counter
     aic : NATURAL RANGE 0 TO 15; -- admin IP counter
-    --apc : NATURAL RANGE 0 TO 15; -- admin UDP counter
+    apc : NATURAL RANGE 0 TO 15; -- admin UDP counter
     fsmc : NATURAL RANGE 0 TO 15; -- filter srcMAC counter
     fdmc : NATURAL RANGE 0 TO 15; -- filter dstMAC counter
     fsic : NATURAL RANGE 0 TO 15; -- filter srcIP counter
@@ -101,7 +105,7 @@ ARCHITECTURE rtl OF io IS
   pc => 0,
   amc => 0,
   aic => 0,
-  --apc => 0,
+  apc => 0,
   fsmc => 0,
   fdmc => 0,
   fsic => 0,
@@ -130,7 +134,6 @@ ARCHITECTURE rtl OF io IS
   udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0'),
   dnsPkt => (OTHERS => '0')
   );
-  
   
   SIGNAL f : filter_t
   := filter_t'(
@@ -286,6 +289,44 @@ BEGIN
           ELSIF (s.aic = 1) THEN
             f.dstIPList(1) <= rd.dnsPkt(331 DOWNTO 300);
             sin.aic <= s.aic + 1;
+          ELSE
+            sin.s <= UpdateFilterSrcPortMeta;
+          END IF;
+          
+        WHEN UpdateFilterSrcPortMeta =>
+          -- SRC Port
+          f.srcPortBW <= rd.dnsPkt(332);
+          -- filter depth affected this length here
+          f.srcPortLength <= to_integer(unsigned(rd.dnsPkt(334 DOWNTO 333)));
+          sin.s <= UpdateFilterSrcPortList;
+          sin.apc <= 0;
+        
+        WHEN UpdateFilterSrcPortList =>
+          IF (s.apc = 0) THEN 
+            f.srcPortList(0) <= rd.dnsPkt(350 DOWNTO 335);
+            sin.apc <= s.apc + 1;
+          ELSIF (s.apc = 1) THEN
+            f.srcPortList(1) <= rd.dnsPkt(366 DOWNTO 351);
+            sin.apc <= s.apc + 1;           
+          ELSE
+            sin.s <= UpdateFilterDstPortMeta;
+          END IF;  
+
+        WHEN UpdateFilterDstPortMeta =>
+          -- DST Port
+          f.dstPortBW <= rd.dnsPkt(367);
+          -- filter depth affected this length here
+          f.dstPortLength <= to_integer(unsigned(rd.dnsPkt(369 DOWNTO 368)));
+          sin.s <= UpdateFilterDstPortList;
+          sin.apc <= 0;
+        
+        WHEN UpdateFilterDstPortList =>
+          IF (s.apc = 0) THEN 
+            f.dstPortList(0) <= rd.dnsPkt(385 DOWNTO 370);
+            sin.apc <= s.apc + 1;
+          ELSIF (s.apc = 1) THEN
+            f.dstPortList(1) <= rd.dnsPkt(401 DOWNTO 386);
+            sin.apc <= s.apc + 1;
           ELSE
             sin.s <= Idle;
           END IF; 
@@ -566,7 +607,11 @@ BEGIN
 
         WHEN Send =>
           el_snd_en <= '1'; -- Send Ethernet packet.
-          sin.pc <= s.pc + 1;
+          IF (s.pc = 15) THEN
+            sin.pc <= 0;
+          ELSE
+            sin.pc <= s.pc + 1;
+          END IF;
           sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.pc + 1, sin.led'length));
           sin.s <= Idle;
 
