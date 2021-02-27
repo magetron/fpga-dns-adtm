@@ -165,7 +165,13 @@ ARCHITECTURE rtl OF io IS
     --whitelist port 53 (0x35), 23456(0x5ba0)
     dstPortBW => '1',
     dstPortLength => 2,
-    dstPortList => (x"3500", x"a05b")
+    dstPortList => (x"3500", x"a05b"),
+    
+    --blakclist apple.com (length 9 bytes), google.com(length 10 bytes)
+    dnsBW => '0',
+    dnsLength => 2,
+    dnsList => (x"6170706c652e636f6d00000000000000", x"676f6f676c652e636f6d000000000000"),
+    dnsItemLength => (9, 10)
     
    );
 

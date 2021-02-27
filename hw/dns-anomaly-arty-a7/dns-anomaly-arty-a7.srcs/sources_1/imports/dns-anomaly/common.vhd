@@ -36,6 +36,9 @@ PACKAGE common IS
   TYPE macfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(47 DOWNTO 0);
   TYPE ipfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
   TYPE udpfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(15 DOWNTO 0);
+  TYPE dnsfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(128 DOWNTO 0);
+  -- 128 bits = 16 bytes
+  TYPE dnsfilter_item_length_list_t IS ARRAY (0 TO filter_depth - 1) OF NATURAL RANGE 0 TO 16;
 
   -- BW, Blacklist = 0, Whitelist = 1
   TYPE filter_t IS RECORD
@@ -57,6 +60,10 @@ PACKAGE common IS
     dstPortBW : STD_LOGIC;
     dstPortLength : NATURAL RANGE 0 TO filter_depth;
     dstPortList : udpfilter_list_t;
+    dnsBW: STD_LOGIC;
+    dnsLength : NATURAL RANGE 0 TO filter_depth;
+    dnsList : dnsfilter_list_t;
+    dnsItemLength : dnsfilter_item_length_list_t;
   END RECORD;
 
 END common;
