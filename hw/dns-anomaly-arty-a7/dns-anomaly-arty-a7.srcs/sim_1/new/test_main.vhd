@@ -89,6 +89,10 @@ BEGIN
     WAIT FOR 100 ns;
 
     WAIT FOR clk_period * 10;
+
+    receive_apple_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
+    -- NEXT PKT
+    WAIT FOR E_RX_CLK_period * 200;
     
     receive_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
     -- NEXT PKT
