@@ -14,7 +14,7 @@ PACKAGE common IS
     srcPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dnsLength : NATURAL RANGE 0 TO 65535; -- MAX 508, 65535 for intake pkt
-    dnsPkt : STD_LOGIC_VECTOR(1023 DOWNTO 0);
+    dnsPkt : STD_LOGIC_VECTOR(511 DOWNTO 0);
   END RECORD;
 
   TYPE snd_data_t IS RECORD
@@ -29,7 +29,7 @@ PACKAGE common IS
     dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     udpLength : STD_LOGIC_VECTOR(15 DOWNTO 0);
     udpChecksum : STD_LOGIC_VECTOR(15 DOWNTO 0);
-    dnsPkt : STD_LOGIC_VECTOR(1023 DOWNTO 0);
+    dnsPkt : STD_LOGIC_VECTOR(511 DOWNTO 0);
   END RECORD;
   
   CONSTANT filter_depth : NATURAL := 2;
@@ -37,7 +37,6 @@ PACKAGE common IS
   TYPE ipfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
   TYPE udpfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(15 DOWNTO 0);
   TYPE dnsfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(127 DOWNTO 0);
-  -- 7 bits each
   TYPE dnsfilter_item_endptr_list_t IS ARRAY (0 TO filter_depth - 1) OF NATURAL RANGE 0 TO 127;
 
   -- BW, Blacklist = 0, Whitelist = 1

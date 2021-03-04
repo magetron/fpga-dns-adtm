@@ -48,8 +48,6 @@ ARCHITECTURE rtl OF io IS
     UpdateFilterSrcPortList,
     UpdateFilterDstPortMeta,
     UpdateFilterDstPortList,
-    UpdateFilterDNSMeta,
-    UpdateFilterDNSList,
     
     -- Filtering Stages
     CheckSrcMAC,
@@ -95,7 +93,6 @@ ARCHITECTURE rtl OF io IS
     amc : NATURAL RANGE 0 TO 15; -- admin MAC counter
     aic : NATURAL RANGE 0 TO 15; -- admin IP counter
     apc : NATURAL RANGE 0 TO 15; -- admin UDP counter
-    adc : NATURAL RANGE 0 TO 15; -- admin DNS counter
     fsmc : NATURAL RANGE 0 TO 15; -- filter srcMAC counter
     fdmc : NATURAL RANGE 0 TO 15; -- filter dstMAC counter
     fsic : NATURAL RANGE 0 TO 15; -- filter srcIP counter
@@ -103,7 +100,7 @@ ARCHITECTURE rtl OF io IS
     fspc : NATURAL RANGE 0 TO 15; -- filter srcUDP counter
     fdpc : NATURAL RANGE 0 TO 15; -- filter dstUDP counter
     fdnsc : NATURAL RANGE 0 TO 15; -- filter dns item counter
-    fpktsc : NATURAL RANGE 0 TO 1023; -- filter pkt start position counter
+    fpktsc : NATURAL RANGE 0 TO 511; -- filter pkt start position counter
     fpktc : NATURAL RANGE 0 TO 128; -- filter pkt bits left counter
     fpktmf : STD_LOGIC; -- filter pkt match flag
   END RECORD;
@@ -117,7 +114,6 @@ ARCHITECTURE rtl OF io IS
   amc => 0,
   aic => 0,
   apc => 0,
-  adc => 0,
   fsmc => 0,
   fdmc => 0,
   fsic => 0,
@@ -349,30 +345,8 @@ BEGIN
             f.dstPortList(1) <= rd.dnsPkt(401 DOWNTO 386);
             sin.apc <= s.apc + 1;
           ELSE
-            sin.s <= UpdateFilterDNSMeta;
-          END IF;
-          
-        WHEN UpdateFilterDNSMeta =>
-          -- DNS Metadata
-          f.dnsBW <= rd.dnsPkt(402);
-          -- filter depth affected this length here
-          f.dnsLength <= to_integer(unsigned(rd.dnsPkt(404 DOWNTO 403)));
-          -- dns filter length affected this length here
-          f.dnsItemEndPtr(0) <= to_integer(unsigned(rd.dnsPkt(411 DOWNTO 405)));
-          f.dnsItemEndPtr(1) <= to_integer(unsigned(rd.dnsPkt(418 DOWNTO 412)));
-          sin.s <= UpdateFilterDNSList;
-          sin.adc <= 0;
-        
-        WHEN UpdateFilterDNSList =>
-          IF (s.adc = 0) THEN
-            f.dnsList(0) <= rd.dnsPkt(546 DOWNTO 419);
-            sin.adc <= s.adc + 1;
-          ELSIF (s.adc = 1) THEN
-            f.dnsList(1) <= rd.dnsPkt(674 DOWNTO 547);
-            sin.adc <= s.adc + 1;
-          ELSE
             sin.s <= Idle;
-          END IF;
+          END IF; 
 
         --------FILTER ROUTE--------
         --SRCMAC
@@ -670,7 +644,7 @@ BEGIN
             sin.s <= FilterPkt;
             sin.fdnsc <= s.fdnsc;     
           -- update this line for pkt size change
-          ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) = 1024) THEN
+          ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) = 512) THEN
             -- all check done
             sin.s <= CheckPkt;
             sin.fdnsc <= s.fdnsc + 1;
