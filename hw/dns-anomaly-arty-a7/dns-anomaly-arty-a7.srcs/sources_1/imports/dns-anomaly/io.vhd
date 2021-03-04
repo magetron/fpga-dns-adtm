@@ -103,7 +103,7 @@ ARCHITECTURE rtl OF io IS
     fspc : NATURAL RANGE 0 TO 15; -- filter srcUDP counter
     fdpc : NATURAL RANGE 0 TO 15; -- filter dstUDP counter
     fdnsc : NATURAL RANGE 0 TO 15; -- filter dns item counter
-    fpktsc : NATURAL RANGE 0 TO 767; -- filter pkt start position counter
+    fpktsc : NATURAL RANGE 0 TO 1023; -- filter pkt start position counter
     fpktc : NATURAL RANGE 0 TO 128; -- filter pkt bits left counter
     fpktmf : STD_LOGIC; -- filter pkt match flag
   END RECORD;
@@ -197,8 +197,6 @@ BEGIN
   VARIABLE udpLengthbuf : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
   VARIABLE srcIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
   VARIABLE dstIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
-  VARIABLE filterDNSebuf : NATURAL RANGE 0 TO 767 := 0;
-  VARIABLE filterItemebuf : NATURAL RANGE 0 TO 127 := 0;
   BEGIN
 
     IF rising_edge(clk) THEN
@@ -207,7 +205,6 @@ BEGIN
 
       CASE s.s IS
         WHEN Idle =>
-          sin.led <= x"0";
           IF (el_rcv_dv = '1') THEN
             sin.s <= Read;
           END IF;
@@ -626,31 +623,9 @@ BEGIN
           END IF;
           
         WHEN CmpPktArea =>
-          filterDNSebuf := s.fpktsc + s.fpktc - 1;
-          filterItemebuf := s.fpktc - 1;
-
           IF (s.fpktc >= 32) THEN
-          
-           -- IF (filterDNSebuf = 103 and filterItemebuf = 71) THEN
-           --   sin.led <= x"b";
-           --   IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 31)
-           --     = x"6d6f632e") THEN
-              --IF (rd.dnsPkt(103 DOWNTO 72) = x"6d6f632e") THEN
-           --    sin.led <= x"c";
-           --     IF (f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 31) = x"6d6f632e") THEN
-           --       sin.led <= x"d";
-            IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 31)
-            = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 31)) THEN
-              sin.led <= x"e";
-           --       END IF;
-           --     END IF;
-           --   END IF;
-            ELSE
-              sin.led <= x"1";
-            END IF;   
-            
-            IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 31))
-              = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 31) THEN
+            IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 32))
+              = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 32))) THEN
               sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
               sin.fpktc <= s.fpktc - 32; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
             ELSE
@@ -658,9 +633,8 @@ BEGIN
               sin.fpktsc <= s.fpktsc; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
             END IF;
           ELSIF (s.fpktc >= 24) THEN
-            sin.led <= x"2";
-            IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 23)
-              = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 23)) THEN
+            IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 24))
+              = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 24))) THEN
               sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
               sin.fpktc <= s.fpktc - 24; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
             ELSE
@@ -668,9 +642,8 @@ BEGIN
               sin.fpktsc <= s.fpktsc; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
             END IF;          
           ELSIF (s.fpktc >= 16) THEN
-            sin.led <= x"3";
-            IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 15)
-              = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 15)) THEN
+            IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 16))
+              = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 16))) THEN
               sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
               sin.fpktc <= s.fpktc - 16; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
             ELSE
@@ -678,9 +651,8 @@ BEGIN
               sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
             END IF;                 
           ELSIF (s.fpktc >= 8) THEN
-            sin.led <= x"4";
-            IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 7)
-              = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 7)) THEN
+            IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 8))
+              = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 8))) THEN
               sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
               sin.fpktc <= s.fpktc - 8; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
             ELSE
@@ -688,26 +660,22 @@ BEGIN
               sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
             END IF;
           ELSE
-            sin.led <= x"a";
             sin.s <= CmpPktDone; sin.fpktsc <= s.fpktsc;
             sin.fpktmf <= '1'; sin.fdnsc <= s.fdnsc;
           END IF;       
         
         WHEN CmpPktDone =>
           IF (s.fpktmf = '1') THEN
-            sin.led <= x"5";
             -- there's a match
             sin.s <= FilterPkt;
             sin.fdnsc <= s.fdnsc;     
           -- update this line for pkt size change
-          ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) = 768) THEN
+          ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) = 1024) THEN
             -- all check done
-            sin.led <= x"6";
             sin.s <= CheckPkt;
             sin.fdnsc <= s.fdnsc + 1;
           ELSE
             -- increment pkt counter
-            sin.led <= x"7";
             sin.s <= CmpPktArea;
             sin.fpktsc <= s.fpktsc + 8;
             sin.fpktc <= f.dnsItemEndPtr(s.fdnsc);
@@ -717,12 +685,10 @@ BEGIN
 
         WHEN FilterPkt =>
           IF (f.dnsBW = '0') THEN
-            sin.led <= x"8";
             --it's on blacklist
             sin.s <= Idle;
             sin.fdnsc <= 0;
           ELSE
-            sin.led <= x"9";
             --it's on whitelist, move on to next step
             sin.s <= MetaInfo;
           END IF;    
@@ -781,7 +747,7 @@ BEGIN
           ELSE
             sin.pc <= s.pc + 1;
           END IF;
-          --sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.pc + 1, sin.led'length));
+          sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.pc + 1, sin.led'length));
           sin.s <= Idle;
 
       END CASE;
