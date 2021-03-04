@@ -639,58 +639,79 @@ BEGIN
            --    sin.led <= x"c";
            --     IF (f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 31) = x"6d6f632e") THEN
            --       sin.led <= x"d";
-            IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 31)
-            = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 31)) THEN
-              sin.led <= x"e";
+           --IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 31)
+           -- = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 31)) THEN
+           --   sin.led <= x"e";
            --       END IF;
            --     END IF;
            --   END IF;
-            ELSE
-              sin.led <= x"1";
-            END IF;   
-            
+           --  ELSE
+            sin.led <= x"1";
+           -- END IF;
             IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 31))
               = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 31) THEN
-              sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
-              sin.fpktc <= s.fpktc - 32; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktArea;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktc <= s.fpktc - 32;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             ELSE
               sin.s <= CmpPktDone;
-              sin.fpktsc <= s.fpktsc; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             END IF;
           ELSIF (s.fpktc >= 24) THEN
             sin.led <= x"2";
             IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 23)
               = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 23)) THEN
-              sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
-              sin.fpktc <= s.fpktc - 24; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktArea;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktc <= s.fpktc - 24;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             ELSE
               sin.s <= CmpPktDone;
-              sin.fpktsc <= s.fpktsc; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             END IF;          
           ELSIF (s.fpktc >= 16) THEN
             sin.led <= x"3";
             IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 15)
               = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 15)) THEN
-              sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
-              sin.fpktc <= s.fpktc - 16; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktArea;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktc <= s.fpktc - 16;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             ELSE
-              sin.s <= CmpPktDone; sin.fpktsc <= s.fpktsc;
-              sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktDone;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             END IF;                 
           ELSIF (s.fpktc >= 8) THEN
             sin.led <= x"4";
             IF (rd.dnsPkt(filterDNSebuf DOWNTO filterDNSebuf - 7)
               = f.dnsList(s.fdnsc)(filterItemebuf DOWNTO filterItemebuf - 7)) THEN
-              sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
-              sin.fpktc <= s.fpktc - 8; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktArea;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktc <= s.fpktc - 8;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             ELSE
-              sin.s <= CmpPktDone; sin.fpktsc <= s.fpktsc;
-              sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktDone;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             END IF;
           ELSE
             sin.led <= x"a";
-            sin.s <= CmpPktDone; sin.fpktsc <= s.fpktsc;
-            sin.fpktmf <= '1'; sin.fdnsc <= s.fdnsc;
+            sin.s <= CmpPktDone;
+            sin.fpktsc <= s.fpktsc;
+            sin.fpktmf <= '1';
+            sin.fdnsc <= s.fdnsc;
           END IF;       
         
         WHEN CmpPktDone =>
@@ -700,7 +721,7 @@ BEGIN
             sin.s <= FilterPkt;
             sin.fdnsc <= s.fdnsc;     
           -- update this line for pkt size change
-          ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) = 768) THEN
+          ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) >= rd.dnsLength * 8) THEN
             -- all check done
             sin.led <= x"6";
             sin.s <= CheckPkt;
