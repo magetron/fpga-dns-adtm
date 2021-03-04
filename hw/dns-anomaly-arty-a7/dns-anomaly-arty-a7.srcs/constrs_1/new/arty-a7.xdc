@@ -224,7 +224,6 @@ create_clock -period 40.000 -name E_TX_CLK -waveform {0.000 20.000} [get_ports E
 
 
 
-
 create_debug_core u_ila_0 ila
 set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
 set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
@@ -239,10 +238,6 @@ connect_debug_port u_ila_0/clk [get_nets [list clk50_BUFG]]
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
 set_property port_width 4 [get_debug_ports u_ila_0/probe0]
 connect_debug_port u_ila_0/probe0 [get_nets [list {LED_OBUF[0]} {LED_OBUF[1]} {LED_OBUF[2]} {LED_OBUF[3]}]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe1]
-set_property port_width 7 [get_debug_ports u_ila_0/probe1]
-connect_debug_port u_ila_0/probe1 [get_nets [list {core/s_reg[fpktc][1]} {core/s_reg[fpktc][2]} {core/s_reg[fpktc][3]} {core/s_reg[fpktc][4]} {core/s_reg[fpktc][5]} {core/s_reg[fpktc][6]} {core/s_reg[fpktc][7]}]]
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
