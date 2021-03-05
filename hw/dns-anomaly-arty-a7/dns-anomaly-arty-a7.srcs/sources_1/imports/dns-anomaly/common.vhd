@@ -37,7 +37,7 @@ PACKAGE common IS
   TYPE ipfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
   TYPE udpfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(15 DOWNTO 0);
   TYPE dnsfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(127 DOWNTO 0);
-  TYPE dnsfilter_item_endptr_list_t IS ARRAY (0 TO filter_depth - 1) OF NATURAL RANGE 0 TO 127;
+  TYPE dnsfilter_item_endptr_list_t IS ARRAY (0 TO filter_depth - 1) OF NATURAL RANGE 0 TO 2047;
 
   -- BW, Blacklist = 0, Whitelist = 1
   TYPE filter_t IS RECORD
