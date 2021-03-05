@@ -10,10 +10,10 @@ PACKAGE common IS
     srcIP : STD_LOGIC_VECTOR(31 DOWNTO 0);
     dstIP : STD_LOGIC_VECTOR(31 DOWNTO 0);
     ipHeaderLength : NATURAL RANGE 0 TO 15;
-    ipLength : NATURAL RANGE 0 TO 65535; -- MAX 576, 65535 for intake pkt
+    ipLength : NATURAL RANGE 0 TO 65535; -- 65535 for intake pkt
     srcPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
-    dnsLength : NATURAL RANGE 0 TO 65535; -- MAX 508, 65535 for intake pkt
+    dnsLength : NATURAL RANGE 0 TO 65535; -- 65535 for intake pkt
     dnsPkt : STD_LOGIC_VECTOR(511 DOWNTO 0);
   END RECORD;
 
@@ -37,7 +37,7 @@ PACKAGE common IS
   TYPE ipfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
   TYPE udpfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(15 DOWNTO 0);
   TYPE dnsfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(127 DOWNTO 0);
-  TYPE dnsfilter_item_endptr_list_t IS ARRAY (0 TO filter_depth - 1) OF NATURAL RANGE 0 TO 127;
+  TYPE dnsfilter_item_endptr_list_t IS ARRAY (0 TO filter_depth - 1) OF NATURAL RANGE 0 TO 128;
 
   -- BW, Blacklist = 0, Whitelist = 1
   TYPE filter_t IS RECORD

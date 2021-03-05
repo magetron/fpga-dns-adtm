@@ -72,7 +72,7 @@ ARCHITECTURE rtl OF mac_snd IS
   TYPE snd_t IS RECORD
     s : state_t;
     crc : STD_LOGIC_VECTOR(31 DOWNTO 0); -- CRC32 latch.
-    c : NATURAL RANGE 0 TO 511; -- Max Value 511
+    c : NATURAL RANGE 0 TO 511;
   END RECORD;
 
   SIGNAL d : snd_data_t
