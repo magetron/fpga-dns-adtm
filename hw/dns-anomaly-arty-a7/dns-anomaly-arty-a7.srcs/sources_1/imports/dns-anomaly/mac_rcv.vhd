@@ -324,7 +324,7 @@ BEGIN
 
             -- DNS Msg
           WHEN DNSMsg =>
-            IF r.c <= 508 THEN
+            IF r.c <= 1020 THEN
               d.dnsPkt((r.c + 3) DOWNTO (r.c)) <= E_RXD;
             END IF;
             IF r.c = r.udpc THEN
