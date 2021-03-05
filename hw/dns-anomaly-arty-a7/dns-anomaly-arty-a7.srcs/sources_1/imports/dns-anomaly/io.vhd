@@ -193,6 +193,7 @@ BEGIN
     VARIABLE udpLengthbuf : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
     VARIABLE srcIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
     VARIABLE dstIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
+    VARIABLE filterPktEndPtr : NATURAL RANGE 0 TO 512;
   BEGIN
 
     IF rising_edge(clk) THEN
@@ -594,6 +595,12 @@ BEGIN
             sin.fpktc <= f.dnsItemEndPtr(s.fdnsc);
             sin.fpktmf <= '0';
             sin.fdnsc <= s.fdnsc;
+            -- change with pkt size
+            IF (rd.dnsLength > 64) THEN -- bytes
+              filterPktEndPtr := 512; -- bits
+            ELSE
+              filterPktEndPtr := rd.dnsLength * 8;
+            END IF;
           END IF;
 
         WHEN CmpPktArea =>
@@ -666,7 +673,7 @@ BEGIN
             sin.s <= FilterPkt;
             sin.fdnsc <= s.fdnsc;
             -- update this line for pkt size change
-          ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) = 512) THEN
+          ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) >= filterPktEndPtr) THEN -- >= rd.dnsLength * 8) THEN
             -- all check done
             sin.s <= CheckPkt;
             sin.fdnsc <= s.fdnsc + 1;
