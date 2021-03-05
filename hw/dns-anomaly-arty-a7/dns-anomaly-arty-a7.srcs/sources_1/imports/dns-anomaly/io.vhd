@@ -100,8 +100,8 @@ ARCHITECTURE rtl OF io IS
     fspc : NATURAL RANGE 0 TO 15; -- filter srcUDP counter
     fdpc : NATURAL RANGE 0 TO 15; -- filter dstUDP counter
     fdnsc : NATURAL RANGE 0 TO 15; -- filter dns item counter
-    fpktsc : NATURAL RANGE 0 TO 2047; -- filter pkt start position counter
-    fpktc : NATURAL RANGE 0 TO 2047; -- filter pkt bits left counter
+    fpktsc : NATURAL RANGE 0 TO 511; -- filter pkt start position counter
+    fpktc : NATURAL RANGE 0 TO 128; -- filter pkt bits left counter
     fpktmf : STD_LOGIC; -- filter pkt match flag
   END RECORD;
 
@@ -666,7 +666,7 @@ BEGIN
             sin.s <= FilterPkt;
             sin.fdnsc <= s.fdnsc;
             -- update this line for pkt size change
-          ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) >= rd.dnsLength * 8) THEN
+          ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) = 512) THEN
             -- all check done
             sin.s <= CheckPkt;
             sin.fdnsc <= s.fdnsc + 1;
