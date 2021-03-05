@@ -72,7 +72,7 @@ ARCHITECTURE rtl OF mac_snd IS
   TYPE snd_t IS RECORD
     s : state_t;
     crc : STD_LOGIC_VECTOR(31 DOWNTO 0); -- CRC32 latch.
-    c : NATURAL RANGE 0 TO 1023; -- Max Value 1020
+    c : NATURAL RANGE 0 TO 511; -- Max Value 511
   END RECORD;
 
   SIGNAL d : snd_data_t
@@ -360,7 +360,7 @@ BEGIN
           E_TX_EN <= '1';
           sin.crc <= nextCRC32_D4(d.dnsPkt((s.c + 3) DOWNTO (s.c)), s.crc);
           --sin.crc <= nextCRC32_D4(x"0", s.crc);
-          IF s.c = 1020 THEN
+          IF s.c = 508 THEN
             sin.c <= 0;
             sin.s <= FrameCheck;
           ELSE
