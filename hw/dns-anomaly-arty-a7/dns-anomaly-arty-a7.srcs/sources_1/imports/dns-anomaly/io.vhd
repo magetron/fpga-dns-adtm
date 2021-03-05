@@ -7,7 +7,8 @@ USE work.common.ALL;
 
 ENTITY io IS
   GENERIC (
-    g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00"
+    g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00";
+    g_admin_dns_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"eeeeee350a00"
   );
   PORT (
     clk : IN STD_LOGIC;
@@ -48,6 +49,8 @@ ARCHITECTURE rtl OF io IS
     UpdateFilterSrcPortList,
     UpdateFilterDstPortMeta,
     UpdateFilterDstPortList,
+    UpdateFilterDNSMeta,
+    UpdateFilterDNSItem,
     
     -- Filtering Stages
     CheckSrcMAC,
@@ -93,6 +96,7 @@ ARCHITECTURE rtl OF io IS
     amc : NATURAL RANGE 0 TO 15; -- admin MAC counter
     aic : NATURAL RANGE 0 TO 15; -- admin IP counter
     apc : NATURAL RANGE 0 TO 15; -- admin UDP counter
+    adc : NATURAL RANGE 0 TO 15; -- admin DNS counter
     fsmc : NATURAL RANGE 0 TO 15; -- filter srcMAC counter
     fdmc : NATURAL RANGE 0 TO 15; -- filter dstMAC counter
     fsic : NATURAL RANGE 0 TO 15; -- filter srcIP counter
@@ -114,6 +118,7 @@ ARCHITECTURE rtl OF io IS
   amc => 0,
   aic => 0,
   apc => 0,
+  adc => 0,
   fsmc => 0,
   fdmc => 0,
   fsic => 0,
@@ -219,6 +224,12 @@ BEGIN
             
             sin.s <= UpdateFilterSrcMACMeta;
             sin.pc <= 0;
+          ELSIF (rd.dstMAC = g_admin_dns_mac) THEN
+            sin.led <= x"8";
+            
+            sin.s <= UpdateFilterDNSItem;
+            sin.pc <= 0;
+            sin.adc <= 0;
           ELSE
             sin.s <= CheckSrcMAC;
             sin.fsmc <= 0;
@@ -345,8 +356,26 @@ BEGIN
             f.dstPortList(1) <= rd.dnsPkt(401 DOWNTO 386);
             sin.apc <= s.apc + 1;
           ELSE
+            sin.s <= UpdateFilterDNSMeta;
+          END IF;
+          
+        WHEN UpdateFilterDNSMeta =>
+          f.dnsBW <= rd.dnsPkt(402);
+          f.dnsLength <= to_integer(unsigned(rd.dnsPkt(404 DOWNTO 403)));
+          f.dnsItemEndPtr(0) <= to_integer(unsigned(rd.dnsPkt(411 DOWNTO 405)));
+          f.dnsItemEndPtr(1) <= to_integer(unsigned(rd.dnsPkt(418 DOWNTO 412)));
+          sin.s <= Idle;
+          
+        WHEN UpdateFilterDNSItem =>
+          IF (s.adc = 0) THEN
+            f.dnsList(0) <= rd.dnsPkt(127 DOWNTO 0);
+            sin.adc <= s.adc + 1;
+          ELSIF (s.adc = 1) THEN
+            f.dnsList(1) <= rd.dnsPkt(255 DOWNTO 128);
+            sin.adc <= s.adc + 1;
+          ELSE
             sin.s <= Idle;
-          END IF; 
+          END IF;
 
         --------FILTER ROUTE--------
         --SRCMAC
