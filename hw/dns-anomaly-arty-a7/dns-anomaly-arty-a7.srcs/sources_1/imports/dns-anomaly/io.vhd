@@ -29,12 +29,12 @@ ARCHITECTURE rtl OF io IS
   TYPE state_t IS (
     -- MINDFUL: must have odd number of stages to slip in an update
     -- within TX clk cycles
-  
+
     Idle,
-    
+
     Read,
     CheckAdmin,
-    
+
     -- Admin Stages
     UpdateFilterSrcMACMeta,
     UpdateFilterSrcMACList,
@@ -48,7 +48,7 @@ ARCHITECTURE rtl OF io IS
     UpdateFilterSrcPortList,
     UpdateFilterDstPortMeta,
     UpdateFilterDstPortList,
-    
+
     -- Filtering Stages
     CheckSrcMAC,
     CmpSrcMAC,
@@ -72,7 +72,7 @@ ARCHITECTURE rtl OF io IS
     CmpPktArea,
     CmpPktDone,
     FilterPkt,
-    
+
     -- Finalising Stages
     MetaInfo,
     ChecksumCalc,
@@ -125,7 +125,7 @@ ARCHITECTURE rtl OF io IS
   fpktc => 0,
   fpktmf => '0'
   );
-  
+
   SIGNAL rd : rcv_data_t
   := rcv_data_t'(
   srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
@@ -135,8 +135,8 @@ ARCHITECTURE rtl OF io IS
   dnsLength => 0,
   dnsPkt => (OTHERS => '0')
   );
-  
-  SIGNAL sd: snd_data_t
+
+  SIGNAL sd : snd_data_t
   := snd_data_t'(
   srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
   srcIP => (OTHERS => '0'), dstIP => (OTHERS => '0'),
@@ -146,53 +146,53 @@ ARCHITECTURE rtl OF io IS
   udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0'),
   dnsPkt => (OTHERS => '0')
   );
-  
+
   SIGNAL f : filter_t
   := filter_t'(
-    --whitelist only VMWare MAC
-    srcMACBW => '1',
-    srcMACLength => 1,
-    srcMACList => (x"ae295f290c00", x"000000000000"),
+  --whitelist only VMWare MAC
+  srcMACBW => '1',
+  srcMACLength => 1,
+  srcMACList => (x"ae295f290c00", x"000000000000"),
 
-    --blacklist 00:0a:35:ff:ff:ff
-    dstMACBW => '0',
-    dstMACLength => 1,
-    dstMACList => (x"ffffff350a00", x"000000000000"),
-    
-    --whitelist 0.0.0.0, 192.168.255.255
-    srcIPBW => '1',
-    srcIPLength => 2,
-    srcIPList => (x"00000000", x"ffffa8c0"),
-    
-    --blacklist 1.2.3.4, 255.255.255.255
-    dstIPBW => '0',
-    dstIPLength => 2,
-    dstIPList => (x"04030201", x"ffffffff"),
-    
-    --whitelist port 53 (0x35), 12345(0x3039)
-    srcPortBW => '1',
-    srcPortLength => 2,
-    srcPortList => (x"3500", x"3930"),
-    
-    --whitelist port 53 (0x35), 23456(0x5ba0)
-    dstPortBW => '1',
-    dstPortLength => 2,
-    dstPortList => (x"3500", x"a05b"),
-    
-    --blakclist apple.com (length 9 bytes), google.com(length 10 bytes)
-    dnsBW => '0',
-    dnsLength => 2,
-    dnsList => (x"000000000000006d6f632e656c707061", x"0000000000006d6f632e656c676f6f67"),
-    dnsItemEndPtr => (72, 80)
-   );
+  --blacklist 00:0a:35:ff:ff:ff
+  dstMACBW => '0',
+  dstMACLength => 1,
+  dstMACList => (x"ffffff350a00", x"000000000000"),
+
+  --whitelist 0.0.0.0, 192.168.255.255
+  srcIPBW => '1',
+  srcIPLength => 2,
+  srcIPList => (x"00000000", x"ffffa8c0"),
+
+  --blacklist 1.2.3.4, 255.255.255.255
+  dstIPBW => '0',
+  dstIPLength => 2,
+  dstIPList => (x"04030201", x"ffffffff"),
+
+  --whitelist port 53 (0x35), 12345(0x3039)
+  srcPortBW => '1',
+  srcPortLength => 2,
+  srcPortList => (x"3500", x"3930"),
+
+  --whitelist port 53 (0x35), 23456(0x5ba0)
+  dstPortBW => '1',
+  dstPortLength => 2,
+  dstPortList => (x"3500", x"a05b"),
+
+  --blakclist apple.com (length 9 bytes), google.com(length 10 bytes)
+  dnsBW => '0',
+  dnsLength => 2,
+  dnsList => (x"000000000000006d6f632e656c707061", x"0000000000006d6f632e656c676f6f67"),
+  dnsItemEndPtr => (72, 80)
+  );
 
 BEGIN
 
   rcvsnd : PROCESS (clk)
-  VARIABLE ipLengthbuf : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-  VARIABLE udpLengthbuf : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-  VARIABLE srcIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
-  VARIABLE dstIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
+    VARIABLE ipLengthbuf : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
+    VARIABLE udpLengthbuf : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
+    VARIABLE srcIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
+    VARIABLE dstIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
   BEGIN
 
     IF rising_edge(clk) THEN
@@ -206,17 +206,17 @@ BEGIN
           END IF;
           --DEBUG
           --sin.led <= STD_LOGIC_VECTOR(to_unsigned(f.srcMACLength, sin.led'length));
-          
+
         WHEN Read =>
           rd <= el_rcv_data;
           el_rcv_ack <= '1';
           sin.s <= CheckAdmin;
-          
+
         WHEN CheckAdmin =>
           IF (rd.dstMAC = g_admin_mac) THEN
             -- SIGNALS recognition of admin pkt
-            sin.led <= x"f";        
-            
+            sin.led <= x"f";
+
             sin.s <= UpdateFilterSrcMACMeta;
             sin.pc <= 0;
           ELSE
@@ -224,7 +224,7 @@ BEGIN
             sin.fsmc <= 0;
           END IF;
 
-        --------ADMIN ROUTE--------          
+          --------ADMIN ROUTE--------          
         WHEN UpdateFilterSrcMACMeta =>
           -- ALL filter elements shall be supplied, check against common.vhd
           -- SRC MAC
@@ -233,11 +233,11 @@ BEGIN
           f.srcMACLength <= to_integer(unsigned(rd.dnsPkt(2 DOWNTO 1)));
           sin.s <= UpdateFilterSrcMACList;
           sin.amc <= 0;
-          
+
         WHEN UpdateFilterSrcMACList =>
           --f.srcMACList(0) <= rd.dnsPkt(50 DOWNTO 3); --f.srcMACList(1) <= rd.dnsPkt(98 DOWNTO 51);
           -- 50 DOWNTO 3, 98 DOWNTO 51, s.c < 2 here is constant, filter_depth
-          IF (s.amc = 0) THEN 
+          IF (s.amc = 0) THEN
             f.srcMACList(0) <= rd.dnsPkt(50 DOWNTO 3);
             sin.amc <= s.amc + 1;
           ELSIF (s.amc = 1) THEN
@@ -254,11 +254,11 @@ BEGIN
           f.dstMACLength <= to_integer(unsigned(rd.dnsPkt(101 DOWNTO 100)));
           sin.s <= UpdateFilterDstMACList;
           sin.amc <= 0;
-        
+
         WHEN UpdateFilterDstMACList =>
           --f.dstMACList(0) <= rd.dnsPkt(149 DOWNTO 102); --f.dstMACList(1) <= rd.dnsPkt(197 DOWNTO 150);
           -- 149 DOWNTO 102, 197 DOWNTO 150, s.c < 2 here is constant, filter_depth
-          IF (s.amc = 0) THEN 
+          IF (s.amc = 0) THEN
             f.dstMACList(0) <= rd.dnsPkt(149 DOWNTO 102);
             sin.amc <= s.amc + 1;
           ELSIF (s.amc = 1) THEN
@@ -266,8 +266,8 @@ BEGIN
             sin.amc <= s.amc + 1;
           ELSE
             sin.s <= UpdateFilterSrcIPMeta;
-          END IF;      
-        
+          END IF;
+
         WHEN UpdateFilterSrcIPMeta =>
           -- SRC IP
           f.srcIPBW <= rd.dnsPkt(198);
@@ -275,19 +275,19 @@ BEGIN
           f.srcIPLength <= to_integer(unsigned(rd.dnsPkt(200 DOWNTO 199)));
           sin.s <= UpdateFilterSrcIPList;
           sin.aic <= 0;
-        
+
         WHEN UpdateFilterSrcIPList =>
           --f.srcIPList(0) <= rd.dnsPkt(232 DOWNTO 201); --f.srcIPList(1) <= rd.dnsPkt(264 DOWNTO 233);
           -- 232 DOWNTO 201, 264 DOWNTO 233, s.c < 2 here is constant, filter_depth
-          IF (s.aic = 0) THEN 
+          IF (s.aic = 0) THEN
             f.srcIPList(0) <= rd.dnsPkt(232 DOWNTO 201);
             sin.aic <= s.aic + 1;
           ELSIF (s.aic = 1) THEN
             f.srcIPList(1) <= rd.dnsPkt(264 DOWNTO 233);
-            sin.aic <= s.aic + 1;           
+            sin.aic <= s.aic + 1;
           ELSE
             sin.s <= UpdateFilterDstIPMeta;
-          END IF;  
+          END IF;
 
         WHEN UpdateFilterDstIPMeta =>
           -- DST IP
@@ -296,11 +296,11 @@ BEGIN
           f.dstIPLength <= to_integer(unsigned(rd.dnsPkt(267 DOWNTO 266)));
           sin.s <= UpdateFilterDstIPList;
           sin.aic <= 0;
-        
+
         WHEN UpdateFilterDstIPList =>
           --f.dstIPList(0) <= rd.dnsPkt(299 DOWNTO 268); --f.dstIPList(1) <= rd.dnsPkt(331 DOWNTO 300);
           -- 299 DOWNTO 268, 331 DOWNTO 300, s.c < 2 here is constant, filter_depth
-          IF (s.aic = 0) THEN 
+          IF (s.aic = 0) THEN
             f.dstIPList(0) <= rd.dnsPkt(299 DOWNTO 268);
             sin.aic <= s.aic + 1;
           ELSIF (s.aic = 1) THEN
@@ -309,7 +309,7 @@ BEGIN
           ELSE
             sin.s <= UpdateFilterSrcPortMeta;
           END IF;
-          
+
         WHEN UpdateFilterSrcPortMeta =>
           -- SRC Port
           f.srcPortBW <= rd.dnsPkt(332);
@@ -317,17 +317,17 @@ BEGIN
           f.srcPortLength <= to_integer(unsigned(rd.dnsPkt(334 DOWNTO 333)));
           sin.s <= UpdateFilterSrcPortList;
           sin.apc <= 0;
-        
+
         WHEN UpdateFilterSrcPortList =>
-          IF (s.apc = 0) THEN 
+          IF (s.apc = 0) THEN
             f.srcPortList(0) <= rd.dnsPkt(350 DOWNTO 335);
             sin.apc <= s.apc + 1;
           ELSIF (s.apc = 1) THEN
             f.srcPortList(1) <= rd.dnsPkt(366 DOWNTO 351);
-            sin.apc <= s.apc + 1;           
+            sin.apc <= s.apc + 1;
           ELSE
             sin.s <= UpdateFilterDstPortMeta;
-          END IF;  
+          END IF;
 
         WHEN UpdateFilterDstPortMeta =>
           -- DST Port
@@ -336,9 +336,9 @@ BEGIN
           f.dstPortLength <= to_integer(unsigned(rd.dnsPkt(369 DOWNTO 368)));
           sin.s <= UpdateFilterDstPortList;
           sin.apc <= 0;
-        
+
         WHEN UpdateFilterDstPortList =>
-          IF (s.apc = 0) THEN 
+          IF (s.apc = 0) THEN
             f.dstPortList(0) <= rd.dnsPkt(385 DOWNTO 370);
             sin.apc <= s.apc + 1;
           ELSIF (s.apc = 1) THEN
@@ -346,10 +346,10 @@ BEGIN
             sin.apc <= s.apc + 1;
           ELSE
             sin.s <= Idle;
-          END IF; 
+          END IF;
 
-        --------FILTER ROUTE--------
-        --SRCMAC
+          --------FILTER ROUTE--------
+          --SRCMAC
         WHEN CheckSrcMAC =>
           IF (s.fsmc = f.srcMACLength) THEN
             IF (f.srcMACBW = '0') THEN
@@ -364,8 +364,8 @@ BEGIN
           ELSE
             sin.s <= CmpSrcMAC;
             sin.fsmc <= s.fsmc;
-          END IF; 
-          
+          END IF;
+
         WHEN CmpSrcMAC =>
           -- check if srcMAC is on list
           IF (rd.srcMAC = f.srcMACList(s.fsmc)) THEN
@@ -386,8 +386,8 @@ BEGIN
             sin.s <= CheckDstMAC;
             sin.fdmc <= 0;
           END IF;
-          
-        --DSTMAC
+
+          --DSTMAC
         WHEN CheckDstMAC =>
           IF (s.fdmc = f.dstMACLength) THEN
             IF (f.dstMACBW = '0') THEN
@@ -402,8 +402,8 @@ BEGIN
           ELSE
             sin.s <= CmpDstMAC;
             sin.fdmc <= s.fdmc;
-          END IF; 
-          
+          END IF;
+
         WHEN CmpDstMAC =>
           -- check if srcMAC is on list
           IF (rd.dstMAC = f.dstMACList(s.fdmc)) THEN
@@ -424,8 +424,8 @@ BEGIN
             sin.s <= CheckSrcIP;
             sin.fsic <= 0;
           END IF;
-          
-        --SRCIP
+
+          --SRCIP
         WHEN CheckSrcIP =>
           IF (s.fsic = f.srcIPLength) THEN
             IF (f.srcIPBW = '0') THEN
@@ -440,8 +440,8 @@ BEGIN
           ELSE
             sin.s <= CmpSrcIP;
             sin.fsic <= s.fsic;
-          END IF; 
-          
+          END IF;
+
         WHEN CmpSrcIP =>
           -- check if srcIP is on list
           IF (rd.srcIP = f.srcIPList(s.fsic)) THEN
@@ -462,8 +462,8 @@ BEGIN
             sin.s <= CheckDstIP;
             sin.fdic <= 0;
           END IF;
-          
-        --DSTIP
+
+          --DSTIP
         WHEN CheckDstIP =>
           IF (s.fdic = f.dstIPLength) THEN
             IF (f.dstIPBW = '0') THEN
@@ -478,8 +478,8 @@ BEGIN
           ELSE
             sin.s <= CmpDstIP;
             sin.fdic <= s.fdic;
-          END IF; 
-          
+          END IF;
+
         WHEN CmpDstIP =>
           -- check if dstIP is on list
           IF (rd.dstIP = f.dstIPList(s.fdic)) THEN
@@ -500,8 +500,8 @@ BEGIN
             sin.s <= CheckSrcPort;
             sin.fspc <= 0;
           END IF;
-        
-        --SRCPORT
+
+          --SRCPORT
         WHEN CheckSrcPort =>
           IF (s.fspc = f.srcPortLength) THEN
             IF (f.srcPortBW = '0') THEN
@@ -516,8 +516,8 @@ BEGIN
           ELSE
             sin.s <= CmpSrcPort;
             sin.fspc <= s.fspc;
-          END IF; 
-          
+          END IF;
+
         WHEN CmpSrcPort =>
           -- check if srcPort is on list
           IF (rd.srcPort = f.srcPortList(s.fspc)) THEN
@@ -538,8 +538,8 @@ BEGIN
             sin.s <= CheckDstPort;
             sin.fdpc <= 0;
           END IF;
-          
-        --DSTPORT
+
+          --DSTPORT
         WHEN CheckDstPort =>
           IF (s.fdpc = f.dstPortLength) THEN
             IF (f.dstPortBW = '0') THEN
@@ -554,8 +554,8 @@ BEGIN
           ELSE
             sin.s <= CmpDstPort;
             sin.fdpc <= s.fdpc;
-          END IF; 
-          
+          END IF;
+
         WHEN CmpDstPort =>
           -- check if dstPort is on list
           IF (rd.dstPort = f.dstPortList(s.fdpc)) THEN
@@ -576,8 +576,8 @@ BEGIN
             sin.s <= CheckPkt;
             sin.fdnsc <= 0;
           END IF;
-          
-        --PKT
+
+          --PKT
         WHEN CheckPkt =>
           IF (s.fdnsc = f.dnsLength) THEN
             IF (f.dnsBW = '0') THEN
@@ -595,55 +595,77 @@ BEGIN
             sin.fpktmf <= '0';
             sin.fdnsc <= s.fdnsc;
           END IF;
-          
+
         WHEN CmpPktArea =>
           IF (s.fpktc >= 32) THEN
             IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 32))
               = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 32))) THEN
-              sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
-              sin.fpktc <= s.fpktc - 32; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktArea;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktc <= s.fpktc - 32;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             ELSE
               sin.s <= CmpPktDone;
-              sin.fpktsc <= s.fpktsc; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             END IF;
           ELSIF (s.fpktc >= 24) THEN
             IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 24))
               = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 24))) THEN
-              sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
-              sin.fpktc <= s.fpktc - 24; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktArea;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktc <= s.fpktc - 24;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             ELSE
               sin.s <= CmpPktDone;
-              sin.fpktsc <= s.fpktsc; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
-            END IF;          
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
+            END IF;
           ELSIF (s.fpktc >= 16) THEN
             IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 16))
               = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 16))) THEN
-              sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
-              sin.fpktc <= s.fpktc - 16; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktArea;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktc <= s.fpktc - 16;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             ELSE
-              sin.s <= CmpPktDone; sin.fpktsc <= s.fpktsc;
-              sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
-            END IF;                 
+              sin.s <= CmpPktDone;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
+            END IF;
           ELSIF (s.fpktc >= 8) THEN
             IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 8))
               = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 8))) THEN
-              sin.s <= CmpPktArea; sin.fpktsc <= s.fpktsc;
-              sin.fpktc <= s.fpktc - 8; sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktArea;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktc <= s.fpktc - 8;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             ELSE
-              sin.s <= CmpPktDone; sin.fpktsc <= s.fpktsc;
-              sin.fpktmf <= '0'; sin.fdnsc <= s.fdnsc;
+              sin.s <= CmpPktDone;
+              sin.fpktsc <= s.fpktsc;
+              sin.fpktmf <= '0';
+              sin.fdnsc <= s.fdnsc;
             END IF;
           ELSE
-            sin.s <= CmpPktDone; sin.fpktsc <= s.fpktsc;
-            sin.fpktmf <= '1'; sin.fdnsc <= s.fdnsc;
-          END IF;       
-        
+            sin.s <= CmpPktDone;
+            sin.fpktsc <= s.fpktsc;
+            sin.fpktmf <= '1';
+            sin.fdnsc <= s.fdnsc;
+          END IF;
+
         WHEN CmpPktDone =>
           IF (s.fpktmf = '1') THEN
             -- there's a match
             sin.s <= FilterPkt;
-            sin.fdnsc <= s.fdnsc;     
-          -- update this line for pkt size change
+            sin.fdnsc <= s.fdnsc;
+            -- update this line for pkt size change
           ELSIF (s.fpktsc + f.dnsItemEndPtr(s.fdnsc) = 512) THEN
             -- all check done
             sin.s <= CheckPkt;
@@ -665,9 +687,9 @@ BEGIN
           ELSE
             --it's on whitelist, move on to next step
             sin.s <= MetaInfo;
-          END IF;    
-          
-        ---------SEND PACKET STAGE----------
+          END IF;
+
+          ---------SEND PACKET STAGE----------
         WHEN MetaInfo =>
           sd.srcIP <= rd.dstIP;
           sd.dstIP <= rd.srcIP;
@@ -677,16 +699,16 @@ BEGIN
           ipLengthbuf := STD_LOGIC_VECTOR(to_unsigned(rd.ipLength, ipLengthbuf'length));
           udpLengthbuf := STD_LOGIC_VECTOR(to_unsigned(rd.dnsLength + 8, udpLengthbuf'length));
           srcIPchecksumbuf := unsigned(STD_LOGIC_VECTOR'(x"0000" & rd.dstIP(23 DOWNTO 16) & rd.dstIP(31 DOWNTO 24))) +
-                              unsigned(STD_LOGIC_VECTOR'(x"0000" & rd.dstIP(7 DOWNTO 0) & rd.dstIP(15 DOWNTO 8)));
+            unsigned(STD_LOGIC_VECTOR'(x"0000" & rd.dstIP(7 DOWNTO 0) & rd.dstIP(15 DOWNTO 8)));
           dstIPchecksumbuf := unsigned(STD_LOGIC_VECTOR'(x"0000" & rd.srcIP(23 DOWNTO 16) & rd.srcIP(31 DOWNTO 24))) +
-                              unsigned(STD_LOGIC_VECTOR'(x"0000" & rd.srcIP(7 DOWNTO 0) & rd.srcIP(15 DOWNTO 8)));
+            unsigned(STD_LOGIC_VECTOR'(x"0000" & rd.srcIP(7 DOWNTO 0) & rd.srcIP(15 DOWNTO 8)));
           sin.s <= ChecksumCalc;
 
         WHEN ChecksumCalc =>
           sin.chksumbuf <= x"00004500" +
-                           unsigned(STD_LOGIC_VECTOR'(x"0000" & ipLengthbuf(3 DOWNTO 0) & ipLengthbuf(7 DOWNTO 4))) +
-                           unsigned(STD_LOGIC_VECTOR'(x"0000" & sd.ipTTL & x"11")) +
-                           srcIPchecksumbuf + dstIPchecksumbuf;
+          unsigned(STD_LOGIC_VECTOR'(x"0000" & ipLengthbuf(3 DOWNTO 0) & ipLengthbuf(7 DOWNTO 4))) +
+          unsigned(STD_LOGIC_VECTOR'(x"0000" & sd.ipTTL & x"11")) +
+          srcIPchecksumbuf + dstIPchecksumbuf;
           sin.s <= ChecksumPopulate;
 
         WHEN ChecksumPopulate =>

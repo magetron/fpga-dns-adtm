@@ -47,7 +47,7 @@ ARCHITECTURE rtl OF main IS
       --led : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
     );
   END COMPONENT;
-  
+
   COMPONENT fifo_rcv IS
     PORT (
       wclk : IN STD_LOGIC; -- Write Clock
@@ -58,7 +58,7 @@ ARCHITECTURE rtl OF main IS
       r_data : OUT rcv_data_t; -- Ethernet Receving Data out
       buf_not_empty : OUT STD_LOGIC -- Buffer NOT Empty
     );
-  END COMPONENT;  
+  END COMPONENT;
 
   COMPONENT mac_snd IS
     PORT (
@@ -101,11 +101,11 @@ ARCHITECTURE rtl OF main IS
 
   SIGNAL el_rcv_data_phy : rcv_data_t; -- Receive data RCV -> FIFO_RCV
   SIGNAL el_rcv_dv_phy : STD_LOGIC; -- Received data valid RCV -> FIFO_RCV
-  
+
   SIGNAL el_rcv_dv_buf : STD_LOGIC; -- Received data valid FIFO_RCV -> Core
-  SIGNAL el_rcv_data_buf : rcv_data_t;  -- Recevie data FIFO_RCV -> Core
+  SIGNAL el_rcv_data_buf : rcv_data_t; -- Recevie data FIFO_RCV -> Core
   SIGNAL el_rcv_ack_buf : STD_LOGIC; -- Recevied data Ready FIFO_RCV -> Core
-    
+
   SIGNAL el_snd_data_buf : snd_data_t; -- Send data Core 
   SIGNAL el_snd_en_buf : STD_LOGIC; -- Enable sending.
 
@@ -133,7 +133,7 @@ BEGIN
     el_dv => el_rcv_dv_phy
     --led => LED
   );
-  
+
   fifo_receive : fifo_rcv PORT MAP(
     wclk => E_RX_CLK,
     rclk => clk50,
@@ -153,7 +153,7 @@ BEGIN
     el_data => el_snd_data_phy,
     el_snd_ack => el_snd_ack_phy
   );
-  
+
   fifo_send : fifo_snd PORT MAP(
     wclk => clk50,
     --wclk => clk,

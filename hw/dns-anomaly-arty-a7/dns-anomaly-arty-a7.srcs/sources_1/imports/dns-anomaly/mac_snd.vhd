@@ -110,7 +110,7 @@ BEGIN
             sin.c <= 0;
             sin.s <= Read;
           END IF;
-          
+
         WHEN Read =>
           d <= el_data;
           el_snd_ack <= '1';

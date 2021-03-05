@@ -7,9 +7,9 @@ PACKAGE common IS
   TYPE rcv_data_t IS RECORD
     srcMAC : STD_LOGIC_VECTOR(47 DOWNTO 0);
     dstMAC : STD_LOGIC_VECTOR(47 DOWNTO 0);
-    srcIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    dstIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    ipHeaderLength: NATURAL RANGE 0 TO 15;
+    srcIP : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    dstIP : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    ipHeaderLength : NATURAL RANGE 0 TO 15;
     ipLength : NATURAL RANGE 0 TO 65535; -- MAX 576, 65535 for intake pkt
     srcPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
@@ -20,8 +20,8 @@ PACKAGE common IS
   TYPE snd_data_t IS RECORD
     srcMAC : STD_LOGIC_VECTOR(47 DOWNTO 0);
     dstMAC : STD_LOGIC_VECTOR(47 DOWNTO 0);
-    srcIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    dstIP  : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    srcIP : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    dstIP : STD_LOGIC_VECTOR(31 DOWNTO 0);
     ipLength : STD_LOGIC_VECTOR(15 DOWNTO 0);
     ipChecksum : STD_LOGIC_VECTOR(15 DOWNTO 0);
     ipTTL : STD_LOGIC_VECTOR(7 DOWNTO 0);
@@ -31,7 +31,7 @@ PACKAGE common IS
     udpChecksum : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dnsPkt : STD_LOGIC_VECTOR(511 DOWNTO 0);
   END RECORD;
-  
+
   CONSTANT filter_depth : NATURAL := 2;
   TYPE macfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(47 DOWNTO 0);
   TYPE ipfilter_list_t IS ARRAY (0 TO filter_depth - 1) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -49,20 +49,20 @@ PACKAGE common IS
     dstMACList : macfilter_list_t;
     srcIPBW : STD_LOGIC;
     srcIPLength : NATURAL RANGE 0 TO filter_depth;
-    srcIPList: ipfilter_list_t;
+    srcIPList : ipfilter_list_t;
     dstIPBW : STD_LOGIC;
     dstIPLength : NATURAL RANGE 0 TO filter_depth;
-    dstIPList: ipfilter_list_t;
+    dstIPList : ipfilter_list_t;
     srcPortBW : STD_LOGIC;
     srcPortLength : NATURAL RANGE 0 TO filter_depth;
     srcPortList : udpfilter_list_t;
     dstPortBW : STD_LOGIC;
     dstPortLength : NATURAL RANGE 0 TO filter_depth;
     dstPortList : udpfilter_list_t;
-    dnsBW: STD_LOGIC;
+    dnsBW : STD_LOGIC;
     dnsLength : NATURAL RANGE 0 TO filter_depth;
     dnsList : dnsfilter_list_t;
-    dnsItemEndPtr : dnsfilter_item_endptr_list_t ;
+    dnsItemEndPtr : dnsfilter_item_endptr_list_t;
   END RECORD;
 
 END common;

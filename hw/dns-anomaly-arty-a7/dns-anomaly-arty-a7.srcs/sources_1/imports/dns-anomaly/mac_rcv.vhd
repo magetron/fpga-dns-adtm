@@ -49,7 +49,7 @@ ARCHITECTURE rtl OF mac_rcv IS
     ipc : NATURAL RANGE 0 TO 65535;
     udpc : NATURAL RANGE 0 TO 65535;
   END RECORD;
-  
+
   SIGNAL d : rcv_data_t
   := rcv_data_t'(
   srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
@@ -296,7 +296,7 @@ BEGIN
 
             -- UDP payload length
           WHEN UDPLength =>
-            IF r.c = 0 or r.c = 2 THEN
+            IF r.c = 0 OR r.c = 2 THEN
               rin.udpc <= r.udpc + to_integer(unsigned(E_RXD));
             ELSIF r.c = 1 THEN
               rin.udpc <= (r.udpc + to_integer(unsigned(E_RXD)) * 16) * 256;
