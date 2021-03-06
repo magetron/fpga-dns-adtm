@@ -14,7 +14,7 @@ PACKAGE common IS
     srcPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     dnsLength : NATURAL RANGE 0 TO 65535; -- 65535 for intake pkt
-    dnsPkt : STD_LOGIC_VECTOR(511 DOWNTO 0);
+    dnsPkt : STD_LOGIC_VECTOR(4095 DOWNTO 0);
   END RECORD;
 
   TYPE snd_data_t IS RECORD
@@ -29,7 +29,7 @@ PACKAGE common IS
     dstPort : STD_LOGIC_VECTOR(15 DOWNTO 0);
     udpLength : STD_LOGIC_VECTOR(15 DOWNTO 0);
     udpChecksum : STD_LOGIC_VECTOR(15 DOWNTO 0);
-    dnsPkt : STD_LOGIC_VECTOR(511 DOWNTO 0);
+    dnsPkt : STD_LOGIC_VECTOR(4095 DOWNTO 0);
   END RECORD;
 
   CONSTANT filter_depth : NATURAL := 2;
