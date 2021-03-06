@@ -204,8 +204,6 @@ BEGIN
         WHEN Idle =>
           IF (el_rcv_dv = '1') THEN
             sin.s <= Read;
-          ELSE
-            sin.s <= Idle;
           END IF;
           --DEBUG
           --sin.led <= STD_LOGIC_VECTOR(to_unsigned(f.srcMACLength, sin.led'length));
