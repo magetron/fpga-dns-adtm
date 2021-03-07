@@ -40,6 +40,10 @@ struct [[gnu::packed]] udp_port_t {
   uint16_t port;
 };
 
+struct [[gnu::packed]] dns_filter_item_t {
+  unsigned char c[16];
+};
+
 struct filter_t {
   unsigned srcMACBW : 1;
   unsigned srcMACLength : 2; // 0,1,2 FILTER_DEPTH related
@@ -59,6 +63,10 @@ struct filter_t {
   unsigned dstPortBW : 1;
   unsigned dstPortLength : 2;
   udp_port_t dstPortList[2];
+  unsigned dnsBW : 1;
+  unsigned dnsLength : 2;
+  uint8_t dnsItemEndPtr[2];
+  dns_filter_item_t dnsList[2];
 };
 
 static inline uint16_t IPchecksum(uint16_t *buff, int32_t _16bitword) {
