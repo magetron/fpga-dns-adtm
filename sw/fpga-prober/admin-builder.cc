@@ -77,6 +77,14 @@ void write_to_file (filter_t& f) {
   for (size_t i = 0; i < FILTER_DEPTH; i++)
     write_buf(f.dstPortList[i].port, 16);
 
+  write_buf(f.dnsBW, 1);
+  write_buf(f.dnsLength, 2);
+  for (size_t i = 0; i < FILTER_DEPTH; i++)
+    write_buf(f.dnsItemEndPtr[i], 8);
+  for (size_t i = 0; i < FILTER_DEPTH; i++)
+    for (size_t j = 0; j < 16; j++)
+      write_buf(f.dnsList[i].c[j], 8);
+
   // closing
   write_buf(0, 0);
   fclose(file);
@@ -141,6 +149,41 @@ int main (int argc, char** argv) {
   f.dstPortLength = 0;
   f.dstPortList[0].port = __bswap_16(0);
   f.dstPortList[1].port = __bswap_16(0);
+
+  f.dnsBW = 1;
+  f.dnsLength = 2;
+  f.dnsItemEndPtr[0] = 10 * 8;
+  f.dnsList[0].c[0] = 'g';
+  f.dnsList[0].c[1] = 'o';
+  f.dnsList[0].c[2] = 'o';
+  f.dnsList[0].c[3] = 'g';
+  f.dnsList[0].c[4] = 'l';
+  f.dnsList[0].c[5] = 'e';
+  f.dnsList[0].c[6] = '.';
+  f.dnsList[0].c[7] = 'c';
+  f.dnsList[0].c[8] = 'o';
+  f.dnsList[0].c[9] = 'm';
+  for (size_t i = 10; i < 16; i++) {
+    f.dnsList[0].c[i] = 0;
+  }
+
+  f.dnsItemEndPtr[1] = 13 * 8;
+  f.dnsList[1].c[0] = 'm';
+  f.dnsList[1].c[1] = 'i';
+  f.dnsList[1].c[2] = 'c';
+  f.dnsList[1].c[3] = 'r';
+  f.dnsList[1].c[4] = 'o';
+  f.dnsList[1].c[5] = 's';
+  f.dnsList[1].c[6] = 'o';
+  f.dnsList[1].c[7] = 'f';
+  f.dnsList[1].c[8] = 't';
+  f.dnsList[1].c[9] = '.';
+  f.dnsList[1].c[10] = 'c';
+  f.dnsList[1].c[11] = 'o';
+  f.dnsList[1].c[12] = 'm';
+  for (size_t i = 13; i < 16; i++) {
+    f.dnsList[1].c[i] = 0;
+  }
 
   write_to_file(f);
 

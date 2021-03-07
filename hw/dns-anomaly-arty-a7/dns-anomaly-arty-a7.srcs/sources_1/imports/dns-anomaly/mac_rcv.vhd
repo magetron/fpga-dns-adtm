@@ -39,7 +39,8 @@ ARCHITECTURE rtl OF mac_rcv IS
     UDPPortDST, -- 2 byte UDP Port DST
     UDPLength, -- 2 byte UDP Length
     UDPChecksum, -- 2 byte
-    DNSMsg, -- 1472 bytes 1500 MTU - 20 IP - 8 UDP = 1472
+    DNSMsgRecord, -- 1472 bytes 1500 MTU - 20 IP - 8 UDP = 1472
+    DNSMsgDiscard,
     Notify -- Inform other hardware components.
   );
 
@@ -49,7 +50,7 @@ ARCHITECTURE rtl OF mac_rcv IS
     ipc : NATURAL RANGE 0 TO 65535;
     udpc : NATURAL RANGE 0 TO 65535;
   END RECORD;
-  
+
   SIGNAL d : rcv_data_t
   := rcv_data_t'(
   srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
@@ -296,7 +297,7 @@ BEGIN
 
             -- UDP payload length
           WHEN UDPLength =>
-            IF r.c = 0 or r.c = 2 THEN
+            IF r.c = 0 OR r.c = 2 THEN
               rin.udpc <= r.udpc + to_integer(unsigned(E_RXD));
             ELSIF r.c = 1 THEN
               rin.udpc <= (r.udpc + to_integer(unsigned(E_RXD)) * 16) * 256;
@@ -317,22 +318,31 @@ BEGIN
               d.dnsLength <= r.udpc;
               rin.udpc <= r.udpc * 8 - 4;
               d.dnsPkt <= (OTHERS => '0');
-              rin.s <= DNSMsg;
+              rin.s <= DNSMsgRecord;
             ELSE
               rin.c <= r.c + 1;
             END IF;
 
             -- DNS Msg
-          WHEN DNSMsg =>
-            IF r.c <= 508 THEN
-              d.dnsPkt((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+          WHEN DNSMsgRecord =>
+            d.dnsPkt((r.c + 3) DOWNTO (r.c)) <= E_RXD;
+            IF r.c = r.udpc THEN
+              rin.c <= 0;
+              rin.s <= Notify;
+            ELSIF r.c = 2044 THEN
+              rin.c <= r.c + 4;
+              rin.s <= DNSMsgDiscard;
+            ELSE
+              rin.c <= r.c + 4;
             END IF;
+            
+          WHEN DNSMsgDiscard =>
             IF r.c = r.udpc THEN
               rin.c <= 0;
               rin.s <= Notify;
             ELSE
               rin.c <= r.c + 4;
-            END IF;
+            END IF;          
 
             -- Notification                                                   --
           WHEN Notify =>
