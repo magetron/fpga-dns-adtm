@@ -137,6 +137,33 @@ Black whitelist logic is now fixed and should perform well, as well prolonged al
 
 Now supports IP-based filtering
 
+Mar 7th Log:
+
+This bug is killing me, now fixed it.
+
+"I literally just fixed the whole problem, it's because a signal is driving to many other signals within a clock cycle, i'm using a signal in a if statement and at the same time using it later on within the if statement, that caused the issue."
+
+"
+Hi Phil, I've finally resolved the issue
+it's due the fact that a signal driving to many other signals within a clock cycle
+remember (if dnsList(s.start_counter + s.counter + 1) downto ...) then sin.counter = s.counter -32?
+s.counter and s.start_counter here has to be buffered to drive the signal /comparison properly
+"
+
+"
+Think about a capacitance storing a value a, we have a statement
+if (a = 1) then b = a; With the comparison of capacitance brings the leakage of ions, so b = a might not succeed. so b goes into a meta state after the execution. 
+
+It depends on several factors, the distance between b and a, the comparison mux and a being a DRAM or SRAM. 
+
+If the distance is too long / or comparison takes too long / a is a DRAM, there's a possiblity that the leakage of voltage drops a below half and hence causing b = 0.
+
+If you buffer a in buf_a, and say if (a = 1) b = buf_a, the capacitance gets refreshed and the 1 value shall be assigned properly
+
+Update to last line, buf_a = a; (first clock cycle) if (a = 1) b = buf_a; (second clock cycle)
+"
+
+
 
 TODO:
 
