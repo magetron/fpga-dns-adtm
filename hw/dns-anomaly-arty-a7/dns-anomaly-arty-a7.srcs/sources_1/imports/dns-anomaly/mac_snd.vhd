@@ -72,7 +72,7 @@ ARCHITECTURE rtl OF mac_snd IS
   TYPE snd_t IS RECORD
     s : state_t;
     crc : STD_LOGIC_VECTOR(31 DOWNTO 0); -- CRC32 latch.
-    c : NATURAL RANGE 0 TO 2047;
+    c : NATURAL RANGE 0 TO 1023;
   END RECORD;
 
   SIGNAL d : snd_data_t
@@ -84,7 +84,7 @@ ARCHITECTURE rtl OF mac_snd IS
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
   udpLength => (OTHERS => '0'),
   udpChecksum => (OTHERS => '0'),
-  dnsPkt => (OTHERS => '0')
+  dnsPktCnt => 0, dnsPkt => (OTHERS => '0')
   );
 
   SIGNAL s, sin : snd_t
@@ -360,7 +360,7 @@ BEGIN
           E_TX_EN <= '1';
           sin.crc <= nextCRC32_D4(d.dnsPkt((s.c + 3) DOWNTO (s.c)), s.crc);
           --sin.crc <= nextCRC32_D4(x"0", s.crc);
-          IF s.c = 2044 THEN
+          IF (s.c >= d.dnsPktCnt and s.c >= 140) THEN
             sin.c <= 0;
             sin.s <= FrameCheck;
           ELSE

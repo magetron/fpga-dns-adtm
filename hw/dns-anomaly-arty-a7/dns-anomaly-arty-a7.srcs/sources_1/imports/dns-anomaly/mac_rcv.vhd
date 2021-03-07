@@ -329,7 +329,7 @@ BEGIN
             IF r.c = r.udpc THEN
               rin.c <= 0;
               rin.s <= Notify;
-            ELSIF r.c = 2044 THEN
+            ELSIF r.c = 1020 THEN
               rin.c <= r.c + 4;
               rin.s <= DNSMsgDiscard;
             ELSE

@@ -107,7 +107,7 @@ ARCHITECTURE rtl OF io IS
     fspc : NATURAL RANGE 0 TO 15; -- filter srcUDP counter
     fdpc : NATURAL RANGE 0 TO 15; -- filter dstUDP counter
     fdnsc : NATURAL RANGE 0 TO 15; -- filter dns item counter
-    fpktsc : NATURAL RANGE 0 TO 2047; -- filter pkt start position counter
+    fpktsc : NATURAL RANGE 0 TO 1023; -- filter pkt start position counter
     fpktc : NATURAL RANGE 0 TO 128; -- filter pkt bits left counter
     fpktmf : STD_LOGIC; -- filter pkt match flag
   END RECORD;
@@ -152,7 +152,7 @@ ARCHITECTURE rtl OF io IS
   ipChecksum => (OTHERS => '0'),
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
   udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0'),
-  dnsPkt => (OTHERS => '0')
+  dnsPktCnt => 0, dnsPkt => (OTHERS => '0')
   );
 
   SIGNAL f : filter_t
@@ -201,10 +201,12 @@ BEGIN
     VARIABLE udpLengthbuf : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
     VARIABLE srcIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
     VARIABLE dstIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
-    VARIABLE filterPktEndPtr : NATURAL RANGE 0 TO 2048;
-    VARIABLE filterPktAreaEndPtr : NATURAL RANGE 0 TO 2048;
-    VARIABLE filterPktItemEndPtr : NATURAL RANGE 0 TO 128;
-    VARIABLE filterPktItemPtr : NATURAL RANGE 0 TO 2;
+    VARIABLE dnsLengthbuf : NATURAL RANGE 0 TO 65535 := 0;
+    
+    VARIABLE filterPktEndPtr : NATURAL RANGE 0 TO 1024 := 0;
+    VARIABLE filterPktAreaEndPtr : NATURAL RANGE 0 TO 1024 := 0;
+    VARIABLE filterPktItemEndPtr : NATURAL RANGE 0 TO 128 := 0;
+    VARIABLE filterPktItemPtr : NATURAL RANGE 0 TO 2 := 0;
   BEGIN
 
     IF rising_edge(clk) THEN
@@ -629,8 +631,8 @@ BEGIN
             sin.fpktmf <= '0';
             sin.fdnsc <= s.fdnsc;
             -- change with pkt size
-            IF (rd.dnsLength > 256) THEN -- bytes
-              filterPktEndPtr := 2048; -- bits
+            IF (rd.dnsLength > 128) THEN -- bytes
+              filterPktEndPtr := 1024; -- bits
             ELSE
               filterPktEndPtr := rd.dnsLength * 8;
             END IF;
@@ -774,11 +776,17 @@ BEGIN
           sd.ipLength(15 DOWNTO 12) <= ipLengthbuf(3 DOWNTO 0);
           sd.ipChecksum(15 DOWNTO 8) <= STD_LOGIC_VECTOR(s.chksumbuf(7 DOWNTO 0));
           sd.ipChecksum(7 DOWNTO 0) <= STD_LOGIC_VECTOR(s.chksumbuf(15 DOWNTO 8));
+          dnsLengthbuf := rd.dnsLength;
           sin.s <= UDPHeader;
 
         WHEN UDPHeader =>
           sd.udpLength(15 DOWNTO 8) <= udpLengthbuf(7 DOWNTO 0);
           sd.udpLength(7 DOWNTO 0) <= udpLengthbuf(15 DOWNTO 8);
+          IF (dnsLengthbuf > 128) THEN  --bytes
+            sd.dnsPktCnt <= 1020;
+          ELSE
+            sd.dnsPktCnt <= rd.dnsLength * 8 - 4;
+          END IF;
           sin.s <= Finalise;
 
         WHEN Finalise =>

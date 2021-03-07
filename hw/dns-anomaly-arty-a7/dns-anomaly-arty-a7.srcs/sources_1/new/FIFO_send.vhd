@@ -33,7 +33,7 @@ ARCHITECTURE rtl OF FIFO_snd IS
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
   udpLength => (OTHERS => '0'),
   udpChecksum => (OTHERS => '0'),
-  dnsPkt => (OTHERS => '0')));
+  dnsPktCnt => 0, dnsPkt => (OTHERS => '0')));
 
   SIGNAL w_index, win_index : NATURAL RANGE 0 TO g_depth - 1 := 0;
   SIGNAL r_index, rin_index : NATURAL RANGE 0 TO g_depth - 1 := 0;
