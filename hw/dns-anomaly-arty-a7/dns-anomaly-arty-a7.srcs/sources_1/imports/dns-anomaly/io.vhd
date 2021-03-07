@@ -48,6 +48,8 @@ ARCHITECTURE rtl OF io IS
     UpdateFilterSrcPortList,
     UpdateFilterDstPortMeta,
     UpdateFilterDstPortList,
+    UpdateFilterDNSMeta,
+    UpdateFilterDNSList,
 
     -- Filtering Stages
     CheckSrcMAC,
@@ -97,6 +99,7 @@ ARCHITECTURE rtl OF io IS
     amc : NATURAL RANGE 0 TO 15; -- admin MAC counter
     aic : NATURAL RANGE 0 TO 15; -- admin IP counter
     apc : NATURAL RANGE 0 TO 15; -- admin UDP counter
+    adc : NATURAL RANGE 0 TO 15; -- admin DNS counter
     fsmc : NATURAL RANGE 0 TO 15; -- filter srcMAC counter
     fdmc : NATURAL RANGE 0 TO 15; -- filter dstMAC counter
     fsic : NATURAL RANGE 0 TO 15; -- filter srcIP counter
@@ -118,6 +121,7 @@ ARCHITECTURE rtl OF io IS
   amc => 0,
   aic => 0,
   apc => 0,
+  adc => 0,
   fsmc => 0,
   fdmc => 0,
   fsic => 0,
@@ -355,11 +359,31 @@ BEGIN
             f.dstPortList(1) <= rd.dnsPkt(401 DOWNTO 386);
             sin.apc <= s.apc + 1;
           ELSE
+            sin.s <= UpdateFilterDNSMeta;
+          END IF;
+
+        WHEN UpdateFilterDNSMeta =>
+          f.dnsBW <= rd.dnsPkt(402);
+          f.dnsLength <= to_integer(unsigned(rd.dnsPkt(404 DOWNTO 403)));
+          -- 0 to 128 (127 + 1), 8 bits
+          f.dnsItemEndPtr(0) <= to_integer(unsigned(rd.dnsPkt(412 DOWNTO 405)));
+          f.dnsItemEndPtr(1) <= to_integer(unsigned(rd.dnsPkt(420 DOWNTO 413)));
+          sin.s <= UpdateFilterDNSList;
+          sin.adc <= 0;
+        
+        WHEN UpdateFilterDNSList =>
+          IF (s.adc = 0) THEN
+            f.dnsList(0) <= rd.dnsPkt(548 DOWNTO 421);
+            sin.adc <= s.adc + 1;
+          ELSIF (s.adc = 1) THEN
+            f.dnsList(1) <= rd.dnsPkt(676 DOWNTO 549);
+            sin.adc <= s.adc + 1;
+          ELSE
             sin.s <= Idle;
           END IF;
 
-          --------FILTER ROUTE--------
-          --SRCMAC
+        --------FILTER ROUTE--------
+        --SRCMAC
         WHEN CheckSrcMAC =>
           IF (s.fsmc = f.srcMACLength) THEN
             IF (f.srcMACBW = '0') THEN
