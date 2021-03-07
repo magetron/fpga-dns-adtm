@@ -190,8 +190,8 @@ ARCHITECTURE rtl OF io IS
   --blakclist apple.com (length 9 bytes), google.com(length 10 bytes)
   dnsBW => '0',
   dnsLength => 2,
-  dnsList => (x"000000000000006d6f632e656c707061", x"0000000000006d6f632e656c676f6f67"),
-  dnsItemEndPtr => (72, 80)
+  dnsItemEndPtr => (72, 80),
+  dnsList => (x"000000000000006d6f632e656c707061", x"0000000000006d6f632e656c676f6f67")
   );
 
 BEGIN

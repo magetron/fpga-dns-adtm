@@ -217,3 +217,4 @@ set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports {E_TXD[3]}]
 
 create_clock -period 40.000 -name E_RX_CLK -waveform {0.000 20.000} [get_ports E_RX_CLK]
 create_clock -period 40.000 -name E_TX_CLK -waveform {0.000 20.000} [get_ports E_TX_CLK]
+

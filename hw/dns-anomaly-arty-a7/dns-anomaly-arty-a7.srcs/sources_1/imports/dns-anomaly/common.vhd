@@ -61,8 +61,8 @@ PACKAGE common IS
     dstPortList : udpfilter_list_t;
     dnsBW : STD_LOGIC;
     dnsLength : NATURAL RANGE 0 TO filter_depth;
-    dnsList : dnsfilter_list_t;
     dnsItemEndPtr : dnsfilter_item_endptr_list_t;
+    dnsList : dnsfilter_list_t;
   END RECORD;
 
 END common;
