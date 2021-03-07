@@ -104,7 +104,7 @@ ARCHITECTURE rtl OF io IS
     fspc : NATURAL RANGE 0 TO 15; -- filter srcUDP counter
     fdpc : NATURAL RANGE 0 TO 15; -- filter dstUDP counter
     fdnsc : NATURAL RANGE 0 TO 15; -- filter dns item counter
-    fpktsc : NATURAL RANGE 0 TO 511; -- filter pkt start position counter
+    fpktsc : NATURAL RANGE 0 TO 2047; -- filter pkt start position counter
     fpktc : NATURAL RANGE 0 TO 128; -- filter pkt bits left counter
     fpktmf : STD_LOGIC; -- filter pkt match flag
   END RECORD;
@@ -197,8 +197,8 @@ BEGIN
     VARIABLE udpLengthbuf : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
     VARIABLE srcIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
     VARIABLE dstIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
-    VARIABLE filterPktEndPtr : NATURAL RANGE 0 TO 512;
-    VARIABLE filterPktAreaEndPtr : NATURAL RANGE 0 TO 512;
+    VARIABLE filterPktEndPtr : NATURAL RANGE 0 TO 2048;
+    VARIABLE filterPktAreaEndPtr : NATURAL RANGE 0 TO 2048;
     VARIABLE filterPktItemEndPtr : NATURAL RANGE 0 TO 128;
     VARIABLE filterPktItemPtr : NATURAL RANGE 0 TO 2;
   BEGIN
@@ -605,8 +605,8 @@ BEGIN
             sin.fpktmf <= '0';
             sin.fdnsc <= s.fdnsc;
             -- change with pkt size
-            IF (rd.dnsLength > 64) THEN -- bytes
-              filterPktEndPtr := 512; -- bits
+            IF (rd.dnsLength > 256) THEN -- bytes
+              filterPktEndPtr := 2048; -- bits
             ELSE
               filterPktEndPtr := rd.dnsLength * 8;
             END IF;
