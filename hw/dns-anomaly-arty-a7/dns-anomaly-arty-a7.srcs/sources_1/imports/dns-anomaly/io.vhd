@@ -7,7 +7,8 @@ USE work.common.ALL;
 
 ENTITY io IS
   GENERIC (
-    g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00"
+    g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00";
+    g_admin_key : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"decaface"
   );
   PORT (
     clk : IN STD_LOGIC;
@@ -36,6 +37,8 @@ ARCHITECTURE rtl OF io IS
     CheckAdmin,
 
     -- Admin Stages
+    CalcHash,
+    HashAuth,
     UpdateFilterSrcMACMeta,
     UpdateFilterSrcMACList,
     UpdateFilterDstMACMeta,
@@ -96,6 +99,8 @@ ARCHITECTURE rtl OF io IS
     chksumbuf : UNSIGNED(31 DOWNTO 0);
     led : STD_LOGIC_VECTOR(3 DOWNTO 0); -- LED register.
     pc : NATURAL RANGE 0 TO 15; -- packet counter
+    ahc : NATURAL RANGE 0 TO 1023; -- hash counter
+    ahv : STD_LOGIC_VECTOR(31 DOWNTO 0); -- hash value;
     amc : NATURAL RANGE 0 TO 15; -- admin MAC counter
     aic : NATURAL RANGE 0 TO 15; -- admin IP counter
     apc : NATURAL RANGE 0 TO 15; -- admin UDP counter
@@ -118,6 +123,8 @@ ARCHITECTURE rtl OF io IS
   chksumbuf => x"00000000",
   led => x"0",
   pc => 0,
+  ahc => 0,
+  ahv => x"00000000",
   amc => 0,
   aic => 0,
   apc => 0,
@@ -232,15 +239,32 @@ BEGIN
           IF (rd.dstMAC = g_admin_mac) THEN
             -- SIGNALS recognition of admin pkt
             sin.led <= x"f";
-
-            sin.s <= UpdateFilterSrcMACMeta;
+            sin.s <= CalcHash;
+            sin.ahv <= g_admin_key;
+            sin.ahc <= 0;
             sin.pc <= 0;
           ELSE
             sin.s <= CheckSrcMAC;
             sin.fsmc <= 0;
           END IF;
-
+          
           --------ADMIN ROUTE--------          
+        WHEN CalcHash =>
+          sin.ahv <= s.ahv xor rd.dnsPkt(s.ahc + 31 DOWNTO s.ahc);
+          IF (s.ahc = 992) THEN -- 1024 - 31 = 993
+            sin.s <= HashAuth;
+          ELSE
+            sin.ahc <= s.ahc + 32;
+          END IF;
+          
+        WHEN HashAuth =>
+          IF (s.ahv = x"00000000") THEN
+            sin.s <= UpdateFilterSrcMACMeta;
+          ELSE
+            sin.led <= x"8";
+            sin.s <= Idle;
+          END IF;
+        
         WHEN UpdateFilterSrcMACMeta =>
           -- ALL filter elements shall be supplied, check against common.vhd
           -- SRC MAC
