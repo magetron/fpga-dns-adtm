@@ -4,6 +4,8 @@
 FILE* file;
 uint64_t buf = 0;
 uint8_t bits_clean = 64;
+uint32_t key = 0xdecaface;
+uint32_t hash_val;
 
 uint64_t reverse_bits_64 (uint64_t n) {
   size_t s = sizeof(n) * 8;
@@ -23,14 +25,22 @@ uint64_t reverse_bits_byte_64 (uint64_t n) {
   return n;
 }
 
+void write_buf_item_and_hash (uint64_t buf, uint8_t bytes_to_write) {
+  hash_val ^= (buf & 0xffffffff);
+  hash_val ^= (buf & 0xffffffff00000000) >> 32;
+  fwrite(&buf, bytes_to_write, 1, file);
+}
+
 void write_buf (uint64_t info, uint8_t bits) {
   // write_buf(0, 0) means closing
   info = reverse_bits_64(info) >> (64 - bits);
   if (bits == 0) {
     // dump all buf to file, ready to close
-    uint8_t bytes_to_write = ((64 - bits_clean) + 7) / 8;
+    uint8_t bytes_to_write = (((64 - bits_clean) + 7) / 8 + 3) & ~0x03;
     buf = reverse_bits_byte_64(__bswap_64(buf));
-    fwrite(&buf, bytes_to_write, 1, file);
+    write_buf_item_and_hash(buf, bytes_to_write);
+    bits_clean = 64;
+    buf = 0;
   } else if (bits_clean >= bits) {
     // normal case
     buf |= (info << (bits_clean - bits)); bits_clean -= bits;
@@ -39,14 +49,22 @@ void write_buf (uint64_t info, uint8_t bits) {
     uint8_t bits_after_write = bits - bits_clean;
     buf |= (info >> bits_after_write);
     buf = reverse_bits_byte_64(__bswap_64(buf));
-    fwrite(&buf, sizeof(buf), 1, file);
+    write_buf_item_and_hash(buf, sizeof(buf));
     bits_clean = 64 - bits_after_write;
     buf = (info & ((1 << (bits_after_write + 1)) - 1)) << bits_clean;
   }
 }
 
+void append_auth_hash () {
+  uint32_t save_hash_val = hash_val;
+  write_buf(save_hash_val, 32);
+  write_buf(0, 0);
+}
+
 void write_to_file (filter_t& f) {
   file = fopen(WRITE_FILENAME, "wb");
+  hash_val = key;
+
   write_buf(f.srcMACBW, 1);
   write_buf(f.srcMACLength, 2);
   for (size_t i = 0; i < FILTER_DEPTH; i++)
@@ -87,6 +105,7 @@ void write_to_file (filter_t& f) {
 
   // closing
   write_buf(0, 0);
+  append_auth_hash();
   fclose(file);
 }
 
