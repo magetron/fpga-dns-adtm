@@ -7,3 +7,5 @@ sudo ./pkt-sender.out -t 10 -s once -m 00:0c:29:5f:29:af,00:0a:35:00:00:ff -i 0.
 sudo ./pkt-sender.out -t 10 -s once -m 00:0c:29:5f:29:af,00:0a:35:00:00:ff -i 0.1.2.3,250.250.250.251 -u 12346,23456 -r google-complicated.bin
 sudo ./pkt-sender.out -t 10 -s once -m 00:0c:29:5f:29:af,00:0a:35:00:00:ff -i 0.1.2.3,250.250.250.251 -u 12346,23456 -r admin.bin
 sudo ./pkt-sender.out -t 10 -s once -m 00:0c:29:5f:29:af,00:0a:35:00:00:ff -i 0.1.2.3,250.250.250.251 -u 12346,23456 -r microsoft.bin
+sudo ./pkt-sender.out -t 10 -s once -m 00:0c:29:5f:29:af,00:0a:35:00:00:ff -i 0.1.2.3,250.250.250.251 -u 12346,23456 -r microsoft-simple.bin
+sudo ./pkt-sender.out -t 10 -s once -m 00:0c:29:5f:29:af,00:0a:35:00:00:ff -i 0.1.2.3,250.250.250.251 -u 12346,23456 -r microsoft-complicated.bin
