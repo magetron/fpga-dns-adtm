@@ -94,17 +94,18 @@ ARCHITECTURE rtl OF io IS
 
   TYPE iostate_t IS RECORD
     s : state_t;
-    --rd : rcv_data_t; -- Rcv Data struct
-    --sd : snd_data_t; -- Snd Data struct
+
     chksumbuf : UNSIGNED(31 DOWNTO 0);
     led : STD_LOGIC_VECTOR(3 DOWNTO 0); -- LED register.
     pc : NATURAL RANGE 0 TO 15; -- packet counter
+    
     ahc : NATURAL RANGE 0 TO 1023; -- hash counter
     ahv : STD_LOGIC_VECTOR(31 DOWNTO 0); -- hash value;
     amc : NATURAL RANGE 0 TO 15; -- admin MAC counter
     aic : NATURAL RANGE 0 TO 15; -- admin IP counter
     apc : NATURAL RANGE 0 TO 15; -- admin UDP counter
     adc : NATURAL RANGE 0 TO 15; -- admin DNS counter
+    
     fsmc : NATURAL RANGE 0 TO 15; -- filter srcMAC counter
     fdmc : NATURAL RANGE 0 TO 15; -- filter dstMAC counter
     fsic : NATURAL RANGE 0 TO 15; -- filter srcIP counter
@@ -115,20 +116,24 @@ ARCHITECTURE rtl OF io IS
     fpktsc : NATURAL RANGE 0 TO 1023; -- filter pkt start position counter
     fpktc : NATURAL RANGE 0 TO 128; -- filter pkt bits left counter
     fpktmf : STD_LOGIC; -- filter pkt match flag
+    
   END RECORD;
 
   SIGNAL s, sin : iostate_t
   := iostate_t'(
   s => Idle,
+  
   chksumbuf => x"00000000",
   led => x"0",
   pc => 0,
+  
   ahc => 0,
   ahv => x"00000000",
   amc => 0,
   aic => 0,
   apc => 0,
   adc => 0,
+  
   fsmc => 0,
   fdmc => 0,
   fsic => 0,
