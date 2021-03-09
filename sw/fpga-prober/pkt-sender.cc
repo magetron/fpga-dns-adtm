@@ -108,7 +108,6 @@ int main (int argc, char** argv) {
   }
   ifreq ifreq_i;
   memset(&ifreq_i, 0, sizeof(ifreq_i));
-  printf("%s\n", INTF_NAME);
   strncpy(ifreq_i.ifr_name, INTF_NAME, strnlen(INTF_NAME, INTF_LENGTH));
   if ((ioctl(sock_raw, SIOCGIFINDEX, &ifreq_i)) < 0)
   {
