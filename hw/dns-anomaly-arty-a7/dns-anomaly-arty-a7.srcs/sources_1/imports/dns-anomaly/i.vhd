@@ -5,7 +5,7 @@ USE ieee.numeric_std.ALL;
 LIBRARY work;
 USE work.common.ALL;
 
-ENTITY io IS
+ENTITY corein IS
   GENERIC (
     g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00";
     g_admin_key : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"decaface"
@@ -16,16 +16,17 @@ ENTITY io IS
     el_rcv_data : IN rcv_data_t;
     el_rcv_dv : IN STD_LOGIC;
     el_rcv_ack : OUT STD_LOGIC;
-    -- Data to send.
-    el_snd_data : OUT snd_data_t;
-    el_snd_en : OUT STD_LOGIC;
+    
+    -- rcved data to snd
+    snd_rcv_data : OUT rcv_data_t;
+    snd_en : OUT STD_LOGIC;
 
     -- LEDs.
     LED : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
   );
-END io;
+END corein;
 
-ARCHITECTURE rtl OF io IS
+ARCHITECTURE rtl OF corein IS
 
   TYPE state_t IS (
     -- MINDFUL: must have odd number of stages to slip in an update
@@ -82,20 +83,12 @@ ARCHITECTURE rtl OF io IS
     CmpPktDone,
     FilterPkt,
 
-    -- Finalising Stages
-    MetaInfo,
-    ChecksumCalc,
-    ChecksumPopulate,
-    IPHeader,
-    UDPHeader,
-    Finalise,
     Send
   );
 
-  TYPE iostate_t IS RECORD
+  TYPE istate_t IS RECORD
     s : state_t;
 
-    chksumbuf : UNSIGNED(31 DOWNTO 0);
     led : STD_LOGIC_VECTOR(3 DOWNTO 0); -- LED register.
     pc : NATURAL RANGE 0 TO 15; -- packet counter
     
@@ -119,11 +112,10 @@ ARCHITECTURE rtl OF io IS
     
   END RECORD;
 
-  SIGNAL s, sin : iostate_t
-  := iostate_t'(
+  SIGNAL s, sin : istate_t
+  := istate_t'(
   s => Idle,
   
-  chksumbuf => x"00000000",
   led => x"0",
   pc => 0,
   
@@ -154,17 +146,6 @@ ARCHITECTURE rtl OF io IS
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
   dnsLength => 0,
   dnsPkt => (OTHERS => '0')
-  );
-
-  SIGNAL sd : snd_data_t
-  := snd_data_t'(
-  srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
-  srcIP => (OTHERS => '0'), dstIP => (OTHERS => '0'),
-  ipLength => (OTHERS => '0'), ipTTL => (OTHERS => '0'),
-  ipChecksum => (OTHERS => '0'),
-  srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
-  udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0'),
-  dnsPktCnt => 0, dnsPkt => (OTHERS => '0')
   );
 
   SIGNAL f : filter_t
@@ -208,13 +189,7 @@ ARCHITECTURE rtl OF io IS
 
 BEGIN
 
-  rcvsnd : PROCESS (clk)
-    VARIABLE ipLengthbuf : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-    VARIABLE udpLengthbuf : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-    VARIABLE srcIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
-    VARIABLE dstIPchecksumbuf : UNSIGNED(31 DOWNTO 0) := (OTHERS => '0');
-    VARIABLE dnsLengthbuf : NATURAL RANGE 0 TO 65535 := 0;
-    
+  rcv : PROCESS (clk)
     VARIABLE filterPktEndPtr : NATURAL RANGE 0 TO 1024 := 0;
     VARIABLE filterPktAreaEndPtr : NATURAL RANGE 0 TO 1024 := 0;
     VARIABLE filterPktItemEndPtr : NATURAL RANGE 0 TO 128 := 0;
@@ -222,7 +197,7 @@ BEGIN
   BEGIN
 
     IF rising_edge(clk) THEN
-      el_snd_en <= '0';
+      snd_en <= '0';
       el_rcv_ack <= '0';
 
       CASE s.s IS
@@ -647,7 +622,7 @@ BEGIN
           IF (s.fdnsc = f.dnsLength) THEN
             IF (f.dnsBW = '0') THEN
               -- exhaust blacklist, no ban
-              sin.s <= MetaInfo;
+              sin.s <= Send;
             ELSE
               -- exhaust whitelist, ban
               sin.s <= Idle;
@@ -768,64 +743,11 @@ BEGIN
             sin.fdnsc <= 0;
           ELSE
             --it's on whitelist, move on to next step
-            sin.s <= MetaInfo;
+            sin.s <= Send;
           END IF;
-
-          ---------SEND PACKET STAGE----------
-        WHEN MetaInfo =>
-          sd.srcIP <= rd.dstIP;
-          sd.dstIP <= rd.srcIP;
-          sd.srcPort <= rd.dstPort;
-          sd.dstPort <= rd.srcPort;
-          sd.ipTTL <= x"40";
-          ipLengthbuf := STD_LOGIC_VECTOR(to_unsigned(rd.ipLength, ipLengthbuf'length));
-          udpLengthbuf := STD_LOGIC_VECTOR(to_unsigned(rd.dnsLength + 8, udpLengthbuf'length));
-          srcIPchecksumbuf := unsigned(STD_LOGIC_VECTOR'(x"0000" & rd.dstIP(23 DOWNTO 16) & rd.dstIP(31 DOWNTO 24))) +
-            unsigned(STD_LOGIC_VECTOR'(x"0000" & rd.dstIP(7 DOWNTO 0) & rd.dstIP(15 DOWNTO 8)));
-          dstIPchecksumbuf := unsigned(STD_LOGIC_VECTOR'(x"0000" & rd.srcIP(23 DOWNTO 16) & rd.srcIP(31 DOWNTO 24))) +
-            unsigned(STD_LOGIC_VECTOR'(x"0000" & rd.srcIP(7 DOWNTO 0) & rd.srcIP(15 DOWNTO 8)));
-          sin.s <= ChecksumCalc;
-
-        WHEN ChecksumCalc =>
-          sin.chksumbuf <= x"00004500" +
-          unsigned(STD_LOGIC_VECTOR'(x"0000" & ipLengthbuf(3 DOWNTO 0) & ipLengthbuf(7 DOWNTO 4))) +
-          unsigned(STD_LOGIC_VECTOR'(x"0000" & sd.ipTTL & x"11")) +
-          srcIPchecksumbuf + dstIPchecksumbuf;
-          sin.s <= ChecksumPopulate;
-
-        WHEN ChecksumPopulate =>
-          sin.chksumbuf <= NOT resize(s.chksumbuf(31 DOWNTO 16) + s.chksumbuf(15 DOWNTO 0), sin.chksumbuf'length);
-          sd.udpChecksum <= x"0000";
-          sin.s <= IPHeader;
-
-        WHEN IPHeader =>
-          sd.ipLength(3 DOWNTO 0) <= ipLengthbuf(15 DOWNTO 12);
-          sd.ipLength(7 DOWNTO 4) <= ipLengthbuf(11 DOWNTO 8);
-          sd.ipLength(11 DOWNTO 8) <= ipLengthbuf(7 DOWNTO 4);
-          sd.ipLength(15 DOWNTO 12) <= ipLengthbuf(3 DOWNTO 0);
-          sd.ipChecksum(15 DOWNTO 8) <= STD_LOGIC_VECTOR(s.chksumbuf(7 DOWNTO 0));
-          sd.ipChecksum(7 DOWNTO 0) <= STD_LOGIC_VECTOR(s.chksumbuf(15 DOWNTO 8));
-          dnsLengthbuf := rd.dnsLength;
-          sin.s <= UDPHeader;
-
-        WHEN UDPHeader =>
-          sd.udpLength(15 DOWNTO 8) <= udpLengthbuf(7 DOWNTO 0);
-          sd.udpLength(7 DOWNTO 0) <= udpLengthbuf(15 DOWNTO 8);
-          IF (dnsLengthbuf > 128) THEN  --bytes
-            sd.dnsPktCnt <= 1020;
-          ELSE
-            sd.dnsPktCnt <= rd.dnsLength * 8 - 4;
-          END IF;
-          sin.s <= Finalise;
-
-        WHEN Finalise =>
-          sd.srcMAC <= x"000000350a00";
-          sd.dstMAC <= x"d3f0f3d6f694";
-          sd.dnsPkt <= rd.dnsPkt;
-          sin.s <= Send;
 
         WHEN Send =>
-          el_snd_en <= '1'; -- Send Ethernet packet.
+          snd_en <= '1'; -- Send Ethernet packet.
           IF (s.pc = 15) THEN
             sin.pc <= 0;
           ELSE
@@ -839,9 +761,9 @@ BEGIN
   END PROCESS;
 
   LED <= s.led;
-  el_snd_data <= sd;
+  snd_rcv_data <= rd;
 
-  reg : PROCESS (clk) --, E_CRS, E_COL)
+  reg : PROCESS (clk)
   BEGIN
     IF falling_edge(clk) THEN
       s <= sin;

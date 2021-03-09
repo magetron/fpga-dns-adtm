@@ -46,7 +46,7 @@
     <Option Name="IPUserFilesDir" Val="$PIPUSERFILESDIR"/>
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
-    <Option Name="WTXSimLaunchSim" Val="298"/>
+    <Option Name="WTXSimLaunchSim" Val="299"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -111,10 +111,10 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/dns-anomaly/io.vhd">
+      <File Path="$PSRCDIR/sources_1/imports/dns-anomaly/i.vhd">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../dns-anomaly/io.vhd"/>
-          <Attr Name="ImportTime" Val="1611963837"/>
+          <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/imports/dns-anomaly/i.vhd"/>
+          <Attr Name="ImportTime" Val="1615240825"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
@@ -131,6 +131,12 @@
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../dns-anomaly/mac_snd.vhd"/>
           <Attr Name="ImportTime" Val="1611963837"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/o.vhd">
+        <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>

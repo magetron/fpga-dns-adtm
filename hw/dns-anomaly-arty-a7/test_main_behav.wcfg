@@ -13,15 +13,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="30685000fs"></ZoomStartTime>
-      <ZoomEndTime time="78925001fs"></ZoomEndTime>
-      <Cursor1Time time="51125000fs"></Cursor1Time>
+      <ZoomStartTime time="30000000fs"></ZoomStartTime>
+      <ZoomEndTime time="74400001fs"></ZoomEndTime>
+      <Cursor1Time time="55980000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="288"></NameColumnWidth>
-      <ValueColumnWidth column_width="148"></ValueColumnWidth>
+      <ValueColumnWidth column_width="142"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="14" />
+   <WVObjectSize size="13" />
    <wvobject fp_name="/test_main/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -70,13 +70,8 @@
       <obj_property name="ElementShortName">E_TX_CLK_period</obj_property>
       <obj_property name="ObjectShortName">E_TX_CLK_period</obj_property>
    </wvobject>
-   <wvobject fp_name="/test_main/uut/core/s" type="array">
+   <wvobject fp_name="/test_main/uut/ci/s" type="array">
       <obj_property name="ElementShortName">s</obj_property>
       <obj_property name="ObjectShortName">s</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_main/uut/core/sd" type="array">
-      <obj_property name="ElementShortName">sd</obj_property>
-      <obj_property name="ObjectShortName">sd</obj_property>
-      <obj_property name="isExpanded"></obj_property>
    </wvobject>
 </wave_config>
