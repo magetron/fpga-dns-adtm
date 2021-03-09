@@ -23,4 +23,4 @@ crc32-checker: $(CRCFOLDER)/crc32-checker.c
 
 
 clean:
-	rm -rf pkt-sender.out crc32-checker.out
+	rm -rf pkt-sender.out crc32-checker.out admin-builder.out
