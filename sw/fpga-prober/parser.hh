@@ -80,7 +80,7 @@ static inline void read_file(char* filename) {
 static inline void parse_args_sender(int argc, char** argv) {
   int c;
   opterr = 0;
-  while ((c = getopt(argc, argv, "r:t:s:m:i:u:h")) != -1) {
+  while ((c = getopt(argc, argv, "r:t:s:f:m:i:u:h")) != -1) {
     switch (c) {
       case 'r':
       // read file
@@ -99,6 +99,10 @@ static inline void parse_args_sender(int argc, char** argv) {
           SEND_MODE = send_mode_t::ONCE;
         }
         break;
+      case 'f':
+      // interface
+        strncpy(INTF_NAME, optarg, strnlen(optarg, INTF_LENGTH));
+        break;
       case 'm':
       // mac address
         parse_mac(optarg);
@@ -115,7 +119,7 @@ static inline void parse_args_sender(int argc, char** argv) {
         printf("Unrecognised argument\n");
       case 'h':
         printf("Usage:\n"
-               "./pkt-sender.out -r dnspacket.bin -t 500 -s daemon "
+               "./pkt-sender.out -f en0 -r dnspacket.bin -t 500 -s daemon "
                "-m 0a:0b:0c:0d:0e:0f,1a:1b:1c:1d:1e:1f -i 10.0.1.14,192.168.5.1 "
                "-u 12345,23456\n");
         exit(0);
@@ -136,6 +140,24 @@ static inline void parse_args_builder (int argc, char** argv) {
         printf("Unrecognised argument\n");
         printf("Usage:\n"
                "./admin-builder.out -w admin.bin");
+        exit(0);
+    }
+  }
+}
+
+static inline void parse_args_receiver (int argc, char ** argv) {
+  int c;
+  opterr = 0;
+  while ((c = getopt(argc, argv, "f:h")) != -1) {
+    switch (c) {
+      case 'f':
+        strncpy(INTF_NAME, optarg, strnlen(optarg, INTF_LENGTH));
+        break;
+      case 'h':
+      default:
+        printf("Unrecognised argument\n");
+        printf("Usage:\n"
+               "./pkt-receiver -f en0\n");
         exit(0);
     }
   }
