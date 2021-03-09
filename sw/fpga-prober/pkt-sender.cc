@@ -108,14 +108,15 @@ int main (int argc, char** argv) {
   }
   ifreq ifreq_i;
   memset(&ifreq_i, 0, sizeof(ifreq_i));
-  strncpy(ifreq_i.ifr_name, "ens37", 6);
+  printf("%s\n", INTF_NAME);
+  strncpy(ifreq_i.ifr_name, INTF_NAME, strnlen(INTF_NAME, INTF_LENGTH));
   if ((ioctl(sock_raw, SIOCGIFINDEX, &ifreq_i)) < 0)
   {
     printf("ERROR in index ioctl reading");
   }
   ifreq ifreq_c;
   memset(&ifreq_c, 0, sizeof(ifreq_c));
-  strncpy(ifreq_c.ifr_name, "ens37", 6);
+  strncpy(ifreq_c.ifr_name, INTF_NAME, strnlen(INTF_NAME, INTF_LENGTH));
   if ((ioctl(sock_raw, SIOCGIFHWADDR, &ifreq_c)) < 0)
   {
     printf("ERROR in SIOCGIFHWADDR ioctl reading\n");
