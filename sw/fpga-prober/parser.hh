@@ -80,7 +80,7 @@ static inline void read_file(char* filename) {
 static inline void parse_args_sender(int argc, char** argv) {
   int c;
   opterr = 0;
-  while ((c = getopt(argc, argv, "r:t:s:m:i:u:h:f:")) != -1) {
+  while ((c = getopt(argc, argv, "r:t:s:f:m:i:u:h")) != -1) {
     switch (c) {
       case 'r':
       // read file
