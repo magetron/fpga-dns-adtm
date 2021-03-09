@@ -144,3 +144,21 @@ static inline void parse_args_builder (int argc, char** argv) {
     }
   }
 }
+
+static inline void parse_args_receiver (int argc, char ** argv) {
+  int c;
+  opterr = 0;
+  while ((c = getopt(argc, argv, "f:h")) != -1) {
+    switch (c) {
+      case 'f':
+        strncpy(INTF_NAME, optarg, strnlen(optarg, INTF_LENGTH));
+        break;
+      case 'h':
+      default:
+        printf("Unrecognised argument\n");
+        printf("Usage:\n"
+               "./pkt-receiver -f en0\n");
+        exit(0);
+    }
+  }
+}
