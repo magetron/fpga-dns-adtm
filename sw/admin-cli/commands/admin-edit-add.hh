@@ -84,6 +84,7 @@ int com_admin_edit_add (char* arg) {
     f_curr.dnsLength++;
   } else {
     com_admin_edit_add_print_error_msg(arg);
+    return -1;
   }
 
   return 0;

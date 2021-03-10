@@ -15,6 +15,8 @@ static inline void print_IP (ip_addr_t* ip) {
 }
 
 void print_filter_configuration (filter_t f) {
+  printf("max filter item per section = %d\n", FILTER_DEPTH);
+
   printf("src MAC\n");
   if (f.srcMACLength > 0) {
     print_filter_BW(f.srcMACBW); printf("\n");
@@ -89,6 +91,8 @@ void print_filter_configuration (filter_t f) {
       }
       printf("]\n");
     }
+  } else {
+    printf("\tNone\n");
   }
 }
 

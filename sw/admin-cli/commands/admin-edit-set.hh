@@ -42,6 +42,7 @@ int com_admin_edit_set (char* arg) {
     f_curr.dnsBW = bw;
   } else {
     com_admin_edit_set_print_error_msg(arg);
+    return -1;
   }
 
   return 0;

@@ -99,7 +99,7 @@ udp_port_t parse_port(char* s) {
       return port;
     }
   }
-  port.port = cur_number;
+  port.port = __bswap_16(cur_number);
   return port;
 }
 
@@ -109,9 +109,6 @@ void com_admin_edit_print_filter_types () {
 
 #include "admin-edit-add.hh"
 
-int com_admin_edit_remove (char* arg) {
-  printf("admin edit remove arg=[%s]\n", arg);
-  return 0;
-}
+#include "admin-edit-remove.hh"
 
 #include "admin-edit-set.hh"
