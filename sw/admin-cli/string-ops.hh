@@ -14,8 +14,7 @@ char* stripwhite (char* string) {
    return s;
 }
 
-char *dupstr (const char* s)
-{
+char *dupstr (const char* s) {
    auto* r = reinterpret_cast<char*>(malloc(strlen(s) + 1));
    strcpy(r, s);
    return r;

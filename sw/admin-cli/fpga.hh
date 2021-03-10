@@ -8,12 +8,6 @@
       __typeof__ (b) _b = (b); \
     _a > _b ? _a : _b; })
 
-static const size_t INTF_LENGTH = 16;
-static const size_t BUFFER_SIZE = 65536;
-static const uint64_t SEC_IN_USEC = 1e6;
-static const uint64_t MS_IN_USEC = 1e3;
-static const uint8_t FILTER_DEPTH = 2;
-
 enum class e_ethertype : uint16_t {
   IPv4 = 0x0800
 };
@@ -21,17 +15,6 @@ enum class e_ethertype : uint16_t {
 enum class e_ip_proto : uint8_t {
   TCP = 0x06,
   UDP = 0x11
-};
-
-enum class packet_mode_t {
-  UDP_TEST,
-  FILE_TEST
-};
-
-enum class send_mode_t {
-  CHANGING,
-  DAEMON,
-  ONCE
 };
 
 struct [[gnu::packed]] mac_addr_t {
@@ -53,26 +36,26 @@ struct [[gnu::packed]] dns_filter_item_t {
 struct filter_t {
   unsigned srcMACBW : 1;
   unsigned srcMACLength : 2; // 0,1,2 FILTER_DEPTH related
-  mac_addr_t srcMACList[2];
+  mac_addr_t srcMACList[FILTER_DEPTH];
   unsigned dstMACBW : 1;
   unsigned dstMACLength : 2; // 0,1,2 FILTER_DEPTH related
-  mac_addr_t dstMACList[2];
+  mac_addr_t dstMACList[FILTER_DEPTH];
   unsigned srcIPBW : 1;
   unsigned srcIPLength : 2; // 0,1,2 FILTER_DEPTH related
-  ip_addr_t srcIPList[2];
+  ip_addr_t srcIPList[FILTER_DEPTH];
   unsigned dstIPBW : 1;
   unsigned dstIPLength : 2; // 0,1,2 FILTER_DEPTH related
-  ip_addr_t dstIPList[2];
+  ip_addr_t dstIPList[FILTER_DEPTH];
   unsigned srcPortBW : 1;
   unsigned srcPortLength : 2;
-  udp_port_t srcPortList[2];
+  udp_port_t srcPortList[FILTER_DEPTH];
   unsigned dstPortBW : 1;
   unsigned dstPortLength : 2;
-  udp_port_t dstPortList[2];
+  udp_port_t dstPortList[FILTER_DEPTH];
   unsigned dnsBW : 1;
   unsigned dnsLength : 2;
-  uint8_t dnsItemEndPtr[2];
-  dns_filter_item_t dnsList[2];
+  uint8_t dnsItemEndPtr[FILTER_DEPTH];
+  dns_filter_item_t dnsList[FILTER_DEPTH];
 };
 
 static inline uint16_t IPchecksum (uint16_t *buff, int32_t _16bitword) {

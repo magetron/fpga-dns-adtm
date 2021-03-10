@@ -1,12 +1,17 @@
 #include <cstdio>
 #include <cstdlib>
+#include <cstdint>
 
 #include <editline/readline.h>
 
 #include "const.hh"
 #include "string-ops.hh"
+#include "file-ops.hh"
 
 #include "fpga.hh"
+#include "filter.hh"
+#include "sender.hh"
+
 #include "main.hh"
 
 #include "commands.hh"
@@ -17,6 +22,7 @@ int main(int argc, char** argv) {
 
   initialise_readline();
   initialise_fpga_configuration();
+  initialise_send_socket();
   stifle_history(HISTORY_LENGTH);
 
   char* buf;

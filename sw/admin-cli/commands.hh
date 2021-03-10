@@ -46,7 +46,7 @@ int execute (char* line, COMMAND* commands) {
 
   while (line[i] && isspace (line[i])) i++;
 
-  return line[i] ? ((*(command->func)) (&line[i])) : ((*(command->func)) (&line[i]));
+  return ((*(command->func)) (&line[i]));
 }
 
 #include "commands/history.hh"
