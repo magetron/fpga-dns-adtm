@@ -26,7 +26,7 @@ void initialise_send_socket () {
   strncpy(send_ifreq_i.ifr_name, IF_NAME, IF_LENGTH);
   if ((ioctl(send_sock_raw, SIOCGIFINDEX, &send_ifreq_i)) < 0)
   {
-    fprintf(stderr, "ERROR in index ioctl reading");
+    fprintf(stderr, "ERROR in index ioctl reading\n");
   }
   memset(&send_ifreq_c, 0, sizeof(send_ifreq_c));
   strncpy(send_ifreq_c.ifr_name, IF_NAME, IF_LENGTH);
