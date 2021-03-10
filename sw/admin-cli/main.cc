@@ -1,0 +1,36 @@
+#include <cstdio>
+#include <cstdlib>
+
+#include <editline/readline.h>
+
+#include "const.hh"
+#include "string-ops.hh"
+
+#include "fpga.hh"
+#include "main.hh"
+
+#include "commands.hh"
+#include "completion.hh"
+
+int main(int argc, char** argv) {
+  printf("FPGA administrator v0.1, https://github.com/magetron/cpu-fpga-nwofle\n");
+
+  initialise_readline();
+  initialise_fpga_configuration();
+  stifle_history(HISTORY_LENGTH);
+
+  char* buf;
+  char* line;
+  while (!done && (buf = readline("> ")) != nullptr) {
+    line = stripwhite(buf);
+    
+    if (strlen(line) > 0) {
+      add_history(line);
+      execute(line, commands);
+    }
+
+    free(buf);
+  }
+
+  return 0;
+}
