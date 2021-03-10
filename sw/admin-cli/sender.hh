@@ -23,13 +23,13 @@ void initialise_send_socket () {
     fprintf(stderr, "ERROR in socket\n");
   }
   memset(&send_ifreq_i, 0, sizeof(send_ifreq_i));
-  strncpy(send_ifreq_i.ifr_name, IF_NAME, IF_LENGTH);
+  strncpy(send_ifreq_i.ifr_name, if_name, if_length);
   if ((ioctl(send_sock_raw, SIOCGIFINDEX, &send_ifreq_i)) < 0)
   {
     fprintf(stderr, "ERROR in index ioctl reading\n");
   }
   memset(&send_ifreq_c, 0, sizeof(send_ifreq_c));
-  strncpy(send_ifreq_c.ifr_name, IF_NAME, IF_LENGTH);
+  strncpy(send_ifreq_c.ifr_name, if_name, if_length);
   if ((ioctl(send_sock_raw, SIOCGIFHWADDR, &send_ifreq_c)) < 0)
   {
     fprintf(stderr, "ERROR in SIOCGIFHWADDR ioctl reading\n");
@@ -64,7 +64,7 @@ void form_packet (const mac_addr_t& srcmac, const mac_addr_t& dstmac,
                   const ip_addr_t& srcip, const ip_addr_t& dstip,
                   const udp_port_t& srcport, const udp_port_t& dstport,
                   const uint8_t* udp_payload, const size_t udp_payload_length) {
-  
+
   printf("forming pkt...\n");
 
   send_pkt_length = udp_payload_length;

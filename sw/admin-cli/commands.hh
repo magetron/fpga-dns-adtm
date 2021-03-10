@@ -40,7 +40,7 @@ int execute (char* line, COMMAND* commands) {
   COMMAND* command = find_command(line, commands);
 
   if (!command) {
-    fprintf (stderr, "%s: no such command\n", line);
+    fprintf(stderr, "%s: no such command\n", line);
     return -1;
   }
 

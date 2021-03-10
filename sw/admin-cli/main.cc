@@ -3,21 +3,25 @@
 #include <cstdint>
 
 #include <editline/readline.h>
+#include <getopt.h>
 
 #include "const.hh"
 #include "string-ops.hh"
 #include "file-ops.hh"
 
+#include "main.hh"
+
 #include "fpga.hh"
 #include "filter.hh"
 #include "sender.hh"
 
-#include "main.hh"
-
+#include "args-parser.hh"
 #include "commands.hh"
 #include "completion.hh"
 
 int main(int argc, char** argv) {
+  parse_args(argc, argv);
+
   printf("FPGA administrator v0.1, https://github.com/magetron/cpu-fpga-nwofle\n");
 
   initialise_readline();
@@ -29,7 +33,7 @@ int main(int argc, char** argv) {
   char* line;
   while (!done && (buf = readline("> ")) != nullptr) {
     line = stripwhite(buf);
-    
+
     if (strlen(line) > 0) {
       add_history(line);
       execute(line, commands);

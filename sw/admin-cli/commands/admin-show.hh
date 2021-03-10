@@ -3,19 +3,18 @@ static inline int print_filter_BW (unsigned bw) {
 }
 
 static inline void print_MAC (mac_addr_t* mac) {
-  printf("\t%02X.%02X.%02X.%02X.%02X.%02X",
+  printf("\t%02X:%02X:%02X:%02X:%02X:%02X",
     mac->byte[0], mac->byte[1],
     mac->byte[2], mac->byte[3],
     mac->byte[4], mac->byte[5]);
 }
 
 static inline void print_IP (ip_addr_t* ip) {
-  printf("\t%d.%d.%d.%d", 
+  printf("\t%d.%d.%d.%d",
     ip->num[0], ip->num[1], ip->num[2], ip->num[3]);
 }
 
 void print_filter_configuration (filter_t f) {
-  
   printf("src MAC\n");
   if (f.srcMACLength > 0) {
     print_filter_BW(f.srcMACBW); printf("\n");
