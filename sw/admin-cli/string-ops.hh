@@ -14,9 +14,20 @@ char* stripwhite (char* string) {
    return s;
 }
 
-char *dupstr (const char* s)
-{
-   auto* r = reinterpret_cast<char*>(malloc(strlen(s) + 1));
-   strcpy(r, s);
-   return r;
+char* dupstr (const char* s) {
+  auto* r = reinterpret_cast<char*>(malloc(strlen(s) + 1));
+  strcpy(r, s);
+  return r;
 }
+
+char* splitstr (char* s) {
+  size_t i = 0;
+  while (s[i] && !isspace(s[i])) i++;
+  if (isspace(s[i])) {
+    s[i] = '\0';
+    return (s + i + 1);
+  } else {
+    return nullptr;
+  }
+}
+

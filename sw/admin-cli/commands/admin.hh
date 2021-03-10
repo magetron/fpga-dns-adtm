@@ -1,6 +1,6 @@
 #pragma once
 
-#include "filter-printer.hh"
+static const mac_addr_t admin_dst_mac = {0x00, 0x0a, 0x35, 0xff, 0xff, 0xff};
 
 int com_admin_show (char*);
 int com_admin_edit (char*);
@@ -17,7 +17,11 @@ COMMAND admin_commands[] = {
 };
 
 int com_admin (char* arg) {
-  execute(arg, admin_commands);
+  if (!*arg) {
+    com_admin_help(arg);
+  } else {
+    execute(arg, admin_commands);
+  }
   return 0;
 }
 
@@ -26,25 +30,9 @@ int com_admin_help (char* arg) {
   return 0;
 }
 
-int com_admin_show (char* arg) {
-  if (strncmp(arg, "fpga", 5) == 0) {
-    print_filter_configuration(f);
-  } else if (strncmp(arg, "curr", 5) == 0) {
-    print_filter_configuration(f_curr);
-  } else {
-    fprintf (stderr, "%s: specify [fpga/curr]\n", arg);
-    return -1;
-  }
-  return 0;
-}
+#include "admin-show.hh"
 
-int com_admin_edit (char* arg) {
-  printf("admin edit arg=[%s]\n", arg);
-  return 0;
-}
+#include "admin-edit.hh"
 
-int com_admin_apply (char* arg) {
-  printf("admin apply arg=[%s]\n", arg);
-  return 0;
-}
+#include "admin-apply.hh"
 
