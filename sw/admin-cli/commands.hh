@@ -4,6 +4,10 @@ typedef int rl_icpfunc_t (char *);
 
 int com_history (char *);
 int com_help (char *);
+int com_admin (char *);
+int com_quit (char *);
+int com_clear (char *);
+
 
 typedef struct {
    const char *name;                   /* User printable name of the function. */
@@ -12,48 +16,49 @@ typedef struct {
 } COMMAND;
 
 COMMAND commands[] = {
-   { "history", com_history, "list history" },
-   { "help", com_help, "display this text" },
-   { "?", com_help, "synonym for `help'" },
-   { (char *)nullptr, (rl_icpfunc_t *)nullptr, (char *)nullptr }
+  { "admin", com_admin, "FPGA filter administrator utilities" },
+  { "history", com_history, "list history" },
+  { "clear", com_clear, "clear the screen" },
+  { "quit", com_quit, "quit FPGA administrator cli" },
+  { "help", com_help, "display this text" },
+  { "?", com_help, "synonym for `help'" },
+  { (char *)nullptr, (rl_icpfunc_t *)nullptr, (char *)nullptr }
 };
 
-int com_history (char* arg) {
-  while (previous_history());
+COMMAND* find_command (char* name, COMMAND* commands) {
+  for (int i = 0; commands[i].name; i++)
+    if (strcmp (name, commands[i].name) == 0)
+      return (&commands[i]);
+  return ((COMMAND *)nullptr);
+}
 
-  size_t lc = 0;
+int execute (char* line, COMMAND* commands) {
+  size_t i = 0;
+  while (line[i] && !isspace(line[i])) i++;
+  line[i++] = '\0';
 
-  for (HIST_ENTRY *he = current_history(); he != NULL; he = next_history()) {
-    printf("%ld \t %s\n", ++lc, he->line);
+  COMMAND* command = find_command(line, commands);
+
+  if (!command) {
+    fprintf (stderr, "%s: no such command\n", line);
+    return -1;
   }
 
+  while (line[i] && isspace (line[i])) i++;
+
+  return line[i] ? ((*(command->func)) (&line[i])) : ((*(command->func)) (&line[i]));
+}
+
+#include "commands/history.hh"
+#include "commands/help.hh"
+#include "commands/admin.hh"
+
+int com_quit (char* arg) {
+  done = 1;
   return 0;
 }
 
-int com_help (char *arg) {
-  int printed = 0;
-
-  for (int i = 0; commands[i].name; i++) {
-    if (!*arg || (strcmp (arg, commands[i].name) == 0)) {
-      printf("%s\t\t%s.\n", commands[i].name, commands[i].doc);
-      printed++;
-    }
-  }
-
-  if (!printed) {
-  printf("No commands match `%s'. Possibilties are:\n", arg);
-
-  for (int i = 0; commands[i].name; i++) {
-    if (printed == 6) {
-      printed = 0;
-      printf ("\n");
-    }
-    printf ("%s\t", commands[i].name);
-    printed++;
-  }
-
-  if (printed) printf ("\n");
-  }
-
+int com_clear (char* arg) {
+  printf("\u001B[2J\u001B[0;0f");
   return 0;
 }

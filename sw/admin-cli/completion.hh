@@ -1,3 +1,5 @@
+// ONLY top-level command completion at the moment
+
 #pragma once
 #include <cstring>
 #include <editline/readline.h>
@@ -5,7 +7,7 @@
 char *command_generator(const char *, int);
 char **admincli_completion(const char *, int, int);
 
-void initialize_readline () {
+void initialise_readline () {
    rl_readline_name = "admincli";
    rl_attempted_completion_function = admincli_completion;
 }

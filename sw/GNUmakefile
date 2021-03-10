@@ -26,7 +26,7 @@ pkt-receiver: $(PROBERFOLDER)/pkt-receiver.cc
 	@$(CPPC) $(CFLAGS) $(PROBERFOLDER)/pkt-receiver.cc -o pkt-receiver.out
 	@echo -e "\tCC ${PROBERFOLDER}/pkt-receiver.cc"
 
-admin-cli: $(CLIFOLDER)/main.cc
+admin-cli: $(CLIFOLDER)/
 	@$(CPPC) $(CFLAGS) $(CLILINK) $(CLIFOLDER)/main.cc -o main.out
 	@echo -e "\tCPPC ${CLIFOLDER}/main.cc"
 
