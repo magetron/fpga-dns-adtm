@@ -3,5 +3,5 @@ Run `make` to build useful toolkits for this project.
 Including a probing packet sender, an admin packet builder and a Ethernet crc checker.
 
 The comprehensive project in progress is `admin-cli`,
-for now, run `make admin-cli` to build the cli and execute the admin server via `./main.out`
+for now, run `make admin-cli` to build the cli and execute the admin server via `sudo ./main.out`
 
