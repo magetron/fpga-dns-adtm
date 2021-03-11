@@ -55,7 +55,8 @@ ARCHITECTURE rtl OF corein IS
     ReplyQueryDstPortList,
     ReplyQueryDNSMeta,
     ReplyQueryDNSList,
-    --ReplyQueryCounters,
+    ReplyQueryCountersTot,
+    REplyQueryCountersSeg,
 
     -- Admin Stages
     CalcHash,
@@ -130,11 +131,11 @@ ARCHITECTURE rtl OF corein IS
     fpktc : NATURAL RANGE 0 TO 128; -- filter pkt bits left counter
     fpktmf : STD_LOGIC; -- filter pkt match flag
     
-    --stc : UNSIGNED(63 DOWNTO 0); -- total valid pkts received
-    --sfc : UNSIGNED(63 DOWNTO 0); -- total filter passed pkts
-    --smc : UNSIGNED(63 DOWNTO 0); -- total filtered mac pkts
-    --sic : UNSIGNED(63 DOWNTO 0); -- total filtered ip pkts
-    --spc : UNSIGNED(63 DOWNTO 0); -- total filtered port pkts
+    stc : UNSIGNED(63 DOWNTO 0); -- total valid pkts received
+    sfc : UNSIGNED(63 DOWNTO 0); -- total filter passed pkts
+    smc : UNSIGNED(63 DOWNTO 0); -- total filter passed mac pkts
+    sic : UNSIGNED(63 DOWNTO 0); -- total filter passed ip pkts
+    spc : UNSIGNED(63 DOWNTO 0); -- total filter passed port pkts
     
   END RECORD;
 
@@ -161,13 +162,13 @@ ARCHITECTURE rtl OF corein IS
   fdnsc => 0,
   fpktsc => 0,
   fpktc => 0,
-  fpktmf => '0'--,
+  fpktmf => '0',
   
-  --stc => (OTHERS => '0'),
-  --sfc => (OTHERS => '0'),
-  --smc => (OTHERS => '0'),
-  --sic => (OTHERS => '0'),
-  --spc => (OTHERS => '0')
+  stc => (OTHERS => '0'),
+  sfc => (OTHERS => '0'),
+  smc => (OTHERS => '0'),
+  sic => (OTHERS => '0'),
+  spc => (OTHERS => '0')
   
   );
 
@@ -266,6 +267,7 @@ BEGIN
             sin.s <= ReplyQueryHeader;
           ELSE
             sin.s <= CheckSrcMAC;
+            sin.stc <= s.stc + 1;
             sin.fsmc <= 0;
           END IF;
           
@@ -392,8 +394,19 @@ BEGIN
             rd.dnsPkt(676 DOWNTO 549) <= f.dnsList(1);
             sin.adc <= s.adc + 1;
           ELSE
-            sin.s <= Send;
+            sin.s <= ReplyQueryCountersTot;
           END IF;
+          
+        WHEN ReplyQueryCountersTot =>
+          rd.dnsPkt(740 DOWNTO 677) <= STD_LOGIC_VECTOR(s.stc);
+          rd.dnsPkt(804 DOWNTO 741) <= STD_LOGIC_VECTOR(s.sfc);
+          sin.s <= ReplyQueryCountersSeg;
+          
+        WHEN ReplyQueryCountersSeg =>
+          rd.dnsPkt(868 DOWNTO 805) <= STD_LOGIC_VECTOR(s.smc);
+          rd.dnsPkt(932 DOWNTO 869) <= STD_LOGIC_VECTOR(s.sic);
+          rd.dnsPkt(996 DOWNTO 933) <= STD_LOGIC_VECTOR(s.spc);
+          sin.s <= Send;
           
         --------ADMIN ROUTE--------          
         WHEN CalcHash =>
@@ -600,6 +613,7 @@ BEGIN
             IF (f.dstMACBW = '0') THEN
               -- exhaust blacklist, no ban
               sin.s <= CheckSrcIP;
+              sin.smc <= s.smc + 1;
               sin.fsic <= 0;
             ELSE
               -- exhaust whitelist, ban
@@ -629,6 +643,7 @@ BEGIN
           ELSE
             --it's on whitelist, move on to next step
             sin.s <= CheckSrcIP;
+            sin.smc <= s.smc + 1;
             sin.fsic <= 0;
           END IF;
 
@@ -676,6 +691,7 @@ BEGIN
             IF (f.dstIPBW = '0') THEN
               -- exhaust blacklist, no ban
               sin.s <= CheckSrcPort;
+              sin.sic <= s.sic + 1;
               sin.fspc <= 0;
             ELSE
               -- exhaust whitelist, ban
@@ -705,6 +721,7 @@ BEGIN
           ELSE
             --it's on whitelist, move on to next step
             sin.s <= CheckSrcPort;
+            sin.sic <= s.sic + 1;
             sin.fspc <= 0;
           END IF;
 
@@ -752,6 +769,7 @@ BEGIN
             IF (f.dstPortBW = '0') THEN
               -- exhaust blacklist, no ban
               sin.s <= CheckPkt;
+              sin.spc <= s.spc + 1;
               sin.fdnsc <= 0;
             ELSE
               -- exhaust whitelist, ban
@@ -781,6 +799,7 @@ BEGIN
           ELSE
             --it's on whitelist, move on to next step
             sin.s <= CheckPkt;
+            sin.spc <= s.spc + 1;
             sin.fdnsc <= 0;
           END IF;
 
@@ -920,6 +939,7 @@ BEGIN
           ELSE
             sin.pc <= s.pc + 1;
           END IF;
+          sin.sfc <= s.sfc + 1;
           sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.pc + 1, sin.led'length));
           sin.s <= Idle;
 
