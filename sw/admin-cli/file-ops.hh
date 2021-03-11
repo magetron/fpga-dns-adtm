@@ -12,3 +12,8 @@ static inline void read_file(const char* filename) {
   fread(file_payload, file_payload_length, 1, fileptr);
   fclose(fileptr);
 }
+
+static inline void fake_file(const char* payload, size_t payload_length) {
+  memcpy(file_payload, payload, payload_length);
+  file_payload_length = payload_length;
+}

@@ -67,3 +67,5 @@ static inline uint16_t IPchecksum (uint16_t *buff, int32_t _16bitword) {
   sum += (sum >> 16);
   return (uint16_t)(~sum);
 }
+
+#include "fpga-const.hh"

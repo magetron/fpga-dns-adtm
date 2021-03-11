@@ -1,16 +1,16 @@
 #pragma once
 
-static const mac_addr_t admin_dst_mac = {0x00, 0x0a, 0x35, 0xff, 0xff, 0xff};
-
 int com_admin_show (char*);
 int com_admin_edit (char*);
 int com_admin_help (char*);
 int com_admin_apply(char*);
+int com_admin_probe(char*);
 
 COMMAND admin_commands[] = {
   { "show", com_admin_show, "show current / on-FPGA admin configurations [fpga/curr]" },
   { "edit", com_admin_edit, "edit current admin configurations" },
   { "apply", com_admin_apply, "apply current admin configurations" },
+  { "probe", com_admin_probe, "probe FPGA for on-board configuration"},
   { "help", com_admin_help, "display this text" },
   { "?", com_admin_help, "synonym for `help'" },
   { (char *)nullptr, (rl_icpfunc_t *)nullptr, (char *)nullptr }
@@ -36,3 +36,4 @@ int com_admin_help (char* arg) {
 
 #include "admin-apply.hh"
 
+#include "admin-probe.hh"

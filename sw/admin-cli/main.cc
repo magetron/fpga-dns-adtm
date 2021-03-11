@@ -13,7 +13,10 @@
 
 #include "fpga.hh"
 #include "filter.hh"
+#include "net-ops.hh"
 #include "sender.hh"
+#include "receiver.hh"
+#include "probe-parser.hh"
 
 #include "args-parser.hh"
 #include "commands.hh"
@@ -23,10 +26,13 @@ int main(int argc, char** argv) {
   parse_args(argc, argv);
 
   printf("FPGA administrator v0.1, https://github.com/magetron/cpu-fpga-nwofle\n");
+  printf("currently operating on %s\n", if_name);
 
   initialise_readline();
   initialise_fpga_configuration();
   initialise_send_socket();
+  initialise_receiver_socket();
+  initialise_network_randomiser();
   stifle_history(HISTORY_LENGTH);
 
   char* buf;
