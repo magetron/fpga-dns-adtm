@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 int com_admin_probe (char* arg) {
 
   mac_addr_t srcmac = random_mac();
@@ -26,4 +24,3 @@ int com_admin_probe (char* arg) {
 
   return 0;
 }
- 
