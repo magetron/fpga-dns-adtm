@@ -138,7 +138,7 @@ BEGIN
           sin.s <= Finalise;
 
         WHEN Finalise =>
-          sd.srcMAC <= x"000000350a00";
+          sd.srcMAC <= rd.dstMAC;
           sd.dstMAC <= x"d3f0f3d6f694";
           sd.dnsPkt <= rd.dnsPkt;
           sin.s <= Send;
