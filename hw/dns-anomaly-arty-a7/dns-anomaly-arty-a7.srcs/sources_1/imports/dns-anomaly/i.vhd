@@ -9,7 +9,8 @@ ENTITY corein IS
   GENERIC (
     g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00";
     g_admin_key : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"decaface";
-    g_query_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ad91be350a00"
+    g_query_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ad91be350a00";
+    g_normal_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"000000350a00"
   );
   PORT (
     clk : IN STD_LOGIC;
@@ -265,9 +266,11 @@ BEGIN
           IF (rd.dstMAC = g_query_mac) THEN
             -- SIGNALS recognition of admin pkt
             sin.s <= ReplyQueryHeader;
+            rd.dstMAC <= g_query_mac;
           ELSE
             sin.s <= CheckSrcMAC;
             sin.stc <= s.stc + 1;
+            rd.dstMAC <= g_normal_mac;
             sin.fsmc <= 0;
           END IF;
           
