@@ -19,7 +19,7 @@ int com_admin_probe (char* arg) {
   memcpy(save_probe_pkt, recv_pkt_buf, save_probe_size);
   auto probe_response = parse_probe_pkt(save_probe_pkt, save_probe_size);
 
-  f = probe_response.filter;
+  //f = probe_response.filter;
   // metrics = metrics
 
   return 0;
