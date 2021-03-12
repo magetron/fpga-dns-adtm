@@ -9,6 +9,7 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <errno.h>
+#include <unistd.h>
 
 uint8_t send_pkt_buf[BUFFER_SIZE];
 size_t send_pkt_length = 0;
@@ -16,24 +17,30 @@ ifreq send_ifreq_i;
 ifreq send_ifreq_c;
 int32_t send_sock_raw;
 
-void initialise_send_socket () {
+void initialise_sender_socket () {
+  printf("initialising sender socket...\n");
+
   send_sock_raw = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
-  if (send_sock_raw == -1)
-  {
+  if (send_sock_raw == -1) {
     fprintf(stderr, "ERROR in socket\n");
   }
   memset(&send_ifreq_i, 0, sizeof(send_ifreq_i));
   strncpy(send_ifreq_i.ifr_name, if_name, if_length);
-  if ((ioctl(send_sock_raw, SIOCGIFINDEX, &send_ifreq_i)) < 0)
-  {
+  if ((ioctl(send_sock_raw, SIOCGIFINDEX, &send_ifreq_i)) < 0) {
     fprintf(stderr, "ERROR in index ioctl reading\n");
   }
   memset(&send_ifreq_c, 0, sizeof(send_ifreq_c));
   strncpy(send_ifreq_c.ifr_name, if_name, if_length);
-  if ((ioctl(send_sock_raw, SIOCGIFHWADDR, &send_ifreq_c)) < 0)
-  {
+  if ((ioctl(send_sock_raw, SIOCGIFHWADDR, &send_ifreq_c)) < 0) {
     fprintf(stderr, "ERROR in SIOCGIFHWADDR ioctl reading\n");
   }
+}
+
+void teardown_sender () {
+  printf("tearing down sender socket...\n");
+
+  shutdown(send_sock_raw, SHUT_RDWR);
+  close(send_sock_raw);
 }
 
 void trigger_send () {
@@ -50,10 +57,10 @@ void trigger_send () {
   sadr_ll.sll_addr[0] = 0x00;
   sadr_ll.sll_addr[0] = 0x00;
 
-  int32_t send_len = sendto(send_sock_raw, send_pkt_buf, send_pkt_length + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
+  ssize_t send_len = sendto(send_sock_raw, send_pkt_buf, send_pkt_length + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
                             reinterpret_cast<const sockaddr *>(&sadr_ll), sizeof(sockaddr_ll));
   if (send_len < 0) {
-    fprintf(stderr, "ERROR in sending, sendlen=%d, errno=%d\n", send_len, errno);
+    fprintf(stderr, "ERROR in sending, sendlen=%ld, errno=%d\n", send_len, errno);
     perror("Socket:");
   } else {
     printf("send done\n");

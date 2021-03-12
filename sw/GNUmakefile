@@ -4,7 +4,7 @@ CFLAGS=-g -Og -Wall
 CRCFOLDER=eth-crc32-checker
 PROBERFOLDER=fpga-prober
 CLIFOLDER=admin-cli
-CLILINK=-ledit
+CLILINK=-ledit -lpthread
 
 .PHONY: pkt-sender admin-builder crc32-checker pkt-receiver clean
 

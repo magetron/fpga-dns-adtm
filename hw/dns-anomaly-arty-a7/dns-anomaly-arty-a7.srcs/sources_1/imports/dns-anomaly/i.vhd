@@ -8,7 +8,9 @@ USE work.common.ALL;
 ENTITY corein IS
   GENERIC (
     g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00";
-    g_admin_key : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"decaface"
+    g_admin_key : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"decaface";
+    g_query_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ad91be350a00";
+    g_normal_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"000000350a00"
   );
   PORT (
     clk : IN STD_LOGIC;
@@ -36,6 +38,26 @@ ARCHITECTURE rtl OF corein IS
 
     Read,
     CheckAdmin,
+    CheckQuery,
+    
+    -- Query Stages
+    ReplyQueryHeader,
+    ReplyQuerySrcMACMeta,
+    ReplyQuerySrcMACList,
+    ReplyQueryDstMACMeta,
+    ReplyQueryDstMACList,
+    ReplyQuerySrcIPMeta,
+    ReplyQuerySrcIPList,
+    ReplyQueryDstIPMeta,
+    ReplyQueryDstIPList,
+    ReplyQuerySrcPortMeta,
+    ReplyQuerySrcPortList,
+    ReplyQueryDstPortMeta,
+    ReplyQueryDstPortList,
+    ReplyQueryDNSMeta,
+    ReplyQueryDNSList,
+    ReplyQueryCountersTot,
+    REplyQueryCountersSeg,
 
     -- Admin Stages
     CalcHash,
@@ -110,6 +132,12 @@ ARCHITECTURE rtl OF corein IS
     fpktc : NATURAL RANGE 0 TO 128; -- filter pkt bits left counter
     fpktmf : STD_LOGIC; -- filter pkt match flag
     
+    stc : UNSIGNED(63 DOWNTO 0); -- total valid pkts received
+    sfc : UNSIGNED(63 DOWNTO 0); -- total filter passed pkts
+    smc : UNSIGNED(63 DOWNTO 0); -- total filter passed mac pkts
+    sic : UNSIGNED(63 DOWNTO 0); -- total filter passed ip pkts
+    spc : UNSIGNED(63 DOWNTO 0); -- total filter passed port pkts
+    
   END RECORD;
 
   SIGNAL s, sin : istate_t
@@ -135,7 +163,14 @@ ARCHITECTURE rtl OF corein IS
   fdnsc => 0,
   fpktsc => 0,
   fpktc => 0,
-  fpktmf => '0'
+  fpktmf => '0',
+  
+  stc => (OTHERS => '0'),
+  sfc => (OTHERS => '0'),
+  smc => (OTHERS => '0'),
+  sic => (OTHERS => '0'),
+  spc => (OTHERS => '0')
+  
   );
 
   SIGNAL rd : rcv_data_t
@@ -224,11 +259,159 @@ BEGIN
             sin.ahc <= 0;
             sin.pc <= 0;
           ELSE
+            sin.s <= CheckQuery;
+          END IF;
+          
+        WHEN CheckQuery =>
+          IF (rd.dstMAC = g_query_mac) THEN
+            -- SIGNALS recognition of admin pkt
+            sin.s <= ReplyQueryHeader;
+            rd.dstMAC <= g_query_mac;
+          ELSE
             sin.s <= CheckSrcMAC;
+            sin.stc <= s.stc + 1;
+            rd.dstMAC <= g_normal_mac;
             sin.fsmc <= 0;
           END IF;
           
-          --------ADMIN ROUTE--------          
+        WHEN ReplyQueryHeader =>
+          rd.ipLength <= 73; -- 73 -> 0x0049 -> 0x0094 = 148
+          rd.dnsLength <= 128;
+          sin.s <= ReplyQuerySrcMacMeta;
+          
+        WHEN ReplyQuerySrcMACMeta =>
+          rd.dnsPkt(0) <= f.srcMACBW;
+          rd.dnsPkt(2 DOWNTO 1) <= STD_LOGIC_VECTOR(to_unsigned(f.srcMACLength, 2));
+          sin.s <= ReplyQuerySrcMACList;
+          sin.amc <= 0;
+        
+        WHEN ReplyQuerySrcMACList =>
+          IF (s.amc = 0) THEN
+            rd.dnsPkt(50 DOWNTO 3) <= f.srcMACList(0);
+            sin.amc <= s.amc + 1;
+          ELSIF (s.amc = 1) THEN
+            rd.dnsPkt(98 DOWNTO 51) <= f.srcMACList(1);
+            sin.amc <= s.amc + 1;
+          ELSE
+            sin.s <= ReplyQueryDstMACMeta;
+          END IF;
+        
+        WHEN ReplyQueryDstMACMeta =>
+          rd.dnsPkt(99) <= f.dstMACBW;
+          rd.dnsPkt(101 DOWNTO 100) <= STD_LOGIC_VECTOR(to_unsigned(f.dstMACLength, 2));
+          sin.s <= ReplyQueryDstMACList;
+          sin.amc <= 0;
+        
+        WHEN ReplyQueryDstMACList =>
+          IF (s.amc = 0) THEN
+            rd.dnsPkt(149 DOWNTO 102) <= f.dstMACList(0);
+            sin.amc <= s.amc + 1;
+          ELSIF (s.amc = 1) THEN
+            rd.dnsPkt(197 DOWNTO 150) <= f.dstMACList(1);
+            sin.amc <= s.amc + 1;
+          ELSE
+            sin.s <= ReplyQuerySrcIPMeta;
+          END IF;
+          
+        WHEN ReplyQuerySrcIPMeta =>
+          rd.dnsPkt(198) <= f.srcIPBW;
+          rd.dnsPkt(200 DOWNTO 199) <= STD_LOGIC_VECTOR(to_unsigned(f.srcIPLength, 2));
+          sin.s <= ReplyQuerySrcIPList;
+          sin.aic <= 0;
+        
+        WHEN ReplyQuerySrcIPList =>
+          IF (s.aic = 0) THEN
+            rd.dnsPkt(232 DOWNTO 201) <= f.srcIPList(0);
+            sin.aic <= s.aic + 1;
+          ELSIF (s.aic = 1) THEN
+            rd.dnsPkt(264 DOWNTO 233) <= f.srcIPList(1);
+            sin.aic <= s.aic + 1;
+          ELSE
+            sin.s <= ReplyQueryDstIPMeta;
+          END IF;
+        
+        WHEN ReplyQueryDstIPMeta =>
+          rd.dnsPkt(265) <= f.dstIPBW;
+          rd.dnsPkt(267 DOWNTO 266) <= STD_LOGIC_VECTOR(to_unsigned(f.dstIPLength, 2));
+          sin.s <= ReplyQueryDstIPList;
+          sin.aic <= 0;
+        
+        WHEN ReplyQueryDstIPList =>
+          IF (s.aic = 0) THEN
+            rd.dnsPkt(299 DOWNTO 268) <= f.dstIPList(0);
+            sin.aic <= s.aic + 1;
+          ELSIF (s.aic = 1) THEN
+            rd.dnsPkt(331 DOWNTO 300) <= f.dstIPList(1);
+            sin.aic <= s.aic + 1;
+          ELSE
+            sin.s <= ReplyQuerySrcPortMeta;
+          END IF;
+          
+        WHEN ReplyQuerySrcPortMeta =>
+          rd.dnsPkt(332) <= f.srcPortBW;
+          rd.dnsPkt(334 DOWNTO 333) <= STD_LOGIC_VECTOR(to_unsigned(f.srcPortLength, 2));
+          sin.s <= ReplyQuerySrcPortList;
+          sin.apc <= 0;
+        
+        WHEN ReplyQuerySrcPortList =>
+          IF (s.apc = 0) THEN
+            rd.dnsPkt(350 DOWNTO 335) <= f.srcPortList(0);
+            sin.apc <= s.apc + 1;
+          ELSIF (s.apc = 1) THEN
+            rd.dnsPkt(366 DOWNTO 351) <= f.srcPortList(1);
+            sin.apc <= s.apc + 1;
+          ELSE
+            sin.s <= ReplyQueryDstPortMeta;
+          END IF;
+        
+        WHEN ReplyQueryDstPortMeta =>
+          rd.dnsPkt(367) <= f.dstPortBW;
+          rd.dnsPkt(369 DOWNTO 368) <= STD_LOGIC_VECTOR(to_unsigned(f.dstPortLength, 2));
+          sin.s <= ReplyQueryDstPortList;
+          sin.apc <= 0;
+        
+        WHEN ReplyQueryDstPortList =>
+          IF (s.apc = 0) THEN
+            rd.dnsPkt(385 DOWNTO 370) <= f.dstPortList(0);
+            sin.apc <= s.apc + 1;
+          ELSIF (s.apc = 1) THEN
+            rd.dnsPkt(401 DOWNTO 386) <= f.dstPortList(1);
+            sin.apc <= s.apc + 1;
+          ELSE
+            sin.s <= ReplyQueryDNSMeta;
+          END IF;
+        
+        WHEN ReplyQueryDNSMeta =>
+          rd.dnsPkt(402) <= f.dnsBW;
+          rd.dnsPkt(404 DOWNTO 403) <= STD_LOGIC_VECTOR(to_unsigned(f.dnsLength, 2));
+          rd.dnsPkt(412 DOWNTO 405) <= STD_LOGIC_VECTOR(to_unsigned(f.dnsItemEndPtr(0), 8));
+          rd.dnsPkt(420 DOWNTO 413) <= STD_LOGIC_VECTOR(to_unsigned(f.dnsItemEndPtr(1), 8));
+          sin.s <= ReplyQueryDNSList;
+          sin.adc <= 0;
+          
+        WHEN ReplyQueryDNSList =>
+          IF (s.adc = 0) THEN
+            rd.dnsPkt(548 DOWNTO 421) <= f.dnsList(0);
+            sin.adc <= s.adc + 1;
+          ELSIF (s.adc = 1) THEN
+            rd.dnsPkt(676 DOWNTO 549) <= f.dnsList(1);
+            sin.adc <= s.adc + 1;
+          ELSE
+            sin.s <= ReplyQueryCountersTot;
+          END IF;
+          
+        WHEN ReplyQueryCountersTot =>
+          rd.dnsPkt(740 DOWNTO 677) <= STD_LOGIC_VECTOR(s.stc);
+          rd.dnsPkt(804 DOWNTO 741) <= STD_LOGIC_VECTOR(s.sfc);
+          sin.s <= ReplyQueryCountersSeg;
+          
+        WHEN ReplyQueryCountersSeg =>
+          rd.dnsPkt(868 DOWNTO 805) <= STD_LOGIC_VECTOR(s.smc);
+          rd.dnsPkt(932 DOWNTO 869) <= STD_LOGIC_VECTOR(s.sic);
+          rd.dnsPkt(996 DOWNTO 933) <= STD_LOGIC_VECTOR(s.spc);
+          sin.s <= Send;
+          
+        --------ADMIN ROUTE--------          
         WHEN CalcHash =>
           sin.ahv <= s.ahv xor rd.dnsPkt(s.ahc + 31 DOWNTO s.ahc);
           IF (s.ahc = 992) THEN -- 1024 - 31 = 993
@@ -433,6 +616,7 @@ BEGIN
             IF (f.dstMACBW = '0') THEN
               -- exhaust blacklist, no ban
               sin.s <= CheckSrcIP;
+              sin.smc <= s.smc + 1;
               sin.fsic <= 0;
             ELSE
               -- exhaust whitelist, ban
@@ -462,6 +646,7 @@ BEGIN
           ELSE
             --it's on whitelist, move on to next step
             sin.s <= CheckSrcIP;
+            sin.smc <= s.smc + 1;
             sin.fsic <= 0;
           END IF;
 
@@ -509,6 +694,7 @@ BEGIN
             IF (f.dstIPBW = '0') THEN
               -- exhaust blacklist, no ban
               sin.s <= CheckSrcPort;
+              sin.sic <= s.sic + 1;
               sin.fspc <= 0;
             ELSE
               -- exhaust whitelist, ban
@@ -538,6 +724,7 @@ BEGIN
           ELSE
             --it's on whitelist, move on to next step
             sin.s <= CheckSrcPort;
+            sin.sic <= s.sic + 1;
             sin.fspc <= 0;
           END IF;
 
@@ -585,6 +772,7 @@ BEGIN
             IF (f.dstPortBW = '0') THEN
               -- exhaust blacklist, no ban
               sin.s <= CheckPkt;
+              sin.spc <= s.spc + 1;
               sin.fdnsc <= 0;
             ELSE
               -- exhaust whitelist, ban
@@ -614,6 +802,7 @@ BEGIN
           ELSE
             --it's on whitelist, move on to next step
             sin.s <= CheckPkt;
+            sin.spc <= s.spc + 1;
             sin.fdnsc <= 0;
           END IF;
 
@@ -623,6 +812,7 @@ BEGIN
             IF (f.dnsBW = '0') THEN
               -- exhaust blacklist, no ban
               sin.s <= Send;
+              sin.sfc <= s.sfc + 1;
             ELSE
               -- exhaust whitelist, ban
               sin.s <= Idle;
@@ -744,6 +934,7 @@ BEGIN
           ELSE
             --it's on whitelist, move on to next step
             sin.s <= Send;
+            sin.sfc <= s.sfc + 1;
           END IF;
 
         WHEN Send =>

@@ -16,11 +16,11 @@ void trigger_send (const ifreq& ifreq_i, const int32_t sock_raw) {
   sadr_ll.sll_ifindex = ifreq_i.ifr_ifindex;
   sadr_ll.sll_halen = ETH_ALEN;
   sadr_ll.sll_addr[0] = 0x00;
-  sadr_ll.sll_addr[0] = 0x0A;
-  sadr_ll.sll_addr[0] = 0x35;
-  sadr_ll.sll_addr[0] = 0x00;
-  sadr_ll.sll_addr[0] = 0x00;
-  sadr_ll.sll_addr[0] = 0x00;
+  sadr_ll.sll_addr[1] = 0x0A;
+  sadr_ll.sll_addr[2] = 0x35;
+  sadr_ll.sll_addr[3] = 0x00;
+  sadr_ll.sll_addr[4] = 0x00;
+  sadr_ll.sll_addr[5] = 0x00;
 
   int32_t send_len = sendto(sock_raw, PKTBUF, PAYLOAD_LENGTH + sizeof(udphdr) + sizeof(iphdr) + sizeof(ethhdr), 0,
                             reinterpret_cast<const sockaddr *>(&sadr_ll), sizeof(sockaddr_ll));

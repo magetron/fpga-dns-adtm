@@ -58,6 +58,14 @@ struct filter_t {
   dns_filter_item_t dnsList[FILTER_DEPTH];
 };
 
+struct stats_t {
+  uint64_t stc;
+  uint64_t sfc;
+  uint64_t smc;
+  uint64_t sic;
+  uint64_t spc;
+};
+
 static inline uint16_t IPchecksum (uint16_t *buff, int32_t _16bitword) {
   uint32_t sum;
   for (sum = 0; _16bitword > 0; _16bitword--) {
@@ -67,3 +75,5 @@ static inline uint16_t IPchecksum (uint16_t *buff, int32_t _16bitword) {
   sum += (sum >> 16);
   return (uint16_t)(~sum);
 }
+
+#include "fpga-const.hh"
