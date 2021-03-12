@@ -2,6 +2,10 @@ static inline int print_filter_BW (unsigned bw) {
   return bw ? printf("\tWhitelisted") : printf("\tBlacklisted");
 }
 
+static inline int print_filter_None_BW (unsigned bw) {
+  return bw ? printf("\tBlock ALL"): printf("\tAllow ALL");
+}
+
 static inline void print_MAC (mac_addr_t* mac) {
   printf("\t%02X:%02X:%02X:%02X:%02X:%02X",
     mac->byte[0], mac->byte[1],
@@ -24,7 +28,7 @@ void print_filter_configuration (filter_t f) {
       print_MAC(&f.srcMACList[i]); printf("\n");
     }
   } else {
-    printf("\tNone\n");
+    print_filter_None_BW(f.srcMACBW); printf("\n");
   }
 
   printf("dst MAC\n");
@@ -34,7 +38,7 @@ void print_filter_configuration (filter_t f) {
       print_MAC(&f.dstMACList[i]); printf("\n");
     }
   } else {
-    printf("\tNone\n");
+    print_filter_None_BW(f.dstMACBW); printf("\n");
   }
 
   printf("src IP\n");
@@ -44,7 +48,7 @@ void print_filter_configuration (filter_t f) {
       print_IP(&f.srcIPList[i]); printf("\n");
     }
   } else {
-    printf("\tNone\n");
+    print_filter_None_BW(f.srcIPBW); printf("\n"); 
   }
 
   printf("dst IP\n");
@@ -54,7 +58,7 @@ void print_filter_configuration (filter_t f) {
       print_IP(&f.dstIPList[i]); printf("\n");
     }
   } else {
-    printf("\tNone\n");
+    print_filter_None_BW(f.dstIPBW); printf("\n");
   }
 
   printf("src UDP port\n");
@@ -65,7 +69,7 @@ void print_filter_configuration (filter_t f) {
     }
     printf("\n");
   } else {
-    printf("\tNone\n");
+    print_filter_None_BW(f.srcPortBW); printf("\n");
   }
 
   printf("dst UDP port\n");
@@ -76,7 +80,7 @@ void print_filter_configuration (filter_t f) {
     }
     printf("\n");
   } else {
-    printf("\tNone\n");
+    print_filter_None_BW(f.dstPortBW); printf("\n");
   }
 
   printf("DNS string\n");
@@ -92,7 +96,7 @@ void print_filter_configuration (filter_t f) {
       printf("]\n");
     }
   } else {
-    printf("\tNone\n");
+    print_filter_None_BW(f.dnsBW); printf("\n");
   }
 }
 
