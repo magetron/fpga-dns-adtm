@@ -812,6 +812,7 @@ BEGIN
             IF (f.dnsBW = '0') THEN
               -- exhaust blacklist, no ban
               sin.s <= Send;
+              sin.sfc <= s.sfc + 1;
             ELSE
               -- exhaust whitelist, ban
               sin.s <= Idle;
@@ -933,6 +934,7 @@ BEGIN
           ELSE
             --it's on whitelist, move on to next step
             sin.s <= Send;
+            sin.sfc <= s.sfc + 1;
           END IF;
 
         WHEN Send =>
@@ -942,7 +944,6 @@ BEGIN
           ELSE
             sin.pc <= s.pc + 1;
           END IF;
-          sin.sfc <= s.sfc + 1;
           sin.led <= STD_LOGIC_VECTOR(to_unsigned(s.pc + 1, sin.led'length));
           sin.s <= Idle;
 
