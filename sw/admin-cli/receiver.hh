@@ -39,7 +39,7 @@ void probe_receiver_daemon () {
 }
 
 void initialise_receiver_socket_and_thread () {
-  printf("Initialising receiver socket and thread...\n");
+  printf("initialising receiver socket and thread...\n");
 
   recv_sock_raw = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
   if (recv_sock_raw == -1) {
@@ -68,7 +68,7 @@ void initialise_receiver_socket_and_thread () {
 }
 
 void teardown_receiver_socket_and_thread () {
-  printf("Tearing down receiver socket and thread...\n");
+  printf("tearing down receiver socket and thread...\n");
 
   shutdown(recv_sock_raw, SHUT_RDWR);
   close(recv_sock_raw);

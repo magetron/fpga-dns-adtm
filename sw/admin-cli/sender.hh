@@ -18,7 +18,7 @@ ifreq send_ifreq_c;
 int32_t send_sock_raw;
 
 void initialise_sender_socket () {
-  printf("Initialising sender socket...\n");
+  printf("initialising sender socket...\n");
 
   send_sock_raw = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
   if (send_sock_raw == -1) {
@@ -37,7 +37,7 @@ void initialise_sender_socket () {
 }
 
 void teardown_sender () {
-  printf("Tearing down receiver socket and thread...\n");
+  printf("tearing down receiver socket and thread...\n");
 
   shutdown(send_sock_raw, SHUT_RDWR);
   close(send_sock_raw);

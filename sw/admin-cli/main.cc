@@ -13,11 +13,12 @@
 #include "main.hh"
 
 #include "fpga.hh"
-#include "filter.hh"
+#include "fpga-filter.hh"
+#include "fpga-stats.hh"
 #include "net-ops.hh"
 #include "sender.hh"
 #include "receiver.hh"
-#include "probe-parser.hh"
+#include "prober.hh"
 
 #include "args-parser.hh"
 #include "commands.hh"
@@ -34,6 +35,12 @@ int main(int argc, char** argv) {
   
   initialise_sender_socket();
   initialise_receiver_socket_and_thread();
+
+  if (probe_board_on_launch) {
+    probe_fpga_update_local();
+    f_curr = f;
+  }
+
   stifle_history(HISTORY_LENGTH);
 
   printf("currently operating on %s\n", if_name);
