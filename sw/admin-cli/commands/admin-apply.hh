@@ -12,8 +12,6 @@ int com_admin_apply (char* arg) {
   form_packet(srcmac, admin_dst_mac, srcip, dstip, srcport, dstport,
     file_payload, file_payload_length);
   trigger_send();
-
-  f = f_curr;
-
+  probe_fpga_update_local();
   return 0;
 }
