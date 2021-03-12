@@ -9,6 +9,7 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <errno.h>
+#include <unistd.h>
 
 uint8_t send_pkt_buf[BUFFER_SIZE];
 size_t send_pkt_length = 0;
@@ -16,7 +17,9 @@ ifreq send_ifreq_i;
 ifreq send_ifreq_c;
 int32_t send_sock_raw;
 
-void initialise_send_socket () {
+void initialise_sender_socket () {
+  printf("Initialising sender socket...\n");
+
   send_sock_raw = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
   if (send_sock_raw == -1) {
     fprintf(stderr, "ERROR in socket\n");
@@ -31,6 +34,13 @@ void initialise_send_socket () {
   if ((ioctl(send_sock_raw, SIOCGIFHWADDR, &send_ifreq_c)) < 0) {
     fprintf(stderr, "ERROR in SIOCGIFHWADDR ioctl reading\n");
   }
+}
+
+void teardown_sender () {
+  printf("Tearing down receiver socket and thread...\n");
+
+  shutdown(send_sock_raw, SHUT_RDWR);
+  close(send_sock_raw);
 }
 
 void trigger_send () {

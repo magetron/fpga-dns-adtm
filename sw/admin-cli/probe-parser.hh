@@ -48,14 +48,36 @@ probe_response_t parse_probe_pkt(uint8_t* pkt, size_t length) {
   printf("%012lx %012lx\n", extract_bits_from_arr(payload, 3, 50), extract_bits_from_arr(payload, 51, 98));
   printf("%01lx %01lx\n", extract_bits_from_arr(payload, 99, 99), extract_bits_from_arr(payload, 100, 101));
   printf("%012lx %012lx\n", extract_bits_from_arr(payload, 102, 149), extract_bits_from_arr(payload, 150, 197));
+  
   printf("%01lx %01lx\n", extract_bits_from_arr(payload, 198, 198), extract_bits_from_arr(payload, 199, 200));
   printf("%08ld %08ld\n", extract_bits_from_arr(payload, 201, 232), extract_bits_from_arr(payload, 233, 264));
   printf("%01lx %01lx\n", extract_bits_from_arr(payload, 265, 265), extract_bits_from_arr(payload, 266, 267));
   printf("%08ld %08ld\n", extract_bits_from_arr(payload, 268, 299), extract_bits_from_arr(payload, 300, 331));
+  
+  printf("%01lx %01lx\n", extract_bits_from_arr(payload, 332, 332), extract_bits_from_arr(payload, 333, 334));
+  printf("%05d %05d\n", __bswap_16((uint16_t)extract_bits_from_arr(payload, 335, 350)), __bswap_16((uint16_t)extract_bits_from_arr(payload, 351, 366)));
+  printf("%01lx %01lx\n", extract_bits_from_arr(payload, 367, 367), extract_bits_from_arr(payload, 368, 369));
+  printf("%05d %05d\n", __bswap_16((uint16_t)extract_bits_from_arr(payload, 370, 385)), __bswap_16((uint16_t)extract_bits_from_arr(payload, 386, 401)));
+
+  printf("%01lx %01lx\n", extract_bits_from_arr(payload, 402, 402), extract_bits_from_arr(payload, 403, 404));
+  printf("%ld %ld\n", extract_bits_from_arr(payload, 405, 412), extract_bits_from_arr(payload, 413, 420));
+  for (size_t i = 421; i <= 541; i += 8) {
+    uint8_t c = (uint8_t)extract_bits_from_arr(payload, i, i + 7);
+    printf("%c", c);
+  }
+  printf("\n");
+  for (size_t i = 549; i <= 669; i += 8) {
+    uint8_t c = (uint8_t)extract_bits_from_arr(payload, i, i + 7);
+    printf("%c", c);
+  }
+  printf("\n");
+
+  printf("%ld %ld\n", extract_bits_from_arr(payload, 677, 740), extract_bits_from_arr(payload, 741, 804));
+  printf("%ld %ld %ld\n", extract_bits_from_arr(payload, 805, 868), extract_bits_from_arr(payload, 869, 932), extract_bits_from_arr(payload, 933, 996));
 
   //for (size_t i = 0; i < length; i++) printf("%02x ", payload[i]);
   //printf("\n");
-
+ 
   pr = {};
   return pr;
 }

@@ -11,13 +11,16 @@ int com_admin_probe (char* arg) {
   fake_file(payload, strnlen(payload, 16));
   form_packet(srcmac, probe_dst_mac, srcip, dstip, srcport, dstport,
     file_payload, file_payload_length);
+
+  probe_reply_received = 0;
   trigger_send();
-  trigger_recv(probe_dst_mac, 10);
-  
-  uint8_t* save_probe_pkt = reinterpret_cast<uint8_t *>(malloc(recv_pkt_length));
-  size_t save_probe_size = recv_pkt_length;
-  memcpy(save_probe_pkt, recv_pkt_buf, save_probe_size);
-  auto probe_response = parse_probe_pkt(save_probe_pkt, save_probe_size);
+  probe_reply_recv(PROBE_TIMEOUT);
+  if (!probe_reply_received) {
+    fprintf(stderr, "ERROR no probe reply received within timeout %ld set\n", PROBE_TIMEOUT);
+    return -1;
+  }
+
+  auto probe_response = parse_probe_pkt(probe_pkt_buf, probe_pkt_length);
 
   //f = probe_response.filter;
   // metrics = metrics

@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>
+#include <thread>
 
 #include <editline/readline.h>
 #include <getopt.h>
@@ -25,15 +26,17 @@
 int main(int argc, char** argv) {
   parse_args(argc, argv);
 
-  printf("FPGA administrator v0.1, https://github.com/magetron/cpu-fpga-nwofle\n");
-  printf("currently operating on %s\n", if_name);
+  printf("Greetings! FPGA administrator v0.1, https://github.com/magetron/cpu-fpga-nwofle\n");
 
   initialise_readline();
   initialise_fpga_configuration();
-  initialise_send_socket();
-  initialise_receiver_socket();
   initialise_network_randomiser();
+  
+  initialise_sender_socket();
+  initialise_receiver_socket_and_thread();
   stifle_history(HISTORY_LENGTH);
+
+  printf("currently operating on %s\n", if_name);
 
   char* buf;
   char* line;
@@ -48,5 +51,10 @@ int main(int argc, char** argv) {
     free(buf);
   }
 
+  teardown_sender();
+  teardown_receiver_socket_and_thread();
+
+  printf("Bye!\n");
+  
   return 0;
 }
