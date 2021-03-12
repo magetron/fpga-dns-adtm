@@ -37,7 +37,7 @@ void initialise_sender_socket () {
 }
 
 void teardown_sender () {
-  printf("tearing down receiver socket and thread...\n");
+  printf("tearing down sender socket...\n");
 
   shutdown(send_sock_raw, SHUT_RDWR);
   close(send_sock_raw);

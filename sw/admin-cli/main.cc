@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
   teardown_sender();
   teardown_receiver_socket_and_thread();
 
-  printf("Bye!\n");
+  printf("bye!\n");
   
   return 0;
 }
