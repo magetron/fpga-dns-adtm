@@ -6,9 +6,9 @@ PROBERFOLDER=fpga-prober
 CLIFOLDER=admin-cli
 CLILINK=-ledit -lpthread
 
-.PHONY: pkt-sender admin-builder crc32-checker pkt-receiver clean
+.PHONY: pkt-sender admin-builder crc32-checker pkt-receiver admin-cli build clean
 
-default: pkt-sender admin-builder crc32-checker pkt-receiver
+default: build
 
 pkt-sender: $(PROBERFOLDER)/pkt-sender.cc
 	@$(CPPC) $(CFLAGS) $(PROBERFOLDER)/pkt-sender.cc -o pkt-sender.out
@@ -30,5 +30,16 @@ admin-cli: $(CLIFOLDER)/
 	@$(CPPC) $(CFLAGS) $(CLILINK) $(CLIFOLDER)/main.cc -o main.out
 	@echo -e "\tCPPC ${CLIFOLDER}/main.cc"
 
+build: admin-cli pkt-sender admin-builder crc32-checker pkt-receiver
+	@mkdir -p tools
+	@mv ./pkt-sender.out tools/
+	@mv ./admin-builder.out tools/
+	@mv ./crc32-checker.out tools/
+	@mv ./pkt-receiver.out tools/
+	@echo -e "BUILD DONE"
+	@echo -e "supplementary tools under ./tools/"
+	@echo -e "CLI interface executable ./main.out, run with root privilege to access raw socket"
+
 clean:
-	rm -rf pkt-sender.out crc32-checker.out admin-builder.out pkt-receiver.out
+	rm -rf pkt-sender.out crc32-checker.out admin-builder.out pkt-receiver.out main.out
+	rm -rf tools/
