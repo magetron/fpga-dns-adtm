@@ -6,6 +6,6 @@ Usually, root privilege is required to access raw sockets, which is a must for t
 
 Sample usage `sudo ./main.out -f enp8s0 -p`
 
-Other tools are also built with `make`, under the `tools/` folder. Namely a prototype pkt sender and receiver, a admin packet builder and a ethernet CRC32 checker.
+Other tools are also built with `make`, under the `tools/` folder. Namely a prototype pkt sender and receiver, an admin packet builder and an ethernet CRC32 checker.
 
  
