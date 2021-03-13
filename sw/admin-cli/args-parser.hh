@@ -10,7 +10,7 @@ static inline void parse_args (int argc, char** argv) {
         break;
       case 'f':
         if_length = strnlen(optarg, IF_NAMESIZE);
-        strncpy(if_name, optarg, if_length);
+        strncpy(if_name, optarg, if_length + 1);
         break;
       default:
         printf("Unrecognised argument\n");
