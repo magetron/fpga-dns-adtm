@@ -1,7 +1,8 @@
 #pragma once
 
 int com_admin_apply (char* arg) {
-  write_to_admin_pkt(f_curr);
+  printf("writing admin pkt to %s...\n", ADMIN_PKT_TMP_FILENAME);
+  write_to_admin_pkt(f_curr, ADMIN_PKT_TMP_FILENAME);
 
   mac_addr_t srcmac = random_mac();
   ip_addr_t srcip = random_local_ip();
@@ -13,5 +14,12 @@ int com_admin_apply (char* arg) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
+
+  if (memcmp(&f, &f_curr, sizeof(filter_t)) == 0) {
+    printf("successful! apply confirmed via probing FPGA\n");
+  } else {
+    printf("failed! apply cannot be confirmed via probing FPGA\n");
+  }
+
   return 0;
 }
