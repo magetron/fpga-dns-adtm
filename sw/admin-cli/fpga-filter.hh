@@ -64,10 +64,12 @@ void append_auth_hash () {
   write_admin_buf(0, 0);
 }
 
-void write_to_admin_pkt (filter_t& f) {
-  printf("writing admin pkt to %s...\n", ADMIN_PKT_TMP_FILENAME);
+void write_to_admin_pkt (filter_t& f, const char* filename) {
+  admin_pkt = fopen(filename, "wb");
+  if (!admin_pkt) {
+    fprintf(stderr, "ERROR invalid filename to write\n");
+  }
 
-  admin_pkt = fopen(ADMIN_PKT_TMP_FILENAME, "wb");
   admin_buf_hash_val = admin_buf_key;
 
   write_admin_buf(f.srcMACBW, 1);
