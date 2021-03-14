@@ -115,6 +115,27 @@ uint8_t probe_reply_recv(uint64_t us_timeout) {
   return probe_reply_received;
 }
 
+uint8_t expect_receive(const uint8_t* payload, size_t length, size_t timeout) {
+  size_t c = 0;
+  while (c < timeout) {
+    auto* eth_hdr = reinterpret_cast<ethhdr*>(recv_pkt_buf);
+    auto* ip_hdr = reinterpret_cast<ip*>(eth_hdr + 1);
+    auto* udp_hdr = reinterpret_cast<udphdr*>(ip_hdr + 1);
+    auto* recv_payload = reinterpret_cast<uint8_t*>(udp_hdr + 1);
+    if (memcmp(eth_hdr->h_source, &fpga_src_mac, sizeof(mac_addr_t)) == 0 &&
+        htons(udp_hdr->len) - 8U == length && memcmp(payload, recv_payload, length) == 0) {
+      return 1;
+    }
+    c++;
+    usleep(1);
+  }
+  return 0;
+}
+
+uint8_t expect_block(const uint8_t* payload, size_t length, size_t timeout) {
+  return !expect_receive(payload, length, timeout); 
+}
+
 // DEPRECATED
 /*
 void trigger_recv(mac_addr_t target_src_mac, size_t timeout) {

@@ -94,7 +94,7 @@ probe_response_t parse_probe_pkt(uint8_t* pkt, size_t length) {
   auto* ip_hdr = reinterpret_cast<ip*>(eth_hdr + 1);
   auto* udp_hdr = reinterpret_cast<udphdr*>(ip_hdr + 1);
   auto* payload = reinterpret_cast<uint8_t*>(udp_hdr + 1);
-  length -= sizeof(eth_hdr) + sizeof(ip) + sizeof(udp_hdr);
+  length -= sizeof(eth_hdr) + sizeof(ip_hdr) + sizeof(udp_hdr);
   //printf("len = %ld\n", length);
   
   if (length < 128) {
