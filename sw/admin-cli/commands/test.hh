@@ -35,5 +35,6 @@ int com_test (char* arg) {
     final_result |= result[i];
   }
   if (final_result == 0) printf("FPGA validation completed. SUCCESSFUL!\n");
+  else printf("FPGA validation failed. UNSUCCESSFUL!\n");
   return 0;
 }
