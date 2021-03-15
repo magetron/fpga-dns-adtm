@@ -31,7 +31,7 @@ int test_dns_empty(filter_t& f) {
       reinterpret_cast<uint8_t *>(&payload), payload_length);
     trigger_send();
     if (!expect_receive(reinterpret_cast<uint8_t *>(&payload), payload_length, 1000)) {
-      printf("FPGA validation failed, expect packet not received.\n");
+      print_not_recv_msg();
       return -1;
     }
     usleep(100);
@@ -76,7 +76,7 @@ int test_dns_filter_one(filter_t& f) {
       reinterpret_cast<uint8_t *>(&payload), payload_length);
     trigger_send();
     if (!expect_receive(reinterpret_cast<uint8_t *>(&payload), payload_length, 1000)) {
-      printf("FPGA validation failed, expect packet not received.\n");
+      print_not_recv_msg();
       return -1;
     }
     usleep(100);
@@ -102,7 +102,7 @@ int test_dns_filter_one(filter_t& f) {
       reinterpret_cast<uint8_t *>(&payload), payload_length);
     trigger_send();
     if (!expect_block(reinterpret_cast<uint8_t *>(&payload), payload_length, 1000)) {
-      printf("FPGA validation failed, block not successful.\n");
+      print_not_block_msg();
       return -1;
     }
     usleep(100);
@@ -149,7 +149,7 @@ int test_dns_filter_two(filter_t& f) {
       reinterpret_cast<uint8_t *>(&payload), payload_length);
     trigger_send();
     if (!expect_receive(reinterpret_cast<uint8_t *>(&payload), payload_length, 1000)) {
-      printf("FPGA validation failed, expect packet not received.\n");
+      print_not_recv_msg();
       return -1;
     }
     usleep(100);
@@ -170,7 +170,7 @@ int test_dns_filter_two(filter_t& f) {
       reinterpret_cast<uint8_t *>(&f.dnsList[index]), f.dnsItemEndPtr[index] / 8);
     trigger_send();
     if (!expect_block(reinterpret_cast<uint8_t *>(&f.dnsList[index]), f.dnsItemEndPtr[index] / 8, 1000)) {
-      printf("FPGA validation failed, block not successful.\n");
+      print_not_block_msg();
       return -1;
     }
     usleep(100);

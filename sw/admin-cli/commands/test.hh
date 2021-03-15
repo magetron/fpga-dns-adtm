@@ -1,5 +1,13 @@
 #pragma once
 
+void print_not_recv_msg() {
+  printf("FPGA validation failed, expect packet not received.\n");
+}
+
+void print_not_block_msg() {
+  printf("FPGA validation failed, block not successful.\n");
+}
+
 #include "tests/test-srcmac.hh"
 #include "tests/test-dstmac.hh"
 #include "tests/test-srcip.hh"
