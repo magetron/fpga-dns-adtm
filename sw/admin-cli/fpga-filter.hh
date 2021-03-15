@@ -95,12 +95,12 @@ void write_to_admin_pkt (filter_t& f, const char* filename) {
   write_admin_buf(f.srcPortBW, 1);
   write_admin_buf(f.srcPortLength, 2);
   for (size_t i = 0; i < FILTER_DEPTH; i++)
-    write_admin_buf(f.srcPortList[i].port, 16);
+    write_admin_buf(htons(f.srcPortList[i].port), 16);
 
   write_admin_buf(f.dstPortBW, 1);
   write_admin_buf(f.dstPortLength, 2);
   for (size_t i = 0; i < FILTER_DEPTH; i++)
-    write_admin_buf(f.dstPortList[i].port, 16);
+    write_admin_buf(htons(f.dstPortList[i].port), 16);
 
   write_admin_buf(f.dnsBW, 1);
   write_admin_buf(f.dnsLength, 2);
@@ -167,13 +167,13 @@ void initialise_fpga_configuration () {
 
   f.srcPortBW = 1;
   f.srcPortLength = 2;
-  f.srcPortList[0].port = __bswap_16(53);
-  f.srcPortList[1].port = __bswap_16(12345);
+  f.srcPortList[0].port = 53;
+  f.srcPortList[1].port = 12345;
 
   f.dstPortBW = 1;
   f.dstPortLength = 2;
-  f.dstPortList[0].port = __bswap_16(53);
-  f.dstPortList[1].port = __bswap_16(23456);
+  f.dstPortList[0].port = 53;
+  f.dstPortList[1].port = 23456;
 
   f.dnsBW = 0;
   f.dnsLength = 2;
@@ -276,7 +276,7 @@ void print_filter_configuration (filter_t f) {
   if (f.srcPortLength > 0) {
     print_filter_BW(f.srcPortBW); printf("\n");
     for (unsigned i = 0; i < f.srcPortLength; i++) {
-      printf("\t%d", __bswap_16(f.srcPortList[i].port));
+      printf("\t%d", f.srcPortList[i].port);
     }
     printf("\n");
   } else {
@@ -287,7 +287,7 @@ void print_filter_configuration (filter_t f) {
   if (f.dstPortLength > 0) {
     print_filter_BW(f.dstPortBW); printf("\n");
     for (unsigned i = 0; i < f.dstPortLength; i++) {
-      printf("\t%d", __bswap_16(f.dstPortList[i].port));
+      printf("\t%d",f.dstPortList[i].port);
     }
     printf("\n");
   } else {
