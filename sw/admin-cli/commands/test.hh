@@ -6,6 +6,7 @@
 #include "tests/test-dstip.hh"
 #include "tests/test-srcport.hh"
 #include "tests/test-dstport.hh"
+#include "tests/test-dns.hh"
 
 int com_test (char* arg) {
   filter_t f;
@@ -16,6 +17,7 @@ int com_test (char* arg) {
   f = {}; result[3] = test_dstip_filters(f);
   f = {}; result[4] = test_srcport_filters(f);
   f = {}; result[5] = test_dstport_filters(f);
+  f = {}; result[6] = test_dns_filters(f);
 
   int final_result = 0;
   for (uint8_t i = 0; i < 7; i++) {
