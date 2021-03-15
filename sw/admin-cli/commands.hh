@@ -5,6 +5,7 @@ typedef int rl_icpfunc_t (char *);
 int com_history (char *);
 int com_help (char *);
 int com_admin (char *);
+int com_test (char *);
 int com_stats (char *);
 int com_quit (char *);
 int com_clear (char *);
@@ -18,6 +19,7 @@ typedef struct {
 COMMAND commands[] = {
   { "admin", com_admin, "FPGA filter administrator utilities" },
   { "stats", com_stats, "FPGA filter stats utilities"},
+  { "test", com_test, "FPGA test utilities"},
   { "history", com_history, "list history" },
   { "clear", com_clear, "clear the screen" },
   { "quit", com_quit, "quit FPGA administrator cli" },
@@ -54,6 +56,7 @@ int execute (char* line, COMMAND* commands) {
 #include "commands/help.hh"
 #include "commands/admin.hh"
 #include "commands/stats.hh"
+#include "commands/test.hh"
 
 int com_quit (char* arg) {
   done = 1;

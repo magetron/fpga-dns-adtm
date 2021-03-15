@@ -71,8 +71,8 @@ filter_t parse_admin_bin(uint8_t* payload, size_t length) {
   f.dstPortBW      = extract_bits_from_arr(payload, 367, 367);
   f.dstPortLength  = extract_bits_from_arr(payload, 368, 369);
   for (size_t i = 0; i < 2; i++) {
-    f.srcPortList[i].port = (uint16_t)extract_bits_from_arr(payload, 335 + i * 16, 350 + i * 16);
-    f.dstPortList[i].port = (uint16_t)extract_bits_from_arr(payload, 370 + i * 16, 385 + i * 16);
+    f.srcPortList[i].port = ntohs((uint16_t)extract_bits_from_arr(payload, 335 + i * 16, 350 + i * 16));
+    f.dstPortList[i].port = ntohs((uint16_t)extract_bits_from_arr(payload, 370 + i * 16, 385 + i * 16));
   }
 
   f.dnsBW          = extract_bits_from_arr(payload, 402, 402);
@@ -94,7 +94,7 @@ probe_response_t parse_probe_pkt(uint8_t* pkt, size_t length) {
   auto* ip_hdr = reinterpret_cast<ip*>(eth_hdr + 1);
   auto* udp_hdr = reinterpret_cast<udphdr*>(ip_hdr + 1);
   auto* payload = reinterpret_cast<uint8_t*>(udp_hdr + 1);
-  length -= sizeof(eth_hdr) + sizeof(ip) + sizeof(udp_hdr);
+  length -= sizeof(eth_hdr) + sizeof(ip_hdr) + sizeof(udp_hdr);
   //printf("len = %ld\n", length);
   
   if (length < 128) {

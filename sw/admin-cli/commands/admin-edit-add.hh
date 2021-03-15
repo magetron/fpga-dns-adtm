@@ -14,9 +14,6 @@ void com_admin_edit_add_print_dns_too_long_msg (char* arg) {
 }
 
 int com_admin_edit_add (char* arg) {
-  printf("admin edit add arg=[%s]\n", arg);
-
-
   if (!*arg) {
     com_admin_edit_add_print_error_msg(arg);
     return -1;
