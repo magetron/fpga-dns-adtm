@@ -59,7 +59,7 @@ PACKAGE BODY test_srcmac_pkts IS
     E_RXD <= x"4"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
 
-    FOR i IN LOOP 0 TO 149 LOOP
+    FOR i IN 0 TO 149 LOOP
       E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
     END LOOP;
 
@@ -89,6 +89,37 @@ PACKAGE BODY test_srcmac_pkts IS
     E_RX_DV <= '0';
   END receive_srcmac_admin_black_packet;
 
+
+  PROCEDURE receive_srcmac_blacklist_one_packet
+    (E_RX_CLK_period : IN TIME;
+    SIGNAL E_RX_DV : OUT STD_LOGIC;
+    SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) IS
+  BEGIN
+    E_RX_DV <= '1';
+    receive_preamble(E_RX_CLK_period, E_RXD);
+    receive_ethernet_header(E_RX_CLK_period, x"d60c2706b70a", x"b043df1bb706", E_RXD);
+    receive_ip_header(E_RX_CLK_period, x"0ac4e67a", x"0a6b1ba0", x"0078", E_RXD);
+    receive_udp_header(E_RX_CLK_period, x"2ba3", x"2ebc", x"0064", E_RXD);
+    receive_any_random_payload(E_RX_CLK_period, E_RXD);
+    receive_null_fcs(E_RX_CLK_period, E_RXD);
+    E_RX_DV <= '0';
+  END receive_srcmac_blacklist_one_packet;
+
+  PROCEDURE receive_srcmac_blacklist_two_packet
+    (E_RX_CLK_period : IN TIME;
+    SIGNAL E_RX_DV : OUT STD_LOGIC;
+    SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) IS
+  BEGIN
+    E_RX_DV <= '1';
+    receive_preamble(E_RX_CLK_period, E_RXD);
+    receive_ethernet_header(E_RX_CLK_period, x"cd9783f7189a", x"b043df1bb706", E_RXD);
+    receive_ip_header(E_RX_CLK_period, x"0ac4e67a", x"0a6b1ba0", x"0078", E_RXD);
+    receive_udp_header(E_RX_CLK_period, x"2ba3", x"2ebc", x"0064", E_RXD);
+    receive_any_random_payload(E_RX_CLK_period, E_RXD);
+    receive_null_fcs(E_RX_CLK_period, E_RXD);
+    E_RX_DV <= '0';
+  END receive_srcmac_blacklist_two_packet;
+
   PROCEDURE receive_srcmac_empty_admin_packet
     (E_RX_CLK_period : IN TIME;
     SIGNAL E_RX_DV : OUT STD_LOGIC;
@@ -117,6 +148,13 @@ PACKAGE BODY test_srcmac_pkts IS
       WAIT FOR E_RX_CLK_period * 200;
     END LOOP;
 
+  END srcmac_empty_test_suite;
+
+  PROCEDURE srcmac_admin_black_test_suite
+    (E_RX_CLK_period : IN TIME;
+    SIGNAL E_RX_DV : OUT STD_LOGIC;
+    SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) IS
+  BEGIN
     receive_srcmac_admin_black_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
     WAIT FOR E_RX_CLK_period * 200;
 
@@ -127,18 +165,17 @@ PACKAGE BODY test_srcmac_pkts IS
 
     FOR i IN 0 TO 4 LOOP
       -- Black list 1
-      --receive_any_random_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
+      receive_srcmac_blacklist_one_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
       WAIT FOR E_RX_CLK_period * 200;
     END LOOP;
 
     FOR i IN 0 TO 4 LOOP
       -- Black list 2
-      --receive_any_random_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
+      receive_srcmac_blacklist_one_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
       WAIT FOR E_RX_CLK_period * 200;
     END LOOP;
 
-
-  END srcmac_empty_test_suite;
+  END srcmac_admin_black_test_suite;
 
 
 END test_srcmac_pkts;

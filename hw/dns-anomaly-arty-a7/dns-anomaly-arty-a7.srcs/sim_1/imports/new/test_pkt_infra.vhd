@@ -37,6 +37,10 @@ PACKAGE test_pkt_infra IS
   (E_RX_CLK_period : IN TIME;
    SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0));
 
+  PROCEDURE receive_any_random_payload
+  (E_RX_CLK_period : IN TIME;
+  SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0));
+
   PROCEDURE receive_any_random_packet
   (E_RX_CLK_period : IN TIME;
    SIGNAL E_RX_DV : OUT STD_LOGIC;
@@ -223,6 +227,37 @@ BEGIN
   E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
 END receive_null_fcs;
 
+PROCEDURE receive_any_random_payload
+(E_RX_CLK_period : IN TIME;
+ SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) IS
+BEGIN
+  E_RXD <= x"7"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"6"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"b"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
+
+  FOR i IN 0 TO 159 LOOP
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+  END LOOP;
+
+  E_RXD <= x"1"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"b"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
+  E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
+END
+
 PROCEDURE receive_any_random_packet
 (E_RX_CLK_period : IN TIME;
  SIGNAL E_RX_DV : OUT STD_LOGIC;
@@ -250,7 +285,7 @@ BEGIN
   FOR i IN 0 TO 167 LOOP
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
   END LOOP;
-  
+
   receive_null_fcs(E_RX_CLK_period, E_RXD);
   E_RX_DV <= '0';
 END receive_any_random_packet;
