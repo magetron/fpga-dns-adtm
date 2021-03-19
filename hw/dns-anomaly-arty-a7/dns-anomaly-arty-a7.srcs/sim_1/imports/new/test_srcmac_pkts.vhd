@@ -38,10 +38,12 @@ PACKAGE BODY test_srcmac_pkts IS
   BEGIN
     receive_srcmac_empty_admin_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
     WAIT FOR E_RX_CLK_period * 200;
-    receive_any_random_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
-    WAIT FOR E_RX_CLK_period * 200;
-    receive_any_random_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
-    WAIT FOR E_RX_CLK_period * 200;
+    
+    FOR i IN 0 TO 9 LOOP
+      receive_any_random_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
+      WAIT FOR E_RX_CLK_period * 200;
+    END LOOP;
+ 
   END srcmac_empty_test_suite;
 
 
