@@ -90,59 +90,8 @@ BEGIN
 
     WAIT FOR clk_period * 10;
 
-    receive_google_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
+    srcmac_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
-    receive_apple_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
-
-    receive_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
-
-    receive_bogus_admin_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
-
-    receive_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
-
-    receive_admin_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
-
-    receive_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
-
-    -- test common packet FIFO 8 packets
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
 
   END PROCESS;
 
