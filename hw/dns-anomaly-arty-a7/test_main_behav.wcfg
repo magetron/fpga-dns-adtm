@@ -8,20 +8,21 @@
             <top_module name="common" />
             <top_module name="pck_crc32_d4" />
             <top_module name="test_main" />
-            <top_module name="test_pkts" />
+            <top_module name="test_pkt_infra" />
+            <top_module name="test_srcmac_pkts" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="30000000fs"></ZoomStartTime>
-      <ZoomEndTime time="74400001fs"></ZoomEndTime>
-      <Cursor1Time time="55980000fs"></Cursor1Time>
+      <ZoomStartTime time="23326500fs"></ZoomStartTime>
+      <ZoomEndTime time="24864001fs"></ZoomEndTime>
+      <Cursor1Time time="23920000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="288"></NameColumnWidth>
-      <ValueColumnWidth column_width="142"></ValueColumnWidth>
+      <ValueColumnWidth column_width="136"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="13" />
+   <WVObjectSize size="14" />
    <wvobject fp_name="/test_main/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -69,6 +70,10 @@
    <wvobject fp_name="/test_main/E_TX_CLK_period" type="other">
       <obj_property name="ElementShortName">E_TX_CLK_period</obj_property>
       <obj_property name="ObjectShortName">E_TX_CLK_period</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_main/uut/mac_receive/r" type="array">
+      <obj_property name="ElementShortName">r</obj_property>
+      <obj_property name="ObjectShortName">r</obj_property>
    </wvobject>
    <wvobject fp_name="/test_main/uut/ci/s" type="array">
       <obj_property name="ElementShortName">s</obj_property>
