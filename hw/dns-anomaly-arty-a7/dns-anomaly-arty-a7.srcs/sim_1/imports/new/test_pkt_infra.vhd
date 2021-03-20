@@ -11,8 +11,8 @@ PACKAGE test_pkt_infra IS
 
   PROCEDURE receive_ethernet_header
   (E_RX_CLK_period : IN TIME;
-  DST_MAC : IN STD_LOGIC_VECTOR(47 DOWNTO 0);
   SRC_MAC : IN STD_LOGIC_VECTOR(47 DOWNTO 0);
+  DST_MAC : IN STD_LOGIC_VECTOR(47 DOWNTO 0);
   SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0));
 
   PROCEDURE receive_ip_header
@@ -64,8 +64,8 @@ END receive_preamble;
 
 PROCEDURE receive_ethernet_header
   (E_RX_CLK_period : IN TIME;
-  DST_MAC : IN STD_LOGIC_VECTOR(47 DOWNTO 0);
   SRC_MAC : IN STD_LOGIC_VECTOR(47 DOWNTO 0);
+  DST_MAC : IN STD_LOGIC_VECTOR(47 DOWNTO 0);
   SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) IS
 BEGIN
 
@@ -256,7 +256,7 @@ BEGIN
   E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
   E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
   E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
-END
+END receive_any_random_payload;
 
 PROCEDURE receive_any_random_packet
 (E_RX_CLK_period : IN TIME;
@@ -268,24 +268,7 @@ BEGIN
   receive_ethernet_header(E_RX_CLK_period, x"afbf61691caa", x"54cb4503dbab", E_RXD);
   receive_ip_header(E_RX_CLK_period, x"0a5ea9b0", x"0aeb963e", x"0078", E_RXD);
   receive_udp_header(E_RX_CLK_period, x"cc1c", x"f2fb", x"0064", E_RXD);
-
-  E_RXD <= x"7"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"6"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"b"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
-  E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
-
-  FOR i IN 0 TO 167 LOOP
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-  END LOOP;
-
+  receive_any_random_payload(E_RX_CLK_period, E_RXD);
   receive_null_fcs(E_RX_CLK_period, E_RXD);
   E_RX_DV <= '0';
 END receive_any_random_packet;
