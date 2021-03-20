@@ -132,8 +132,8 @@ PACKAGE BODY test_dstmac_pkts IS
     E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
 
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"1"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
 
     FOR i IN 0 TO 125 LOOP
       E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;

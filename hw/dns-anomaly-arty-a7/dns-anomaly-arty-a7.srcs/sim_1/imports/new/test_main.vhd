@@ -3,6 +3,7 @@ USE ieee.std_logic_1164.ALL;
 
 LIBRARY work;
 USE work.test_srcmac_pkts.ALL;
+USE work.test_dstmac_pkts.ALL;
 
 ENTITY test_main IS
 END test_main;
@@ -92,7 +93,10 @@ BEGIN
 
     --srcmac_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
     --srcmac_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
-    srcmac_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --srcmac_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    dstmac_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    dstmac_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    dstmac_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
   END PROCESS;
 
