@@ -88,43 +88,43 @@ PACKAGE BODY test_srcmac_pkts IS
     (E_RX_CLK_period : IN TIME;
     SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) is
   BEGIN
+    E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
+
+    E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
+
+    E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
+
+    E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
 
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
 
-    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
-
-    E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"1"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
 
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
-
-    E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
-
-    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
-
-    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
-
-    E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
-
-    E_RXD <= x"7"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
 
     E_RXD <= x"b"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
-
-    E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
-
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+
+    E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"1"; WAIT FOR E_RX_CLK_period;
+
+    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"6"; WAIT FOR E_RX_CLK_period;
+
+    E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+
+    E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
+
+    E_RXD <= x"4"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
 
     FOR i IN 0 TO 149 LOOP
@@ -132,14 +132,14 @@ PACKAGE BODY test_srcmac_pkts IS
     END LOOP;
 
     -- HASH
-    E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"4"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"7"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"7"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"1"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"1"; WAIT FOR E_RX_CLK_period;
   END receive_srcmac_admin_white_payload;
 
   PROCEDURE receive_srcmac_admin_black_packet
