@@ -6,6 +6,7 @@ USE work.test_srcmac_pkts.ALL;
 USE work.test_dstmac_pkts.ALL;
 USE work.test_srcip_pkts.ALL;
 USE work.test_dstip_pkts.ALL;
+USE work.test_srcport_pkts.ALL;
 
 ENTITY test_main IS
 END test_main;
@@ -103,9 +104,12 @@ BEGIN
     --srcip_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
     --srcip_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
     --srcip_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
-    dstip_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
-    dstip_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
-    dstip_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstip_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstip_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstip_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    srcport_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    srcport_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    srcport_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
   END PROCESS;
 
