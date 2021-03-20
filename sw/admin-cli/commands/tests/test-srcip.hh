@@ -324,12 +324,12 @@ int test_ip_srcip_filter_two_white(filter_t& f) {
 }
 
 int test_srcip_filters(filter_t& f) {
-  if (test_ip_srcip_empty(f)      == -1) { return -1; }
-  if (test_ip_srcip_filter_one(f) == -1) { return -1; }
-  if (test_ip_srcip_filter_two(f) == -1) { return -1; }
-  if (test_ip_srcip_empty_white(f)      == -1) { return -1; }
-  if (test_ip_srcip_filter_one_white(f) == -1) { return -1; }
-  if (test_ip_srcip_filter_two_white(f) == -1) { return -1; }
+  f = {}; if (test_ip_srcip_empty(f)      == -1) { return -1; }
+  f = {}; if (test_ip_srcip_filter_one(f) == -1) { return -1; }
+  f = {}; if (test_ip_srcip_filter_two(f) == -1) { return -1; }
+  f = {}; if (test_ip_srcip_empty_white(f)      == -1) { return -1; }
+  f = {}; if (test_ip_srcip_filter_one_white(f) == -1) { return -1; }
+  f = {}; if (test_ip_srcip_filter_two_white(f) == -1) { return -1; }
   return 0;
 }
 

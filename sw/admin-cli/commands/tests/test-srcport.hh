@@ -323,11 +323,11 @@ int test_udp_srcport_filter_two_white(filter_t& f) {
 }
 
 int test_srcport_filters(filter_t& f) {
-  if (test_udp_srcport_empty(f)      == -1) { return -1; }
-  if (test_udp_srcport_filter_one(f) == -1) { return -1; }
-  if (test_udp_srcport_filter_two(f) == -1) { return -1; }
-  if (test_udp_srcport_empty_white(f)      == -1) { return -1; }
-  if (test_udp_srcport_filter_one_white(f) == -1) { return -1; }
-  if (test_udp_srcport_filter_two_white(f) == -1) { return -1; }
+  f = {}; if (test_udp_srcport_empty(f)      == -1) { return -1; }
+  f = {}; if (test_udp_srcport_filter_one(f) == -1) { return -1; }
+  f = {}; if (test_udp_srcport_filter_two(f) == -1) { return -1; }
+  f = {}; if (test_udp_srcport_empty_white(f)      == -1) { return -1; }
+  f = {}; if (test_udp_srcport_filter_one_white(f) == -1) { return -1; }
+  f = {}; if (test_udp_srcport_filter_two_white(f) == -1) { return -1; }
   return 0;
 }

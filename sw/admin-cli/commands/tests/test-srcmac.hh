@@ -329,11 +329,11 @@ int test_mac_srcmac_filter_two_white(filter_t& f) {
 }
 
 int test_srcmac_filters(filter_t& f) {
-  if (test_mac_srcmac_empty(f)      == -1) { return -1; }
-  if (test_mac_srcmac_filter_one(f) == -1) { return -1; }
-  if (test_mac_srcmac_filter_two(f) == -1) { return -1; }\
-  if (test_mac_srcmac_empty_white(f)      == -1) { return -1; }
-  if (test_mac_srcmac_filter_one_white(f) == -1) { return -1; }
-  if (test_mac_srcmac_filter_two_white(f) == -1) { return -1; }
+  f = {}; if (test_mac_srcmac_empty(f)      == -1) { return -1; }
+  f = {}; if (test_mac_srcmac_filter_one(f) == -1) { return -1; }
+  f = {}; if (test_mac_srcmac_filter_two(f) == -1) { return -1; }\
+  f = {}; if (test_mac_srcmac_empty_white(f)      == -1) { return -1; }
+  f = {}; if (test_mac_srcmac_filter_one_white(f) == -1) { return -1; }
+  f = {}; if (test_mac_srcmac_filter_two_white(f) == -1) { return -1; }
   return 0;
 }

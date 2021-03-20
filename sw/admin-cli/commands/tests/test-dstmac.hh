@@ -14,7 +14,7 @@ int test_mac_dstmac_empty(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -52,7 +52,7 @@ int test_mac_dstmac_filter_one(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     // dstmac doesn't match filtered mac
     mac_addr_t srcmac = random_mac();
@@ -115,7 +115,7 @@ int test_mac_dstmac_filter_two(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     // dstmac doesn't match filtered mac
     mac_addr_t srcmac = random_mac();
@@ -329,11 +329,11 @@ int test_mac_dstmac_filter_two_white(filter_t& f) {
 }
 
 int test_dstmac_filters(filter_t& f) {
-  if (test_mac_dstmac_empty(f)      == -1) { return -1; }
-  if (test_mac_dstmac_filter_one(f) == -1) { return -1; }
-  if (test_mac_dstmac_filter_two(f) == -1) { return -1; }
-  if (test_mac_dstmac_empty_white(f)      == -1) { return -1; }
-  if (test_mac_dstmac_filter_one_white(f) == -1) { return -1; }
-  if (test_mac_dstmac_filter_two_white(f) == -1) { return -1; }
+  f = {}; if (test_mac_dstmac_empty(f)      == -1) { return -1; }
+  f = {}; if (test_mac_dstmac_filter_one(f) == -1) { return -1; }
+  f = {}; if (test_mac_dstmac_filter_two(f) == -1) { return -1; }
+  f = {}; if (test_mac_dstmac_empty_white(f)      == -1) { return -1; }
+  f = {}; if (test_mac_dstmac_filter_one_white(f) == -1) { return -1; }
+  f = {}; if (test_mac_dstmac_filter_two_white(f) == -1) { return -1; }
   return 0;
 }
