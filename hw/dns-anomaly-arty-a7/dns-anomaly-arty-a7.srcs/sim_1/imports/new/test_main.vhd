@@ -4,6 +4,7 @@ USE ieee.std_logic_1164.ALL;
 LIBRARY work;
 USE work.test_srcmac_pkts.ALL;
 USE work.test_dstmac_pkts.ALL;
+USE work.test_srcip_pkts.ALL;
 
 ENTITY test_main IS
 END test_main;

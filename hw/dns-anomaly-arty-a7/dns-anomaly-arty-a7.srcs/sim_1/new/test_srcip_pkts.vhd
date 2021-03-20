@@ -35,7 +35,7 @@ PACKAGE BODY test_srcip_pkts IS
     END LOOP;
 
     E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"1"; WAIT FOR E_RX_CLK_period;
 
     E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
@@ -80,7 +80,7 @@ PACKAGE BODY test_srcip_pkts IS
     (E_RX_CLK_period : IN TIME;
     SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) is
   BEGIN
-    FOR i IN 0 TO 49 LOOP
+    FOR i IN 0 TO 47 LOOP
       E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
     END LOOP;
 
@@ -111,7 +111,7 @@ PACKAGE BODY test_srcip_pkts IS
     E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
 
-    FOR i IN 0 TO 107 LOOP
+    FOR i IN 0 TO 109 LOOP
       E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
     END LOOP;
 
