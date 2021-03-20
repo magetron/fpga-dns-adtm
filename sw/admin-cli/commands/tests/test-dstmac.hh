@@ -170,7 +170,7 @@ int test_mac_dstmac_empty_white(filter_t& f) {
   ip_addr_t dstip = random_local_ip();
   udp_port_t srcport = random_unused_port();
   udp_port_t dstport = random_unused_port();
-  f.dstMACBW = 0;
+  f.dstMACBW = 1;
   f.dstMACLength = 0;
   write_to_admin_pkt(f, ADMIN_PKT_TMP_FILENAME);
   read_file(ADMIN_PKT_TMP_FILENAME);
