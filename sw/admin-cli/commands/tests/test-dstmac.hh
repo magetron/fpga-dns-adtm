@@ -178,7 +178,7 @@ int test_mac_dstmac_empty_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -216,7 +216,7 @@ int test_mac_dstmac_filter_one_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     // dstmac doesn't match filtered mac
     mac_addr_t srcmac = random_mac();
@@ -279,7 +279,7 @@ int test_mac_dstmac_filter_two_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     // dstmac doesn't match filtered mac
     mac_addr_t srcmac = random_mac();

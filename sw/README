@@ -2,10 +2,10 @@ Run `make` to build useful toolkits for this project.
 
 Read `./main.out -h` before proceeding with launching the CLI.
 
-Usually, root privilege is required to access raw sockets, which is a must for the FPGA CLI interface. 
+Usually, root privilege is required to access raw sockets, which is a must for the FPGA CLI interface.
 
 Sample usage `sudo ./main.out -f enp8s0 -p`
 
 Other tools are also built with `make`, under the `tools/` folder. Namely a prototype pkt sender and receiver, an admin packet builder and an ethernet CRC32 checker.
 
- 
+

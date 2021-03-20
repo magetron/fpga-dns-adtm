@@ -16,7 +16,7 @@ int test_dns_empty(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -55,11 +55,11 @@ int test_dns_filter_one(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
-    
+
     ip_addr_t srcip = random_local_ip();
     ip_addr_t dstip = random_local_ip();
     udp_port_t srcport = random_unused_port();
@@ -128,7 +128,7 @@ int test_dns_filter_two(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -165,7 +165,7 @@ int test_dns_filter_two(filter_t& f) {
     udp_port_t dstport = random_unused_port();
 
     size_t index = rand() % 2;
-    
+
     form_packet(srcmac, dstmac, srcip, dstip, srcport, dstport,
       reinterpret_cast<uint8_t *>(&f.dnsList[index]), f.dnsItemEndPtr[index] / 8);
     trigger_send();
@@ -193,7 +193,7 @@ int test_dns_empty_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -232,11 +232,11 @@ int test_dns_filter_one_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
-    
+
     ip_addr_t srcip = random_local_ip();
     ip_addr_t dstip = random_local_ip();
     udp_port_t srcport = random_unused_port();
@@ -305,7 +305,7 @@ int test_dns_filter_two_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -342,7 +342,7 @@ int test_dns_filter_two_white(filter_t& f) {
     udp_port_t dstport = random_unused_port();
 
     size_t index = rand() % 2;
-    
+
     form_packet(srcmac, dstmac, srcip, dstip, srcport, dstport,
       reinterpret_cast<uint8_t *>(&f.dnsList[index]), f.dnsItemEndPtr[index] / 8);
     trigger_send();

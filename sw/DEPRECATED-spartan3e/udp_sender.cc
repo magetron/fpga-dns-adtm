@@ -112,7 +112,7 @@ int main () {
       perror("Socket:");
       return -1;
     }
-  
+
     usleep(1e6);
   }
 

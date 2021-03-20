@@ -35,7 +35,7 @@ filter_t parse_admin_bin(uint8_t* payload, size_t length) {
   }
 
   filter_t f = {};
-  
+
   f.srcMACBW       = extract_bits_from_arr(payload, 0, 0);
   f.srcMACLength   = extract_bits_from_arr(payload, 1, 2);
   f.dstMACBW       = extract_bits_from_arr(payload, 99, 99);
@@ -89,19 +89,19 @@ filter_t parse_admin_bin(uint8_t* payload, size_t length) {
 
 probe_response_t parse_probe_pkt(uint8_t* pkt, size_t length) {
   probe_response_t pr;
-  
+
   auto* eth_hdr = reinterpret_cast<ethhdr*>(pkt);
   auto* ip_hdr = reinterpret_cast<ip*>(eth_hdr + 1);
   auto* udp_hdr = reinterpret_cast<udphdr*>(ip_hdr + 1);
   auto* payload = reinterpret_cast<uint8_t*>(udp_hdr + 1);
   length -= sizeof(eth_hdr) + sizeof(ip_hdr) + sizeof(udp_hdr);
   //printf("len = %ld\n", length);
-  
+
   if (length < 128) {
     fprintf(stderr, "ERROR invalid return probe pkt\n");
     return {};
   }
- 
+
   pr.f = parse_admin_bin(payload, length);
   pr.s.stc = extract_bits_from_arr(payload, 677, 740);
   pr.s.sfc = extract_bits_from_arr(payload, 741, 804);

@@ -259,7 +259,7 @@ void print_filter_configuration (filter_t f) {
       print_IP(&f.srcIPList[i]); printf("\n");
     }
   } else {
-    print_filter_None_BW(f.srcIPBW); printf("\n"); 
+    print_filter_None_BW(f.srcIPBW); printf("\n");
   }
 
   printf("dst IP\n");

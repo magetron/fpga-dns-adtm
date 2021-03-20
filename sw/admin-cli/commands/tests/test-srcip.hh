@@ -14,7 +14,7 @@ int test_ip_srcip_empty(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -52,15 +52,15 @@ int test_ip_srcip_filter_one(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     // srcip doesn't match filtered ip
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
-    
+
     ip_addr_t srcip;
     do { srcip = random_local_ip(); } while (memcmp(&srcip, &f.srcIPList[0], sizeof(ip_addr_t)) == 0);
-    
+
     ip_addr_t dstip = random_local_ip();
     udp_port_t srcport = random_unused_port();
     udp_port_t dstport = random_unused_port();
@@ -114,7 +114,7 @@ int test_ip_srcip_filter_two(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -176,7 +176,7 @@ int test_ip_srcip_empty_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -214,15 +214,15 @@ int test_ip_srcip_filter_one_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     // srcip doesn't match filtered ip
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
-    
+
     ip_addr_t srcip;
     do { srcip = random_local_ip(); } while (memcmp(&srcip, &f.srcIPList[0], sizeof(ip_addr_t)) == 0);
-    
+
     ip_addr_t dstip = random_local_ip();
     udp_port_t srcport = random_unused_port();
     udp_port_t dstport = random_unused_port();
@@ -276,7 +276,7 @@ int test_ip_srcip_filter_two_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();

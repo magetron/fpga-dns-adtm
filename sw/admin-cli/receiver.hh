@@ -133,7 +133,7 @@ uint8_t expect_receive(const uint8_t* payload, size_t length, size_t timeout) {
 }
 
 uint8_t expect_block(const uint8_t* payload, size_t length, size_t timeout) {
-  return !expect_receive(payload, length, timeout); 
+  return !expect_receive(payload, length, timeout);
 }
 
 // DEPRECATED

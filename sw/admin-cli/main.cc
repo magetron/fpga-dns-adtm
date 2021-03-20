@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
   initialise_readline();
   initialise_fpga_configuration();
   initialise_network_randomiser();
-  
+
   initialise_sender_socket();
   initialise_receiver_socket_and_thread();
 
@@ -62,6 +62,6 @@ int main(int argc, char** argv) {
   teardown_receiver_socket_and_thread();
 
   printf("bye!\n");
-  
+
   return 0;
 }
