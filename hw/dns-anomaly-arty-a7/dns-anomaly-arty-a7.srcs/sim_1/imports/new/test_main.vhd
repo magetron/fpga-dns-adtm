@@ -94,9 +94,13 @@ BEGIN
     --srcmac_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
     --srcmac_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
     --srcmac_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
-    dstmac_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
-    dstmac_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
-    dstmac_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstmac_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstmac_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstmac_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+
+    srcip_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    srcip_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    srcip_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
   END PROCESS;
 
