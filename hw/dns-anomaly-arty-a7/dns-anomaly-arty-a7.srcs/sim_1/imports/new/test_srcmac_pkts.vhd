@@ -284,7 +284,7 @@ PACKAGE BODY test_srcmac_pkts IS
       WAIT FOR E_RX_CLK_period * 200;
     END LOOP;
 
-  END srcmac_admin_black_test_suite;
+  END srcmac_admin_white_test_suite;
 
 
 END test_srcmac_pkts;

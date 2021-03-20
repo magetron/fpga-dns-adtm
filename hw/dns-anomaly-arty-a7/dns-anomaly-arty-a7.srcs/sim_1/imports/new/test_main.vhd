@@ -91,7 +91,8 @@ BEGIN
     WAIT FOR clk_period * 10;
 
     --srcmac_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
-    srcmac_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --srcmac_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    srcmac_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
   END PROCESS;
 
