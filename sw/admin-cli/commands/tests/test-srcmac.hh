@@ -297,8 +297,8 @@ int test_mac_srcmac_filter_two_white(filter_t& f) {
     form_packet(srcmac, dstmac, srcip, dstip, srcport, dstport,
       reinterpret_cast<uint8_t *>(&payload), payload_length);
     trigger_send();
-    if (!expect_receive(reinterpret_cast<uint8_t *>(&payload), payload_length, 1000)) {
-      print_not_recv_msg();
+    if (!expect_block(reinterpret_cast<uint8_t *>(&payload), payload_length, 1000)) {
+      print_not_block_msg();
       return -1;
     }
     usleep(100);
@@ -318,8 +318,8 @@ int test_mac_srcmac_filter_two_white(filter_t& f) {
     form_packet(srcmac, dstmac, srcip, dstip, srcport, dstport,
       reinterpret_cast<uint8_t *>(&payload), payload_length);
     trigger_send();
-    if (!expect_block(reinterpret_cast<uint8_t *>(&payload), payload_length, 1000)) {
-      print_not_block_msg();
+    if (!expect_receive(reinterpret_cast<uint8_t *>(&payload), payload_length, 1000)) {
+      print_not_recv_msg();
       return -1;
     }
     usleep(100);
