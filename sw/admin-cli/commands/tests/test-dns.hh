@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 int test_dns_empty(filter_t& f) {
   mac_addr_t srcmac = random_mac();
   ip_addr_t srcip = random_local_ip();
