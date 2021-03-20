@@ -207,7 +207,7 @@ int test_mac_dstmac_filter_one_white(filter_t& f) {
   ip_addr_t dstip = random_local_ip();
   udp_port_t srcport = random_unused_port();
   udp_port_t dstport = random_unused_port();
-  f.dstMACBW = 0;
+  f.dstMACBW = 1;
   f.dstMACLength = 1;
   f.dstMACList[0] = random_mac();
   write_to_admin_pkt(f, ADMIN_PKT_TMP_FILENAME);
@@ -222,7 +222,7 @@ int test_mac_dstmac_filter_one_white(filter_t& f) {
     mac_addr_t srcmac = random_mac();
 
     mac_addr_t dstmac;
-    do { dstmac = random_mac(); } while (memcmp(&srcmac, &f.dstMACList[0], sizeof(mac_addr_t)) == 0);
+    do { dstmac = random_mac(); } while (memcmp(&dstmac, &f.dstMACList[0], sizeof(mac_addr_t)) == 0);
 
     ip_addr_t srcip = random_local_ip();
     ip_addr_t dstip = random_local_ip();
@@ -269,7 +269,7 @@ int test_mac_dstmac_filter_two_white(filter_t& f) {
   ip_addr_t dstip = random_local_ip();
   udp_port_t srcport = random_unused_port();
   udp_port_t dstport = random_unused_port();
-  f.dstMACBW = 0;
+  f.dstMACBW = 1;
   f.dstMACLength = 2;
   f.dstMACList[0] = random_mac();
   f.dstMACList[1] = random_mac();

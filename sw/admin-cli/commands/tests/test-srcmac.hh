@@ -269,7 +269,7 @@ int test_mac_srcmac_filter_two_white(filter_t& f) {
   ip_addr_t dstip = random_local_ip();
   udp_port_t srcport = random_unused_port();
   udp_port_t dstport = random_unused_port();
-  f.srcMACBW = 0;
+  f.srcMACBW = 1;
   f.srcMACLength = 2;
   f.srcMACList[0] = random_mac();
   f.srcMACList[1] = random_mac();
