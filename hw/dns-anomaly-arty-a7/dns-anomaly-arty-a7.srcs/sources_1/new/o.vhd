@@ -139,7 +139,8 @@ BEGIN
 
         WHEN Finalise =>
           sd.srcMAC <= rd.dstMAC;
-          sd.dstMAC <= x"d3f0f3d6f694";
+          --sd.dstMAC <= x"d3f0f3d6f694"; -- Patrick's Mac Pro eth0 MAC
+          sd.dstMAC <= x"7dce1feb27b8"; -- Rapsberry Pi 2 B eth0 MAC
           sd.dnsPkt <= rd.dnsPkt;
           sin.s <= Send;
           
