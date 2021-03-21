@@ -87,8 +87,8 @@ PACKAGE BODY test_dstport_pkts IS
     E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
 
-    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
 
     FOR i IN 0 TO 73 LOOP
       E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
