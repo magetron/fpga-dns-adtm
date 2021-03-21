@@ -4,3 +4,9 @@ Folder `spartan3e/dns-anomaly` contains old project ran to Spartan 3E starter ki
 
 `pre-project.zip` includes couple of test projects developed (LCD/adder) before the impl of actual project.
 
+DNS-Anomaly Arty A7 project
+
+Testbench / Simulation sources are availabe in "Simulation-Only Sources" section in Vivado, with `test_main.vhd` being the top module.
+Enable / Disable test suites by commenting (out) VHDL procedure calls in `test_main.vhd`
+
+HDL Design Sources are availabe in `xil_defaultlib` with `main.vhd` as the top module. Use `arty-a7.xdc` as the default constraint file for the Digilent Arty Artix-7 35 (xc7a35ticsg324-1L) board. When debugging with ILA, use `arty-a7-debug.xdc` instead.

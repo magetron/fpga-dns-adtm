@@ -76,15 +76,15 @@ static inline void print_fail_test_suite(int i) {
 }
 
 int com_test_all (char* arg) {
-  filter_t f;
+  filter_t f = {};
   int result[7] = {};
-  f = {}; result[0] = test_srcmac_filters(f);
-  f = {}; result[1] = test_dstmac_filters(f);
-  f = {}; result[2] = test_srcip_filters(f);
-  f = {}; result[3] = test_dstip_filters(f);
-  f = {}; result[4] = test_srcport_filters(f);
-  f = {}; result[5] = test_dstport_filters(f);
-  f = {}; result[6] = test_dns_filters(f);
+  result[0] = test_srcmac_filters(f);
+  result[1] = test_dstmac_filters(f);
+  result[2] = test_srcip_filters(f);
+  result[3] = test_dstip_filters(f);
+  result[4] = test_srcport_filters(f);
+  result[5] = test_dstport_filters(f);
+  result[6] = test_dns_filters(f);
 
   int final_result = 0;
   for (uint8_t i = 0; i < 7; i++) {
@@ -99,24 +99,24 @@ int com_test_all (char* arg) {
 }
 
 int com_test_first_fail(char* arg) {
-  filter_t f;
+  filter_t f = {};
   int result = 0;
-  f = {}; result = test_srcmac_filters(f); if (result == -1)    { print_fail_test_suite(0); return -1; }
-  f = {}; result = test_dstmac_filters(f); if (result == -1)    { print_fail_test_suite(1); return -1; }
-  f = {}; result = test_srcip_filters(f); if (result == -1)     { print_fail_test_suite(2); return -1; }
-  f = {}; result = test_dstip_filters(f); if (result == -1)     { print_fail_test_suite(3); return -1; }
-  f = {}; result = test_srcport_filters(f); if (result == -1)   { print_fail_test_suite(4); return -1; }
-  f = {}; result = test_dstport_filters(f); if (result == -1)   { print_fail_test_suite(5); return -1; }
-  f = {}; result = test_dns_filters(f); if (result == -1)       { print_fail_test_suite(6); return -1; }
+  result = test_srcmac_filters(f); if (result == -1)    { print_fail_test_suite(0); return -1; }
+  result = test_dstmac_filters(f); if (result == -1)    { print_fail_test_suite(1); return -1; }
+  result = test_srcip_filters(f); if (result == -1)     { print_fail_test_suite(2); return -1; }
+  result = test_dstip_filters(f); if (result == -1)     { print_fail_test_suite(3); return -1; }
+  result = test_srcport_filters(f); if (result == -1)   { print_fail_test_suite(4); return -1; }
+  result = test_dstport_filters(f); if (result == -1)   { print_fail_test_suite(5); return -1; }
+  result = test_dns_filters(f); if (result == -1)       { print_fail_test_suite(6); return -1; }
   printf("FPGA validation completed. SUCCESSFUL!\n");
   return 0;
 }
 
 int com_test_mac(char* arg) {
-  filter_t f;
+  filter_t f = {};
   int result[7] = {};
-  f = {}; result[0] = test_srcmac_filters(f);
-  f = {}; result[1] = test_dstmac_filters(f);
+  result[0] = test_srcmac_filters(f);
+  result[1] = test_dstmac_filters(f);
   int final_result = 0;
   for (uint8_t i = 0; i < 7; i++) {
     if (result[i] == -1) {
@@ -130,10 +130,10 @@ int com_test_mac(char* arg) {
 }
 
 int com_test_ip(char* arg) {
-  filter_t f;
+  filter_t f = {};
   int result[7] = {};
-  f = {}; result[2] = test_srcip_filters(f);
-  f = {}; result[3] = test_dstip_filters(f);
+  result[2] = test_srcip_filters(f);
+  result[3] = test_dstip_filters(f);
   int final_result = 0;
   for (uint8_t i = 0; i < 7; i++) {
     if (result[i] == -1) {
@@ -147,10 +147,10 @@ int com_test_ip(char* arg) {
 }
 
 int com_test_udp(char* arg) {
-  filter_t f;
+  filter_t f = {};
   int result[7] = {};
-  f = {}; result[4] = test_srcport_filters(f);
-  f = {}; result[5] = test_dstport_filters(f);
+  result[4] = test_srcport_filters(f);
+  result[5] = test_dstport_filters(f);
   int final_result = 0;
   for (uint8_t i = 0; i < 7; i++) {
     if (result[i] == -1) {
@@ -164,9 +164,9 @@ int com_test_udp(char* arg) {
 }
 
 int com_test_dns(char* arg) {
-  filter_t f;
+  filter_t f = {};
   int result[7] = {};
-  f = {}; result[6] = test_dns_filters(f);
+  result[6] = test_dns_filters(f);
   int final_result = 0;
   for (uint8_t i = 0; i < 7; i++) {
     if (result[i] == -1) {

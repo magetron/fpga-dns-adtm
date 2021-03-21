@@ -2,7 +2,14 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 
 LIBRARY work;
-USE work.test_pkts.ALL;
+USE work.test_srcmac_pkts.ALL;
+USE work.test_dstmac_pkts.ALL;
+USE work.test_srcip_pkts.ALL;
+USE work.test_dstip_pkts.ALL;
+USE work.test_srcport_pkts.ALL;
+USE work.test_dstport_pkts.ALL;
+USE work.test_dns_pkts.ALL;
+
 
 ENTITY test_main IS
 END test_main;
@@ -90,59 +97,30 @@ BEGIN
 
     WAIT FOR clk_period * 10;
 
-    receive_google_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
+    --srcmac_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --srcmac_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --srcmac_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstmac_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstmac_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstmac_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
-    receive_apple_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
+    --srcip_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --srcip_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --srcip_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstip_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstip_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstip_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
-    receive_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
+    --srcport_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --srcport_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --srcport_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstport_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstport_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dstport_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
-    receive_bogus_admin_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
-
-    receive_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
-
-    receive_admin_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
-
-    receive_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 200;
-
-    -- test common packet FIFO 8 packets
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
-    receive_new_normal_pkt(E_RX_CLK_period, E_RX_DV, E_RXD);
-    -- NEXT PKT
-    WAIT FOR E_RX_CLK_period * 150;
+    dns_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    dns_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    dns_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
   END PROCESS;
 

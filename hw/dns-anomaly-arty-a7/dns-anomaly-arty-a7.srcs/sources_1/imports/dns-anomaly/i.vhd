@@ -104,7 +104,8 @@ ARCHITECTURE rtl OF corein IS
     CmpPktArea8,
     CmpPktDone,
     FilterPkt,
-
+    SetDefaultMAC,
+    
     Send
   );
 
@@ -266,11 +267,9 @@ BEGIN
           IF (rd.dstMAC = g_query_mac) THEN
             -- SIGNALS recognition of admin pkt
             sin.s <= ReplyQueryHeader;
-            rd.dstMAC <= g_query_mac;
           ELSE
             sin.s <= CheckSrcMAC;
             sin.stc <= s.stc + 1;
-            rd.dstMAC <= g_normal_mac;
             sin.fsmc <= 0;
           END IF;
           
@@ -403,6 +402,7 @@ BEGIN
         WHEN ReplyQueryCountersTot =>
           rd.dnsPkt(740 DOWNTO 677) <= STD_LOGIC_VECTOR(s.stc);
           rd.dnsPkt(804 DOWNTO 741) <= STD_LOGIC_VECTOR(s.sfc);
+          rd.dstMAC <= g_query_mac;
           sin.s <= ReplyQueryCountersSeg;
           
         WHEN ReplyQueryCountersSeg =>
@@ -811,7 +811,7 @@ BEGIN
           IF (s.fdnsc = f.dnsLength) THEN
             IF (f.dnsBW = '0') THEN
               -- exhaust blacklist, no ban
-              sin.s <= Send;
+              sin.s <= SetDefaultMAC;
               sin.sfc <= s.sfc + 1;
             ELSE
               -- exhaust whitelist, ban
@@ -933,9 +933,13 @@ BEGIN
             sin.fdnsc <= 0;
           ELSE
             --it's on whitelist, move on to next step
-            sin.s <= Send;
+            sin.s <= SetDefaultMAC;
             sin.sfc <= s.sfc + 1;
           END IF;
+          
+        WHEN SetDefaultMAC =>
+          rd.dstMAC <= g_normal_mac;
+          sin.s <= Send;
 
         WHEN Send =>
           snd_en <= '1'; -- Send Ethernet packet.

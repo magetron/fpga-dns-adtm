@@ -14,7 +14,7 @@ int test_udp_dstport_empty(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -52,12 +52,12 @@ int test_udp_dstport_filter_one(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     // srcip doesn't match filtered ip
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
-    
+
     ip_addr_t srcip = random_local_ip();
     ip_addr_t dstip = random_local_ip();
     udp_port_t srcport = random_unused_port();
@@ -113,7 +113,7 @@ int test_udp_dstport_filter_two(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -174,7 +174,7 @@ int test_udp_dstport_empty_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -212,12 +212,12 @@ int test_udp_dstport_filter_one_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     // srcip doesn't match filtered ip
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
-    
+
     ip_addr_t srcip = random_local_ip();
     ip_addr_t dstip = random_local_ip();
     udp_port_t srcport = random_unused_port();
@@ -273,7 +273,7 @@ int test_udp_dstport_filter_two_white(filter_t& f) {
     file_payload, file_payload_length);
   trigger_send();
   probe_fpga_update_local();
-  
+
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
     mac_addr_t dstmac = random_mac();
@@ -321,11 +321,11 @@ int test_udp_dstport_filter_two_white(filter_t& f) {
 }
 
 int test_dstport_filters(filter_t& f) {
-  if (test_udp_dstport_empty(f)      == -1) { return -1; }
-  if (test_udp_dstport_filter_one(f) == -1) { return -1; }
-  if (test_udp_dstport_filter_two(f) == -1) { return -1; }
-  if (test_udp_dstport_empty_white(f)      == -1) { return -1; }
-  if (test_udp_dstport_filter_one_white(f) == -1) { return -1; }
-  if (test_udp_dstport_filter_two_white(f) == -1) { return -1; }
+  f = {}; if (test_udp_dstport_empty(f)      == -1) { return -1; }
+  f = {}; if (test_udp_dstport_filter_one(f) == -1) { return -1; }
+  f = {}; if (test_udp_dstport_filter_two(f) == -1) { return -1; }
+  f = {}; if (test_udp_dstport_empty_white(f)      == -1) { return -1; }
+  f = {}; if (test_udp_dstport_filter_one_white(f) == -1) { return -1; }
+  f = {}; if (test_udp_dstport_filter_two_white(f) == -1) { return -1; }
   return 0;
 }
