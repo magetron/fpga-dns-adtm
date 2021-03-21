@@ -46,8 +46,8 @@ PACKAGE BODY test_dns_pkts IS
     E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
 
-    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
 
     E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"4"; WAIT FOR E_RX_CLK_period;
