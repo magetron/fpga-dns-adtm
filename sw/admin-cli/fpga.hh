@@ -56,6 +56,7 @@ struct filter_t {
   unsigned dnsLength : 2;
   uint8_t dnsItemEndPtr[FILTER_DEPTH];
   dns_filter_item_t dnsList[FILTER_DEPTH];
+  unsigned replyType : 1;
 };
 
 struct stats_t {

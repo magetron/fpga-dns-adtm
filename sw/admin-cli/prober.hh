@@ -84,6 +84,8 @@ filter_t parse_admin_bin(uint8_t* payload, size_t length) {
     }
   }
 
+  f.replyType      = extract_bits_from_arr(payload, 677, 677);
+
   return f;
 }
 
