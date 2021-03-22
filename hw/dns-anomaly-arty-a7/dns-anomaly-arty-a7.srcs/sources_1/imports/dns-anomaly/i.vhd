@@ -56,8 +56,9 @@ ARCHITECTURE rtl OF corein IS
     ReplyQueryDstPortList,
     ReplyQueryDNSMeta,
     ReplyQueryDNSList,
+    ReplyQueryReplyType,
     ReplyQueryCountersTot,
-    REplyQueryCountersSeg,
+    ReplyQueryCountersSeg,
 
     -- Admin Stages
     CalcHash,
@@ -76,6 +77,7 @@ ARCHITECTURE rtl OF corein IS
     UpdateFilterDstPortList,
     UpdateFilterDNSMeta,
     UpdateFilterDNSList,
+    UpdateReplyType,
 
     -- Filtering Stages
     CheckSrcMAC,
@@ -104,6 +106,9 @@ ARCHITECTURE rtl OF corein IS
     CmpPktArea8,
     CmpPktDone,
     FilterPkt,
+
+    SetDNSReplyHeader,
+    SetDNSReplyCount,
     SetDefaultMAC,
 
     Send
@@ -220,7 +225,9 @@ ARCHITECTURE rtl OF corein IS
   dnsBW => '0',
   dnsLength => 2,
   dnsItemEndPtr => (72, 80),
-  dnsList => (x"000000000000006d6f632e656c707061", x"0000000000006d6f632e656c676f6f67")
+  dnsList => (x"000000000000006d6f632e656c707061", x"0000000000006d6f632e656c676f6f67"),
+
+  replyType => '0'
   );
 
 BEGIN
@@ -396,19 +403,23 @@ BEGIN
             rd.dnsPkt(676 DOWNTO 549) <= f.dnsList(1);
             sin.adc <= s.adc + 1;
           ELSE
-            sin.s <= ReplyQueryCountersTot;
+            sin.s <= ReplyQueryReplyType;
           END IF;
 
+        WHEN ReplyQueryReplyType =>
+          rd.dnsPkt(677) <= f.replyType;
+          sin.s <= ReplyQueryCountersTot;
+
         WHEN ReplyQueryCountersTot =>
-          rd.dnsPkt(740 DOWNTO 677) <= STD_LOGIC_VECTOR(s.stc);
-          rd.dnsPkt(804 DOWNTO 741) <= STD_LOGIC_VECTOR(s.sfc);
+          rd.dnsPkt(741 DOWNTO 678) <= STD_LOGIC_VECTOR(s.stc);
+          rd.dnsPkt(805 DOWNTO 742) <= STD_LOGIC_VECTOR(s.sfc);
           rd.dstMAC <= g_query_mac;
           sin.s <= ReplyQueryCountersSeg;
 
         WHEN ReplyQueryCountersSeg =>
-          rd.dnsPkt(868 DOWNTO 805) <= STD_LOGIC_VECTOR(s.smc);
-          rd.dnsPkt(932 DOWNTO 869) <= STD_LOGIC_VECTOR(s.sic);
-          rd.dnsPkt(996 DOWNTO 933) <= STD_LOGIC_VECTOR(s.spc);
+          rd.dnsPkt(869 DOWNTO 806) <= STD_LOGIC_VECTOR(s.smc);
+          rd.dnsPkt(933 DOWNTO 870) <= STD_LOGIC_VECTOR(s.sic);
+          rd.dnsPkt(997 DOWNTO 934) <= STD_LOGIC_VECTOR(s.spc);
           sin.s <= Send;
 
         --------ADMIN ROUTE--------
@@ -568,8 +579,12 @@ BEGIN
             f.dnsList(1) <= rd.dnsPkt(676 DOWNTO 549);
             sin.adc <= s.adc + 1;
           ELSE
-            sin.s <= Idle;
+            sin.s <= UpdateReplyType;
           END IF;
+
+        WHEN UpdateReplyType =>
+          f.replyType <= rd.dnsPkt(677);
+          sin.s <= Idle;
 
         --------FILTER ROUTE--------
         --SRCMAC
@@ -811,7 +826,7 @@ BEGIN
           IF (s.fdnsc = f.dnsLength) THEN
             IF (f.dnsBW = '0') THEN
               -- exhaust blacklist, no ban
-              sin.s <= SetDefaultMAC;
+              sin.s <= SetDNSReplyHeader;
               sin.sfc <= s.sfc + 1;
             ELSE
               -- exhaust whitelist, ban
@@ -933,9 +948,34 @@ BEGIN
             sin.fdnsc <= 0;
           ELSE
             --it's on whitelist, move on to next step
-            sin.s <= SetDefaultMAC;
+            sin.s <= SetDNSReplyHeader;
             sin.sfc <= s.sfc + 1;
           END IF;
+
+        WHEN SetDNSReplyHeader =>
+          IF (f.replyType = '0') THEN
+            sin.s <= SetDefaultMAC;
+          ELSE
+            -- Copying 15 DOWNTO 0 as unique ID
+            rd.dnsPkt(31 DOWNTO 28) <= x"3"; -- RCODE 3 NameError
+            rd.dnsPkt(27 DOWNTO 25) <= "000"; -- Reserved
+            rd.dnsPkt(24) <= '0'; -- Recursion Available No
+            rd.dnsPkt(23) <= '0'; -- Recursion Desired No (it's a reply)
+            rd.dnsPkt(22) <= '0'; -- Not Truncated Pkt
+            rd.dnsPkt(21) <= '1'; -- Authoritative Answer
+            rd.dnsPkt(20 DOWNTO 17) <= x"0"; -- OPCode Standard Query
+            rd.dnsPkt(16) <= '1'; -- QR Response
+            sin.s <= SetDNSReplyCount;
+          END IF;
+
+        WHEN SetDNSReplyCount =>
+          rd.ipLength <= 199; -- 199 -> 0xc7 -> 0x7c -> 124
+          rd.dnsLength <= 96;
+          rd.dnsPkt(47 DOWNTO 32) <= x"0000"; -- QDCOUNT 0
+          rd.dnsPkt(63 DOWNTO 48) <= x"0000"; -- ANCOUNT 0
+          rd.dnsPkt(79 DOWNTO 64) <= x"0000"; -- NSCOUNT 0
+          rd.dnsPkt(95 DOWNTO 80) <= x"0000"; -- ARCOUNT 0
+          sin.s <= SetDefaultMAC;
 
         WHEN SetDefaultMAC =>
           rd.dstMAC <= g_normal_mac;

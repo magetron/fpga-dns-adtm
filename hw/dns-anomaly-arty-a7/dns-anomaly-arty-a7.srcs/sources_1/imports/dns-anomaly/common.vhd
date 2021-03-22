@@ -41,6 +41,7 @@ PACKAGE common IS
   TYPE dnsfilter_item_endptr_list_t IS ARRAY (0 TO filter_depth - 1) OF NATURAL RANGE 0 TO 128;
 
   -- BW, Blacklist = 0, Whitelist = 1
+  -- replyType, Man in the middle (full reply) = 0, Man on the side (dns reply) = 1
   TYPE filter_t IS RECORD
     srcMACBW : STD_LOGIC;
     srcMACLength : NATURAL RANGE 0 TO filter_depth;
@@ -64,6 +65,7 @@ PACKAGE common IS
     dnsLength : NATURAL RANGE 0 TO filter_depth;
     dnsItemEndPtr : dnsfilter_item_endptr_list_t;
     dnsList : dnsfilter_list_t;
+    replyType : STD_LOGIC;
   END RECORD;
 
 END common;
