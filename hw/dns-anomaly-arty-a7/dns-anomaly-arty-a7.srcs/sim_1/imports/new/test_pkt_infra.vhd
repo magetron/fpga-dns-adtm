@@ -32,7 +32,7 @@ PACKAGE test_pkt_infra IS
   PROCEDURE receive_empty_admin_payload
   (E_RX_CLK_period : IN TIME;
    SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0));
-   
+
   PROCEDURE receive_null_fcs
   (E_RX_CLK_period : IN TIME;
    SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0));
@@ -44,7 +44,7 @@ PACKAGE test_pkt_infra IS
   PROCEDURE receive_any_random_packet
   (E_RX_CLK_period : IN TIME;
    SIGNAL E_RX_DV : OUT STD_LOGIC;
-   SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)); 
+   SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0));
 
 END test_pkt_infra;
 
@@ -75,7 +75,7 @@ BEGIN
       WAIT FOR E_RX_CLK_period;
     END LOOP;
   END LOOP;
-  
+
   FOR i IN 5 DOWNTO 0 LOOP
     FOR j IN 0 TO 1 LOOP
       E_RXD <= SRC_MAC(i * 8 + j * 4 + 3 DOWNTO i * 8 + j * 4);

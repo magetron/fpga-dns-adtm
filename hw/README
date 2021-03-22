@@ -10,3 +10,5 @@ Testbench / Simulation sources are availabe in "Simulation-Only Sources" section
 Enable / Disable test suites by commenting (out) VHDL procedure calls in `test_main.vhd`
 
 HDL Design Sources are availabe in `xil_defaultlib` with `main.vhd` as the top module. Use `arty-a7.xdc` as the default constraint file for the Digilent Arty Artix-7 35 (xc7a35ticsg324-1L) board. When debugging with ILA, use `arty-a7-debug.xdc` instead.
+
+NOTE : Set `o.vhd`, GENERIC `g_reply_mac` to the interface MAC FPGA is responding to.

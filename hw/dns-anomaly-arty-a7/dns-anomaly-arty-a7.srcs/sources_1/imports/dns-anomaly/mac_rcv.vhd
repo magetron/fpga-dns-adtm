@@ -335,14 +335,14 @@ BEGIN
             ELSE
               rin.c <= r.c + 4;
             END IF;
-            
+
           WHEN DNSMsgDiscard =>
             IF r.c = r.udpc THEN
               rin.c <= 0;
               rin.s <= Notify;
             ELSE
               rin.c <= r.c + 4;
-            END IF;          
+            END IF;
 
             -- Notification                                                   --
           WHEN Notify =>

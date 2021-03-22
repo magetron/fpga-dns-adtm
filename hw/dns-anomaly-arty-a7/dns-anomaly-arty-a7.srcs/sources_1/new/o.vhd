@@ -6,13 +6,17 @@ LIBRARY work;
 USE work.common.ALL;
 
 entity coreout is
+  GENERIC (
+    --g_reply_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"d3f0f3d6f694" -- Patrick's Mac Pro eth0 MAC
+    g_reply_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"7dce1feb27b8" -- Rapsberry Pi 2 B eth0 MAC
+  );
   PORT (
     clk : IN STD_LOGIC;
     -- Data received
     rcv_data : IN rcv_data_t;
     rcv_data_dv : IN STD_LOGIC;
 
-    
+
     -- Data to send.
     el_snd_data : OUT snd_data_t;
     el_snd_en : OUT STD_LOGIC
@@ -33,19 +37,19 @@ architecture rtl of coreout is
     Finalise,
     Send
   );
-  
+
   TYPE ostate_t IS RECORD
     s : state_t;
-    
+
     chksumbuf : UNSIGNED(31 DOWNTO 0);
   END RECORD;
-  
+
   SIGNAL s, sin : ostate_t
   := ostate_t' (
   s => Idle,
   chksumbuf => x"00000000"
   );
-  
+
   SIGNAL rd : rcv_data_t
   := rcv_data_t'(
   srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
@@ -55,7 +59,7 @@ architecture rtl of coreout is
   dnsLength => 0,
   dnsPkt => (OTHERS => '0')
   );
-  
+
   SIGNAL sd : snd_data_t
   := snd_data_t'(
   srcMAC => (OTHERS => '0'), dstMAC => (OTHERS => '0'),
@@ -65,7 +69,7 @@ architecture rtl of coreout is
   srcPort => (OTHERS => '0'), dstPort => (OTHERS => '0'),
   udpLength => (OTHERS => '0'), udpChecksum => (OTHERS => '0'),
   dnsPktCnt => 0, dnsPkt => (OTHERS => '0')
-  );  
+  );
 
 BEGIN
 
@@ -78,7 +82,7 @@ BEGIN
   BEGIN
     IF rising_edge(clk) THEN
       el_snd_en <= '0';
-      
+
       CASE s.s IS
         WHEN Idle =>
           IF (rcv_data_dv = '1') THEN
@@ -87,7 +91,7 @@ BEGIN
           ELSE
             sin.s <= Idle;
           END IF;
-  
+
         ---------SEND PACKET STAGE----------
         WHEN MetaInfo =>
           sd.srcIP <= rd.dstIP;
@@ -139,15 +143,14 @@ BEGIN
 
         WHEN Finalise =>
           sd.srcMAC <= rd.dstMAC;
-          --sd.dstMAC <= x"d3f0f3d6f694"; -- Patrick's Mac Pro eth0 MAC
-          sd.dstMAC <= x"7dce1feb27b8"; -- Rapsberry Pi 2 B eth0 MAC
+          sd.dstMAC <= g_reply_mac;
           sd.dnsPkt <= rd.dnsPkt;
           sin.s <= Send;
-          
+
         WHEN Send =>
           el_snd_en <= '1';
           sin.s <= Idle;
-          
+
       END CASE;
     END IF;
   END PROCESS;
