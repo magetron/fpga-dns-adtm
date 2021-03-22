@@ -98,14 +98,14 @@ ARCHITECTURE rtl OF main IS
       LED : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
     );
   END COMPONENT;
-  
+
   COMPONENT coreout IS
     PORT (
       clk : IN STD_LOGIC;
       -- data received.
       rcv_data : IN rcv_data_t;
       rcv_data_dv : IN STD_LOGIC;
-      
+
       -- data to send.
       el_snd_data : OUT snd_data_t;
       el_snd_en : OUT STD_LOGIC
@@ -122,7 +122,7 @@ ARCHITECTURE rtl OF main IS
   SIGNAL core_io_data : rcv_data_t;
   SIGNAL core_io_dv : STD_LOGIC;
 
-  SIGNAL el_snd_data_buf : snd_data_t; -- Send data Core 
+  SIGNAL el_snd_data_buf : snd_data_t; -- Send data Core
   SIGNAL el_snd_en_buf : STD_LOGIC; -- Enable sending.
 
   SIGNAL el_snd_en_phy : STD_LOGIC;
@@ -195,14 +195,14 @@ BEGIN
     -- LEDs.
     LED => LED
   );
-  
+
   co : coreout PORT MAP(
     clk => clk50,
 
     -- data received.
     rcv_data => core_io_data,
     rcv_data_dv => core_io_dv,
-  
+
     -- data to send.
     el_snd_data => el_snd_data_buf,
     el_snd_en => el_snd_en_buf
