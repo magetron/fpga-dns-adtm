@@ -33,7 +33,7 @@ int test_reply_dns(filter_t& f) {
     expect_dns_response[1] = reinterpret_cast<uint8_t *>(&payload)[1];
     expect_dns_response[2] = 0x84;
     expect_dns_response[3] = 0x33;
-    for (size_t j = 0; j < 12; j++) expect_dns_response[j] = 0x00;
+    for (size_t j = 4; j < 12; j++) expect_dns_response[j] = 0x00;
 
     if (!expect_receive(reinterpret_cast<uint8_t *>(expect_dns_response), 12, 1000)) {
       print_not_recv_msg();
