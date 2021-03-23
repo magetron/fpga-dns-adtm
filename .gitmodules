@@ -1,0 +1,3 @@
+[submodule "sw/siphash-ref-impl"]
+	path = sw/siphash-ref-impl
+	url = https://github.com/magetron/siphash-ref-impl.git
