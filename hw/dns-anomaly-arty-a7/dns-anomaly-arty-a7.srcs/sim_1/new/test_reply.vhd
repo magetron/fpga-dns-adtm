@@ -1,43 +1,79 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 03/23/2021 07:33:44 AM
--- Design Name: 
--- Module Name: test_reply - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
-----------------------------------------------------------------------------------
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+
+LIBRARY work;
+USE work.common.ALL;
+
+LIBRARY work;
+USE work.test_pkt_infra.ALL;
+
+PACKAGE test_reply_pkts IS
+  PROCEDURE reply_dns_test_suite
+    (E_RX_CLK_period : IN TIME;
+    SIGNAL E_RX_DV : OUT STD_LOGIC;
+    SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0));
+END test_reply_pkts;
+
+PACKAGE BODY test_reply_pkts IS
+  PROCEDURE receive_reply_admin_dns_payload
+  (E_RX_CLK_period : IN TIME;
+  SIGNAL E_RX_DV : OUT STD_LOGIC;
+  SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) IS
+  BEGIN
+    FOR i IN 0 TO 167 LOOP
+      E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    END LOOP;
+
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
+
+    FOR i IN 0 TO 5 LOOP
+      E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    END LOOP;
+
+    -- HASH
+    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
+  END receive_reply_admin_dns_payload;
 
 
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+  PROCEDURE receive_reply_admin_dns_packet
+    (E_RX_CLK_period : IN TIME;
+     SIGNAL E_RX_DV : OUT STD_LOGIC;
+     SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) IS
+  BEGIN
+    E_RX_DV <= '1';
+    receive_preamble(E_RX_CLK_period, E_RXD);
+    receive_ethernet_header(E_RX_CLK_period, x"b043df1bb706", x"000a35ffffff", E_RXD);
+    receive_ip_header(E_RX_CLK_period, x"0ac4e67a", x"0a6b1ba0", x"0078", E_RXD);
+    receive_udp_header(E_RX_CLK_period, x"2ba3", x"2ebc", x"0064", E_RXD);
+    receive_reply_admin_dns_payload(E_RX_CLK_period, E_RXD);
+    receive_null_fcs(E_RX_CLK_period, E_RXD);
+    E_RX_DV <= '0';
+  END receive_reply_admin_dns_packet;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+  PROCEDURE reply_dns_test_suite
+    (E_RX_CLK_period : IN TIME;
+    SIGNAL E_RX_DV : OUT STD_LOGIC;
+    SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) IS
+  BEGIN
+    receive_reply_admin_dns_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
+    WAIT FOR E_RX_CLK_period * 200;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+    FOR i IN 0 TO 9 LOOP
+      receive_any_random_packet(E_RX_CLK_period, E_RX_DV, E_RXD);
+      WAIT FOR E_RX_CLK_period * 200;
+      -- should receive first 16 bits copied
+      -- followed by 0x84, 0x33
+      -- then 8 bytes of 0x00
+    END LOOP;
 
-entity test_reply is
---  Port ( );
-end test_reply;
+  END reply_admin_white_test_suite;
 
-architecture Behavioral of test_reply is
-
-begin
-
-
-end Behavioral;
+END test_reply_pkts;

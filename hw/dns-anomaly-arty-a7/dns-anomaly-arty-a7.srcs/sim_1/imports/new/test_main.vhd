@@ -9,7 +9,7 @@ USE work.test_dstip_pkts.ALL;
 USE work.test_srcport_pkts.ALL;
 USE work.test_dstport_pkts.ALL;
 USE work.test_dns_pkts.ALL;
-
+USE work.test_reply_pkts.ALL;
 
 ENTITY test_main IS
 END test_main;
@@ -118,10 +118,11 @@ BEGIN
     --dstport_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
     --dstport_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
-    dns_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
-    dns_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
-    dns_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dns_empty_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dns_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    --dns_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
+    reply_dns_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
   END PROCESS;
 
 END;
