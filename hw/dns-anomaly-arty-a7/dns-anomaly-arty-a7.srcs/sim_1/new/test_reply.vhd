@@ -17,7 +17,6 @@ END test_reply_pkts;
 PACKAGE BODY test_reply_pkts IS
   PROCEDURE receive_reply_admin_dns_payload
   (E_RX_CLK_period : IN TIME;
-  SIGNAL E_RX_DV : OUT STD_LOGIC;
   SIGNAL E_RXD : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)) IS
   BEGIN
     FOR i IN 0 TO 167 LOOP
@@ -74,6 +73,6 @@ PACKAGE BODY test_reply_pkts IS
       -- then 8 bytes of 0x00
     END LOOP;
 
-  END reply_admin_white_test_suite;
+  END reply_dns_test_suite;
 
 END test_reply_pkts;
