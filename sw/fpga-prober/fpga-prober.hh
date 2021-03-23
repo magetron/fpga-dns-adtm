@@ -88,7 +88,7 @@ static inline uint16_t IPchecksum(uint16_t *buff, int32_t _16bitword) {
 packet_mode_t PACKET_MODE = packet_mode_t::UDP_TEST;
 send_mode_t SEND_MODE = send_mode_t::ONCE;
 uint64_t SEND_TIME = SEC_IN_USEC;
-char INTF_NAME[INTF_LENGTH] = "ens37";
+char INTF_NAME[INTF_LENGTH] = "";
 mac_addr_t MAC_ADDRS[2] = {{0x00, 0x0c, 0x29, 0x5f, 0x29, 0xae}, {0x00, 0x0a, 0x35, 0x00, 0x00, 0x00}};
 ip_addr_t IP_ADDRS[2] = {{0, 0, 0, 0}, {192, 168, 5, 1}};
 udp_port_t UDP_PORTS[2] = {12345, 23456};
