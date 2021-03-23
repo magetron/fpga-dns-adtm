@@ -15,6 +15,7 @@ void print_not_block_msg() {
 #include "tests/test-srcport.hh"
 #include "tests/test-dstport.hh"
 #include "tests/test-dns.hh"
+#include "tests/test-reply.hh"
 
 int com_test_all(char*);
 int com_test_first_fail(char*);
@@ -22,6 +23,7 @@ int com_test_mac(char*);
 int com_test_ip(char*);
 int com_test_udp(char*);
 int com_test_dns(char*);
+int com_test_reply(char*);
 int com_test_help(char*);
 
 COMMAND test_commands[] = {
@@ -31,6 +33,7 @@ COMMAND test_commands[] = {
   { "ip", com_test_ip, "run IPv4 related tests"},
   { "udp", com_test_udp, "run UDP related tests"},
   { "dns", com_test_dns, "run DNS related tests"},
+  { "reply", com_test_reply, "run reply-mode related tests"},
   { "help", com_test_help, "display this text" },
   { "?", com_test_help, "synonym for `help'" },
   { (char *)nullptr, (rl_icpfunc_t *)nullptr, (char *)nullptr }
@@ -66,6 +69,8 @@ static inline const char* index_to_test_type(int i) {
     return "dstport";
     case 6:
     return "dns";
+    case 7:
+    return "reply";
     default:
     return "UNKNOWN";
   }
@@ -77,7 +82,7 @@ static inline void print_fail_test_suite(int i) {
 
 int com_test_all (char* arg) {
   filter_t f = {};
-  int result[7] = {};
+  int result[8] = {};
   result[0] = test_srcmac_filters(f);
   result[1] = test_dstmac_filters(f);
   result[2] = test_srcip_filters(f);
@@ -85,9 +90,10 @@ int com_test_all (char* arg) {
   result[4] = test_srcport_filters(f);
   result[5] = test_dstport_filters(f);
   result[6] = test_dns_filters(f);
+  result[7] = test_reply(f);
 
   int final_result = 0;
-  for (uint8_t i = 0; i < 7; i++) {
+  for (uint8_t i = 0; i < 8; i++) {
     if (result[i] == -1) {
       print_fail_test_suite(i);
     }
@@ -108,17 +114,18 @@ int com_test_first_fail(char* arg) {
   result = test_srcport_filters(f); if (result == -1)   { print_fail_test_suite(4); return -1; }
   result = test_dstport_filters(f); if (result == -1)   { print_fail_test_suite(5); return -1; }
   result = test_dns_filters(f); if (result == -1)       { print_fail_test_suite(6); return -1; }
+  result = test_reply(f); if (result == -1)             { print_fail_test_suite(7); return -1; }
   printf("FPGA validation completed. SUCCESSFUL!\n");
   return 0;
 }
 
 int com_test_mac(char* arg) {
   filter_t f = {};
-  int result[7] = {};
+  int result[8] = {};
   result[0] = test_srcmac_filters(f);
   result[1] = test_dstmac_filters(f);
   int final_result = 0;
-  for (uint8_t i = 0; i < 7; i++) {
+  for (uint8_t i = 0; i < 8; i++) {
     if (result[i] == -1) {
       print_fail_test_suite(i);
     }
@@ -131,11 +138,11 @@ int com_test_mac(char* arg) {
 
 int com_test_ip(char* arg) {
   filter_t f = {};
-  int result[7] = {};
+  int result[8] = {};
   result[2] = test_srcip_filters(f);
   result[3] = test_dstip_filters(f);
   int final_result = 0;
-  for (uint8_t i = 0; i < 7; i++) {
+  for (uint8_t i = 0; i < 8; i++) {
     if (result[i] == -1) {
       print_fail_test_suite(i);
     }
@@ -148,11 +155,11 @@ int com_test_ip(char* arg) {
 
 int com_test_udp(char* arg) {
   filter_t f = {};
-  int result[7] = {};
+  int result[8] = {};
   result[4] = test_srcport_filters(f);
   result[5] = test_dstport_filters(f);
   int final_result = 0;
-  for (uint8_t i = 0; i < 7; i++) {
+  for (uint8_t i = 0; i < 8; i++) {
     if (result[i] == -1) {
       print_fail_test_suite(i);
     }
@@ -165,10 +172,26 @@ int com_test_udp(char* arg) {
 
 int com_test_dns(char* arg) {
   filter_t f = {};
-  int result[7] = {};
+  int result[8] = {};
   result[6] = test_dns_filters(f);
   int final_result = 0;
-  for (uint8_t i = 0; i < 7; i++) {
+  for (uint8_t i = 0; i < 8; i++) {
+    if (result[i] == -1) {
+      print_fail_test_suite(i);
+    }
+    final_result |= result[i];
+  }
+  if (final_result == 0) printf("FPGA partial validation completed. SUCCESSFUL!\n");
+  else printf("FPGA partial validation failed. UNSUCCESSFUL!\n");
+  return 0;
+}
+
+int com_test_reply(char* arg) {
+  filter_t f = {};
+  int result[8] = {};
+  result[7] = test_reply(f);
+  int final_result = 0;
+  for (uint8_t i = 0; i < 8; i++) {
     if (result[i] == -1) {
       print_fail_test_suite(i);
     }

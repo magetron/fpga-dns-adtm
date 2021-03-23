@@ -1,7 +1,7 @@
-FPGA-based DNS Anomaly detector
+Low-latency FPGA DNS Firewall & Anomaly Detector
 
-Digilent Arty A7-35T
-Xilinx Artix-7
+Board: Digilent Arty A7-35T
+FPGA Core: Xilinx Artix-7
 
 was:
 CPU-to-FPGA Network Offload Engine

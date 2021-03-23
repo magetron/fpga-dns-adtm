@@ -84,6 +84,8 @@ filter_t parse_admin_bin(uint8_t* payload, size_t length) {
     }
   }
 
+  f.replyType      = extract_bits_from_arr(payload, 677, 677);
+
   return f;
 }
 
@@ -103,11 +105,11 @@ probe_response_t parse_probe_pkt(uint8_t* pkt, size_t length) {
   }
 
   pr.f = parse_admin_bin(payload, length);
-  pr.s.stc = extract_bits_from_arr(payload, 677, 740);
-  pr.s.sfc = extract_bits_from_arr(payload, 741, 804);
-  pr.s.smc = extract_bits_from_arr(payload, 805, 868);
-  pr.s.sic = extract_bits_from_arr(payload, 869, 932);
-  pr.s.spc = extract_bits_from_arr(payload, 933, 996);
+  pr.s.stc = extract_bits_from_arr(payload, 678, 741);
+  pr.s.sfc = extract_bits_from_arr(payload, 742, 805);
+  pr.s.smc = extract_bits_from_arr(payload, 806, 869);
+  pr.s.sic = extract_bits_from_arr(payload, 870, 933);
+  pr.s.spc = extract_bits_from_arr(payload, 934, 997);
 
 
   return pr;

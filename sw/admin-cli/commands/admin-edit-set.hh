@@ -2,7 +2,7 @@
 
 void com_admin_edit_set_print_error_msg (char* arg) {
   com_admin_edit_print_filter_types();
-  fprintf(stderr, "%s: specify [filter-type] [black/white]\n", arg);
+  fprintf(stderr, "%s: specify [filter-type/reply] [(black/white)/(payload/dns)]\n", arg);
 }
 
 int com_admin_edit_set (char* arg) {
@@ -17,9 +17,9 @@ int com_admin_edit_set (char* arg) {
   }
 
   uint8_t bw = 0;
-  if (strncmp(sarg, "black", 6) == 0) {
+  if (strncmp(sarg, "black", 6) == 0 || strncmp(sarg, "payload", 8) == 0) {
     bw = 0;
-  } else if (strncmp(sarg, "white", 6) == 0) {
+  } else if (strncmp(sarg, "white", 6) == 0 || strncmp(sarg, "dns", 4) == 0) {
     bw = 1;
   } else {
     com_admin_edit_set_print_error_msg(arg);
@@ -40,6 +40,8 @@ int com_admin_edit_set (char* arg) {
     f_curr.dstPortBW = bw;
   } else if (strncmp(arg, "dns", 4) == 0) {
     f_curr.dnsBW = bw;
+  } else if (strncmp(arg, "reply", 6) == 0) {
+    f_curr.replyType = bw;
   } else {
     com_admin_edit_set_print_error_msg(arg);
     return -1;

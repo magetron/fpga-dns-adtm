@@ -105,6 +105,7 @@ udp_port_t parse_port(char* s) {
 
 void com_admin_edit_print_filter_types () {
   printf("filter-type := [srcmac/dstmac/srcip/dstip/srcport/dstport/dns]\n");
+  printf("or specify \"reply\" to alter reply type\n");
 }
 
 #include "admin-edit-add.hh"

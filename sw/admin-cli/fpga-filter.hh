@@ -110,6 +110,8 @@ void write_to_admin_pkt (filter_t& f, const char* filename) {
     for (size_t j = 0; j < 16; j++)
       write_admin_buf(f.dnsList[i].c[j], 8);
 
+  write_admin_buf(f.replyType, 1);
+
   // closing
   write_admin_buf(0, 0);
   append_auth_hash();
@@ -205,6 +207,8 @@ void initialise_fpga_configuration () {
   for (size_t i = 10; i < 16; i++) {
     f.dnsList[1].c[i] = 0;
   }
+
+  f.replyType = 0;
 
   f_curr = f;
 }
@@ -308,5 +312,12 @@ void print_filter_configuration (filter_t f) {
     }
   } else {
     print_filter_None_BW(f.dnsBW); printf("\n");
+  }
+
+  printf("Reply Type\n");
+  if (f.replyType == 0) {
+    printf("\tMan-in-the-Middle Reply (Same Payload)\n");
+  } else {
+    printf("\tMan-on-the-Side Reply (DNS Name Error Response)\n");
   }
 }
