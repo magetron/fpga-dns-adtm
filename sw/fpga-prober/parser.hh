@@ -101,7 +101,7 @@ static inline void parse_args_sender(int argc, char** argv) {
         break;
       case 'f':
       // interface
-        strncpy(INTF_NAME, optarg, strnlen(optarg, INTF_LENGTH));
+        strncpy(INTF_NAME, optarg, strnlen(optarg, INTF_LENGTH) + 1);
         break;
       case 'm':
       // mac address
