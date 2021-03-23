@@ -281,7 +281,7 @@ BEGIN
           END IF;
 
         WHEN ReplyQueryHeader =>
-          rd.ipLength <= 73; -- 73 -> 0x0049 -> 0x0094 = 148
+          rd.ipLength <= 201; -- 201 -> 0x00c9 -> 0x009c = 156
           rd.dnsLength <= 128;
           sin.s <= ReplyQuerySrcMacMeta;
 
@@ -957,20 +957,24 @@ BEGIN
             sin.s <= SetDefaultMAC;
           ELSE
             -- Copying 15 DOWNTO 0 as unique ID
-            rd.dnsPkt(31 DOWNTO 28) <= x"3"; -- RCODE 3 NameError
-            rd.dnsPkt(27 DOWNTO 25) <= "000"; -- Reserved
-            rd.dnsPkt(24) <= '0'; -- Recursion Available No
-            rd.dnsPkt(23) <= '0'; -- Recursion Desired No (it's a reply)
-            rd.dnsPkt(22) <= '0'; -- Not Truncated Pkt
-            rd.dnsPkt(21) <= '1'; -- Authoritative Answer
-            rd.dnsPkt(20 DOWNTO 17) <= x"0"; -- OPCode Standard Query
-            rd.dnsPkt(16) <= '1'; -- QR Response
+            -- Byte 2
+            rd.dnsPkt(27 DOWNTO 24) <= x"3"; -- RCODE 3 NameError (not exist)
+            rd.dnsPkt(28) <= '1'; -- CD Do not check DNSSEC
+            rd.dnsPkt(29) <= '1'; -- AD Answer authenticated
+            rd.dnsPkt(30) <= '0'; -- Z
+            rd.dnsPkt(31) <= '0'; -- Recursion Available No
+            -- Byte 1
+            rd.dnsPkt(16) <= '0'; -- Recursion Desired No (it's a reply)
+            rd.dnsPkt(17) <= '0'; -- Not Truncated Pkt
+            rd.dnsPkt(18) <= '1'; -- Authoritative Answer
+            rd.dnsPkt(22 DOWNTO 19) <= x"0"; -- OPCode Standard Query
+            rd.dnsPkt(23) <= '1'; -- QR Response
             sin.s <= SetDNSReplyCount;
           END IF;
 
         WHEN SetDNSReplyCount =>
-          rd.ipLength <= 199; -- 199 -> 0xc7 -> 0x7c -> 124
-          rd.dnsLength <= 96;
+          rd.ipLength <= 130; -- 130 -> 0x0082 -> 0x0028 -> 40
+          rd.dnsLength <= 12;
           rd.dnsPkt(47 DOWNTO 32) <= x"0000"; -- QDCOUNT 0
           rd.dnsPkt(63 DOWNTO 48) <= x"0000"; -- ANCOUNT 0
           rd.dnsPkt(79 DOWNTO 64) <= x"0000"; -- NSCOUNT 0
