@@ -149,11 +149,9 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/cpu-fpga-nwofle/siphasher.vhd">
+      <File Path="$PSRCDIR/sources_1/new/siphasher.vhd">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../siphasher.vhd"/>
-          <Attr Name="ImportTime" Val="1616558688"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
