@@ -122,7 +122,7 @@ BEGIN
     --dns_admin_black_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
     --dns_admin_white_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
 
-    --reply_dns_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
+    reply_dns_test_suite(E_RX_CLK_period, E_RX_DV, E_RXD);
   END PROCESS;
 
 END;

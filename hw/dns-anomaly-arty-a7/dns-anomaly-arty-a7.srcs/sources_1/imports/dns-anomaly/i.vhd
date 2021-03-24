@@ -8,7 +8,7 @@ USE work.common.ALL;
 ENTITY corein IS
   GENERIC (
     g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00";
-    g_admin_key : STD_LOGIC_VECTOR(127 DOWNTO 0) := x"decaface1eadf1a9UL1713440219990927";
+    g_admin_key : STD_LOGIC_VECTOR(127 DOWNTO 0) := x"decaface1eadf1a91713440219990927";
     g_query_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ad91be350a00";
     g_normal_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"000000350a00"
   );
@@ -37,8 +37,8 @@ ARCHITECTURE rtl OF corein IS
       in_data : IN STD_LOGIC_VECTOR(959 DOWNTO 0);
       in_start : IN STD_LOGIC;
       out_data : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
-      out_ready : OUT STD_LOGIC;
-    )
+      out_ready : OUT STD_LOGIC
+    );
   END COMPONENT;
 
   TYPE state_t IS (
@@ -164,8 +164,7 @@ ARCHITECTURE rtl OF corein IS
   led => x"0",
   pc => 0,
 
-  ahc => 0,
-  ahv => x"00000000",
+  ahv => x"0000000000000000",
   amc => 0,
   aic => 0,
   apc => 0,
@@ -242,7 +241,7 @@ ARCHITECTURE rtl OF corein IS
   );
 
   SIGNAL siphash_start : STD_LOGIC := '0';
-  SIGNAL siphash_ready : STD_LOIGC := '0';
+  SIGNAL siphash_ready : STD_LOGIC := '0';
 BEGIN
 
   siphash : siphasher PORT MAP (
@@ -250,9 +249,9 @@ BEGIN
     in_key => g_admin_key,
     in_data => rd.dnsPkt(959 DOWNTO 0),
     in_start => siphash_start,
-    out_data => sin.ahv;
-    out_ready => siphash_ready;
-  )
+    out_data => sin.ahv,
+    out_ready => siphash_ready
+  );
 
   rcv : PROCESS (clk)
     VARIABLE filterPktEndPtr : NATURAL RANGE 0 TO 1024 := 0;
@@ -264,6 +263,7 @@ BEGIN
     IF rising_edge(clk) THEN
       snd_en <= '0';
       el_rcv_ack <= '0';
+      siphash_start <= '0';
 
       CASE s.s IS
         WHEN Idle =>
@@ -285,8 +285,6 @@ BEGIN
             -- SIGNALS recognition of admin pkt
             sin.led <= x"f";
             sin.s <= StartHash;
-            sin.ahv <= g_admin_key;
-            sin.ahc <= 0;
             sin.pc <= 0;
           ELSE
             sin.s <= CheckQuery;
