@@ -8,7 +8,7 @@ USE work.common.ALL;
 ENTITY corein IS
   GENERIC (
     g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00";
-    g_admin_key : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"decaface";
+    g_admin_key : STD_LOGIC_VECTOR(127 DOWNTO 0) := x"decaface1eadf1a9UL1713440219990927";
     g_query_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ad91be350a00";
     g_normal_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"000000350a00"
   );
@@ -29,6 +29,17 @@ ENTITY corein IS
 END corein;
 
 ARCHITECTURE rtl OF corein IS
+
+  COMPONENT siphasher IS
+    PORT (
+      clk : IN STD_LOGIC;
+      in_key : IN STD_LOGIC_VECTOR(127 DOWNTO 0);
+      in_data : IN STD_LOGIC_VECTOR(959 DOWNTO 0);
+      in_start : IN STD_LOGIC;
+      out_data : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+      out_ready : OUT STD_LOGIC;
+    )
+  END COMPONENT;
 
   TYPE state_t IS (
     -- MINDFUL: must have odd number of stages to slip in an update
@@ -61,7 +72,8 @@ ARCHITECTURE rtl OF corein IS
     ReplyQueryCountersSeg,
 
     -- Admin Stages
-    CalcHash,
+    StartHash,
+    WaitHash,
     HashAuth,
     UpdateFilterSrcMACMeta,
     UpdateFilterSrcMACList,
@@ -120,8 +132,7 @@ ARCHITECTURE rtl OF corein IS
     led : STD_LOGIC_VECTOR(3 DOWNTO 0); -- LED register.
     pc : NATURAL RANGE 0 TO 15; -- packet counter
 
-    ahc : NATURAL RANGE 0 TO 1023; -- hash counter
-    ahv : STD_LOGIC_VECTOR(31 DOWNTO 0); -- hash value;
+    ahv : STD_LOGIC_VECTOR(63 DOWNTO 0); -- hash value;
     amc : NATURAL RANGE 0 TO 15; -- admin MAC counter
     aic : NATURAL RANGE 0 TO 15; -- admin IP counter
     apc : NATURAL RANGE 0 TO 15; -- admin UDP counter
@@ -230,7 +241,18 @@ ARCHITECTURE rtl OF corein IS
   replyType => '0'
   );
 
+  SIGNAL siphash_start : STD_LOGIC := '0';
+  SIGNAL siphash_ready : STD_LOIGC := '0';
 BEGIN
+
+  siphash : siphasher PORT MAP (
+    clk => clk,
+    in_key => g_admin_key,
+    in_data => rd.dnsPkt(959 DOWNTO 0),
+    in_start => siphash_start,
+    out_data => sin.ahv;
+    out_ready => siphash_ready;
+  )
 
   rcv : PROCESS (clk)
     VARIABLE filterPktEndPtr : NATURAL RANGE 0 TO 1024 := 0;
@@ -262,7 +284,7 @@ BEGIN
           IF (rd.dstMAC = g_admin_mac) THEN
             -- SIGNALS recognition of admin pkt
             sin.led <= x"f";
-            sin.s <= CalcHash;
+            sin.s <= StartHash;
             sin.ahv <= g_admin_key;
             sin.ahc <= 0;
             sin.pc <= 0;
@@ -423,16 +445,19 @@ BEGIN
           sin.s <= Send;
 
         --------ADMIN ROUTE--------
-        WHEN CalcHash =>
-          sin.ahv <= s.ahv xor rd.dnsPkt(s.ahc + 31 DOWNTO s.ahc);
-          IF (s.ahc = 992) THEN -- 1024 - 31 = 993
+        WHEN StartHash =>
+          siphash_start <= '1';
+          sin.s <= WaitHash;
+
+        WHEN WaitHash =>
+          IF (siphash_ready = '1') THEN
             sin.s <= HashAuth;
           ELSE
-            sin.ahc <= s.ahc + 32;
+            sin.s <= WaitHash;
           END IF;
 
         WHEN HashAuth =>
-          IF (s.ahv = x"00000000") THEN
+          IF (s.ahv = rd.dnsPkt(1023 DOWNTO 960)) THEN
             sin.s <= UpdateFilterSrcMACMeta;
           ELSE
             sin.led <= x"8";
