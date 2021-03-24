@@ -3,10 +3,11 @@ CPPC=g++
 CFLAGS=-g -Og -Wall
 CRCFOLDER=eth-crc32-checker
 PROBERFOLDER=fpga-prober
+SIPHASHFOLDER=siphash-checker
 CLIFOLDER=admin-cli
 CLILINK=-ledit -lpthread
 
-.PHONY: pkt-sender admin-builder crc32-checker pkt-receiver admin-cli build clean
+.PHONY: pkt-sender admin-builder crc32-checker pkt-receiver admin-cli siphash-checker build clean
 
 default: build
 
@@ -30,16 +31,21 @@ admin-cli: $(CLIFOLDER)/
 	@$(CPPC) $(CFLAGS) $(CLILINK) $(CLIFOLDER)/main.cc -o main.out
 	@echo -e "\tCPPC ${CLIFOLDER}/main.cc"
 
-build: admin-cli pkt-sender admin-builder crc32-checker pkt-receiver
+siphash-checker: $(SIPHASHFOLDER)/siphash-checker.cc
+	@$(CPPC) $(CFLAGS) $(SIPHASHFOLDER)/siphash-checker.cc -o siphash-checker.out
+	@echo -e "\tCC $(SIPHASHFOLDER)/siphash-checker.cc"
+
+build: admin-cli pkt-sender admin-builder crc32-checker pkt-receiver siphash-checker
 	@mkdir -p tools
 	@mv ./pkt-sender.out tools/
 	@mv ./admin-builder.out tools/
 	@mv ./crc32-checker.out tools/
 	@mv ./pkt-receiver.out tools/
+	@mv ./siphash-checker.out tools/
 	@echo -e "BUILD DONE"
 	@echo -e "supplementary tools under ./tools/"
 	@echo -e "CLI interface executable ./main.out, run with root privilege to access raw socket"
 
 clean:
-	rm -rf pkt-sender.out crc32-checker.out admin-builder.out pkt-receiver.out main.out
+	rm -rf main.out pkt-sender.out crc32-checker.out admin-builder.out pkt-receiver.out siphash-checker.out
 	rm -rf tools/
