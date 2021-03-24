@@ -166,10 +166,10 @@ BEGIN
           sin.s <= InitKey;
 
         WHEN InitKey =>
-          sin.v3 <= s.v3 xor (k(127 DOWNTO 64));
-          sin.v2 <= s.v2 xor (k(63 DOWNTO 0));
-          sin.v1 <= s.v1 xor (k(127 DOWNTO 64));
-          sin.v0 <= s.v0 xor (k(63 DOWNTO 0));
+          sin.v3 <= s.v3 xor (k(63 DOWNTO 0));
+          sin.v2 <= s.v2 xor (k(127 DOWNTO 64));
+          sin.v1 <= s.v1 xor (k(63 DOWNTO 0));
+          sin.v0 <= s.v0 xor (k(127 DOWNTO 64));
           sin.c <= 0;
           sin.s <= Compression;
 
