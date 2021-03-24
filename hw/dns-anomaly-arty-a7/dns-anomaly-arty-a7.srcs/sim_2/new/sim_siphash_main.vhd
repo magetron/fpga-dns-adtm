@@ -54,6 +54,18 @@ BEGIN
     WAIT FOR 100 ns;
 
     WAIT FOR clk_period * 10;
+    
+    IN_KEY <= x"decaface1eadf1a91713440219990927";
+    IN_DATA <= (OTHERS => '0');
+    IN_START <= '1';
+    
+    WAIT FOR clk_period;
+    IN_START <= '0';
+    
+    
+    WAIT UNTIL OUT_READY = '1';
+    
+    WAIT FOR clk_period * 100;
 
 
   END PROCESS;
