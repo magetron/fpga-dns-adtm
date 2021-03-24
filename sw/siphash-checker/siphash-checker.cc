@@ -52,6 +52,7 @@ int main (int argc, char** argv) {
 
 
   memset(in_data, 0, 120);
+  in_data[84] = 0x20;
 
 
   uint8_t *out_data = new uint8_t[8]; // 64bits;
