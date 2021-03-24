@@ -4,18 +4,18 @@ USE ieee.numeric_std.ALL;
 
 LIBRARY work;
 
-ENTITY sim_siphash IS
+ENTITY siphasher IS
 PORT (
   clk : IN STD_LOGIC;
   in_key : IN STD_LOGIC_VECTOR(127 DOWNTO 0);
   in_data : IN STD_LOGIC_VECTOR(959 DOWNTO 0);
   in_start : IN STD_LOGIC;
   out_data : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
-  out_ready : OUT STD_LOGIC;
+  out_ready : OUT STD_LOGIC
 );
-END sim_siphash;
+END siphasher;
 
-ARCHITECTURE rtl OF sim_siphash IS
+ARCHITECTURE rtl OF siphasher IS
   TYPE state_t IS (
     Idle,
     InitV,
@@ -23,7 +23,7 @@ ARCHITECTURE rtl OF sim_siphash IS
     Compression,
     CompressionLength,
     Finalise,
-    Output,
+    Output
   );
 
   TYPE hstate_t IS RECORD
@@ -43,7 +43,7 @@ ARCHITECTURE rtl OF sim_siphash IS
     v1 => (OTHERS => '0'),
     v2 => (OTHERS => '0'),
     v3 => (OTHERS => '0')
-  )
+  );
 
   SIGNAL d : STD_LOGIC_VECTOR(959 DOWNTO 0) := (OTHERS => '0');
   SIGNAL k : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
@@ -53,18 +53,19 @@ ARCHITECTURE rtl OF sim_siphash IS
     SIGNAL v1_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
     SIGNAL v2_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
     SIGNAL v3_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v0_out : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v1_out : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v2_out : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v3_out : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL d : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v0_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v1_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v2_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v3_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    d_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0)
   ) IS
-  VARIABLE v0, v1, v2, v3 : UNSIGNED(63 downto 0);
+  VARIABLE v0, v1, v2, v3, d : UNSIGNED(63 downto 0);
   begin
     v0 := UNSIGNED(v0_in);
     v1 := UNSIGNED(v1_in);
     v2 := UNSIGNED(v2_in);
     v3 := UNSIGNED(v3_in);
+    d := UNSIGNED(d_in);
 
     v3 := v3 xor d;
 
@@ -99,13 +100,13 @@ ARCHITECTURE rtl OF sim_siphash IS
     SIGNAL v1_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
     SIGNAL v2_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
     SIGNAL v3_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v0_out : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v1_out : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v2_out : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v3_out : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v0_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v1_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v2_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v3_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0)
   ) IS
   VARIABLE v0, v1, v2, v3 : UNSIGNED(63 downto 0);
-  begin
+  BEGIN
 
     v0 := UNSIGNED(v0_in);
     v1 := UNSIGNED(v1_in);
@@ -161,7 +162,7 @@ BEGIN
           sin.v0 <= x"736f6d6570736575";
           sin.v1 <= x"646f72616e646f6d";
           sin.v2 <= x"6c7967656e657261";
-          sin.v3 <= x"7465646279746573;
+          sin.v3 <= x"7465646279746573";
           sin.s <= InitKey;
 
         WHEN InitKey =>
@@ -196,7 +197,7 @@ BEGIN
     END IF;
   END PROCESS;
 
-  out_auth <= s.v0;
+  out_data <= s.v0;
 
   reg : PROCESS(clk)
   BEGIN
