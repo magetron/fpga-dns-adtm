@@ -29,7 +29,7 @@ PACKAGE BODY test_reply_pkts IS
     FOR i IN 0 TO 69 LOOP
       E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
     END LOOP;
-    
+
     -- SipHash MAC
     E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
