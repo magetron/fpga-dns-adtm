@@ -214,22 +214,22 @@ PACKAGE BODY test_siphash_pkts IS
     END LOOP;
 
     -- SipHash MAC
-    E_RXD <= x"b"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"6"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"4"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"7"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"4"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"5"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"6"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"1"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"3"; WAIT FOR E_RX_CLK_period;
 
   END receive_siphash_admin_payload;
 
