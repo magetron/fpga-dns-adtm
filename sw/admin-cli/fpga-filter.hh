@@ -36,8 +36,7 @@ uint64_t reverse_bits_byte_64 (uint64_t n) {
 }
 
 void write_admin_buf_item_and_hash (uint64_t admin_buf, uint8_t bytes_to_write) {
-  uint64_t admin_buf_hash_val = __bswap_64(admin_buf);
-  memcpy(reinterpret_cast<uint8_t*>(admin_buf_data) + admin_buf_data_ptr, &admin_buf_hash_val, bytes_to_write);
+  memcpy(reinterpret_cast<uint8_t*>(admin_buf_data) + admin_buf_data_ptr, &admin_buf, bytes_to_write);
   admin_buf_data_ptr += bytes_to_write;
   fwrite(&admin_buf, bytes_to_write, 1, admin_pkt);
 }
