@@ -8,7 +8,8 @@ USE work.common.ALL;
 entity coreout is
   GENERIC (
     --g_reply_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"d3f0f3d6f694" -- Patrick's Mac Pro eth0 MAC
-    g_reply_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"7dce1feb27b8" -- Rapsberry Pi 2 B eth0 MAC
+    --g_reply_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"7dce1feb27b8" -- Raspberry Pi 2 B eth0 MAC
+    g_reply_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"06bd5332a6dc" -- Raspberry Pi 4 B eth0 MAC
   );
   PORT (
     clk : IN STD_LOGIC;
