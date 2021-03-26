@@ -302,7 +302,7 @@ BEGIN
           sin.s <= FinaliseSIPRound2;
 
         WHEN FinaliseSIPRound4 =>
-          siphash_round_4s(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          siphash_round_4(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
           IF (s.crc = g_finalise_rounds) THEN
             sin.s <= FinaliseAfter;
           ELSE
