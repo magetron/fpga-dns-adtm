@@ -29,14 +29,20 @@ ARCHITECTURE rtl OF siphasher IS
     CompressionBefore,
     CompressionSIPRound1,
     CompressionSIPRound2,
+    CompressionSIPRound3,
+    CompressionSIPRound4,
     CompressionAfter,
     CompressionLengthBefore,
     CompressionLengthSIPRound1,
     CompressionLengthSIPRound2,
+    CompressionLengthSIPRound3,
+    CompressionLengthSIPRound4,
     CompressionLengthAfter,
     FinaliseBefore,
     FinaliseSIPRound1,
     FinaliseSIPRound2,
+    FinaliseSIPRound3,
+    FinaliseSIPRound4,
     FinaliseAfter,
     Output
   );
@@ -92,11 +98,6 @@ ARCHITECTURE rtl OF siphasher IS
     v2 := v2 + v3;
     v1 := rotate_left(v1, 13);
     v3 := rotate_left(v3, 16);
-    v1 := v1 xor v0;
-    v3 := v3 xor v2;
-    v0 := rotate_left(v0, 32);
-    v0 := v0 + v3;
-    v2 := v2 + v1;
 
     v0_out <= STD_LOGIC_VECTOR(v0);
     v1_out <= STD_LOGIC_VECTOR(v1);
@@ -121,8 +122,61 @@ ARCHITECTURE rtl OF siphasher IS
     v2 := UNSIGNED(v2_in);
     v3 := UNSIGNED(v3_in);
 
+    v1 := v1 xor v0;
+    v3 := v3 xor v2;
+    v0 := rotate_left(v0, 32);
+
+    v0_out <= STD_LOGIC_VECTOR(v0);
+    v1_out <= STD_LOGIC_VECTOR(v1);
+    v2_out <= STD_LOGIC_VECTOR(v2);
+    v3_out <= STD_LOGIC_VECTOR(v3);
+  END siphash_round_2;
+
+  PROCEDURE siphash_round_3(
+    SIGNAL v0_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v1_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v2_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v3_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v0_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v1_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v2_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v3_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0)
+  ) IS
+  VARIABLE v0, v1, v2, v3: UNSIGNED(63 downto 0);
+  BEGIN
+    v0 := UNSIGNED(v0_in);
+    v1 := UNSIGNED(v1_in);
+    v2 := UNSIGNED(v2_in);
+    v3 := UNSIGNED(v3_in);
+
+    v0 := v0 + v3;
+    v2 := v2 + v1;
     v1 := rotate_left(v1, 17);
     v3 := rotate_left(v3, 21);
+
+    v0_out <= STD_LOGIC_VECTOR(v0);
+    v1_out <= STD_LOGIC_VECTOR(v1);
+    v2_out <= STD_LOGIC_VECTOR(v2);
+    v3_out <= STD_LOGIC_VECTOR(v3);
+  END siphash_round_3;
+
+  PROCEDURE siphash_round_4(
+    SIGNAL v0_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v1_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v2_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v3_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v0_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v1_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v2_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v3_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0)
+  ) IS
+  VARIABLE v0, v1, v2, v3: UNSIGNED(63 downto 0);
+  BEGIN
+    v0 := UNSIGNED(v0_in);
+    v1 := UNSIGNED(v1_in);
+    v2 := UNSIGNED(v2_in);
+    v3 := UNSIGNED(v3_in);
+
     v1 := v1 xor v2;
     v3 := v3 xor v0;
     v2 := rotate_left(v2, 32);
@@ -131,7 +185,7 @@ ARCHITECTURE rtl OF siphasher IS
     v1_out <= STD_LOGIC_VECTOR(v1);
     v2_out <= STD_LOGIC_VECTOR(v2);
     v3_out <= STD_LOGIC_VECTOR(v3);
-  END siphash_round_2;
+  END siphash_round_4;
 
 BEGIN
   hash : PROCESS (clk)
@@ -180,6 +234,14 @@ BEGIN
 
         WHEN CompressionSIPRound2 =>
           siphash_round_2(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          sin.s <= CompressionSIPRound2;
+
+        WHEN CompressionSIPRound3 =>
+          siphash_round_3(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          sin.s <= CompressionSIPRound2;
+
+        WHEN CompressionSIPRound4 =>
+          siphash_round_4(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
           IF (s.crc = g_compression_rounds) THEN
             sin.s <= CompressionAfter;
           ELSE
@@ -203,6 +265,14 @@ BEGIN
 
         WHEN CompressionLengthSIPRound2 =>
           siphash_round_2(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          sin.s <= CompressionLengthSIPRound2;
+
+        WHEN CompressionLengthSIPRound3 =>
+          siphash_round_3(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          sin.s <= CompressionLengthSIPRound2;
+
+        WHEN CompressionLengthSIPRound4 =>
+          siphash_round_4(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
           IF (s.crc = g_compression_rounds) THEN
             sin.s <= CompressionLengthAfter;
           ELSE
@@ -212,7 +282,6 @@ BEGIN
 
         WHEN CompressionLengthAfter =>
           sin.v0 <= s.v0 xor g_siphash_length;
-          sin.dpc <= s.dpc + 64;
           sin.s <= FinaliseBefore;
 
         WHEN FinaliseBefore =>
@@ -226,6 +295,14 @@ BEGIN
 
         WHEN FinaliseSIPRound2 =>
           siphash_round_2(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          sin.s <= FinaliseSIPRound2;
+
+        WHEN FinaliseSIPRound3 =>
+          siphash_round_3(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          sin.s <= FinaliseSIPRound2;
+
+        WHEN FinaliseSIPRound4 =>
+          siphash_round_4s(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
           IF (s.crc = g_finalise_rounds) THEN
             sin.s <= FinaliseAfter;
           ELSE
