@@ -184,6 +184,7 @@ BEGIN
             sin.s <= CompressionAfter;
           ELSE
             sin.crc <= s.crc + 1;
+            sin.s <= CompressionSIPRound1;
           END IF;
 
         WHEN CompressionAfter =>
@@ -206,6 +207,7 @@ BEGIN
             sin.s <= CompressionLengthAfter;
           ELSE
             sin.crc <= s.crc + 1;
+            sin.s <= CompressionLengthSIPRound1;
           END IF;
 
         WHEN CompressionLengthAfter =>
@@ -228,6 +230,7 @@ BEGIN
             sin.s <= FinaliseAfter;
           ELSE
             sin.crc <= s.crc + 1;
+            sin.s <= FinaliseSIPRound1;
           END IF;
 
         WHEN FinaliseAfter =>
