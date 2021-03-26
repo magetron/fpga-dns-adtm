@@ -171,7 +171,13 @@ int siphash(const void *in, const size_t inlen, const void *k, uint8_t *out,
     for (i = 0; i < dROUNDS; ++i)
         SIPROUND;
 
+    TRACE;
+
     b = v0 ^ v1 ^ v2 ^ v3;
+    v0 = b;
+
+    TRACE;
+
     U64TO8_LE(out + 8, b);
 
     return 0;
