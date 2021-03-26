@@ -234,11 +234,11 @@ BEGIN
 
         WHEN CompressionSIPRound2 =>
           siphash_round_2(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
-          sin.s <= CompressionSIPRound2;
+          sin.s <= CompressionSIPRound3;
 
         WHEN CompressionSIPRound3 =>
           siphash_round_3(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
-          sin.s <= CompressionSIPRound2;
+          sin.s <= CompressionSIPRound4;
 
         WHEN CompressionSIPRound4 =>
           siphash_round_4(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
@@ -265,11 +265,11 @@ BEGIN
 
         WHEN CompressionLengthSIPRound2 =>
           siphash_round_2(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
-          sin.s <= CompressionLengthSIPRound2;
+          sin.s <= CompressionLengthSIPRound3;
 
         WHEN CompressionLengthSIPRound3 =>
           siphash_round_3(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
-          sin.s <= CompressionLengthSIPRound2;
+          sin.s <= CompressionLengthSIPRound4;
 
         WHEN CompressionLengthSIPRound4 =>
           siphash_round_4(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
@@ -295,11 +295,11 @@ BEGIN
 
         WHEN FinaliseSIPRound2 =>
           siphash_round_2(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
-          sin.s <= FinaliseSIPRound2;
+          sin.s <= FinaliseSIPRound3;
 
         WHEN FinaliseSIPRound3 =>
           siphash_round_3(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
-          sin.s <= FinaliseSIPRound2;
+          sin.s <= FinaliseSIPRound4;
 
         WHEN FinaliseSIPRound4 =>
           siphash_round_4(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
