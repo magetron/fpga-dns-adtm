@@ -13,9 +13,8 @@ int com_admin_apply (char* arg) {
   form_packet(srcmac, admin_dst_mac, srcip, dstip, srcport, dstport,
     file_payload, file_payload_length);
   trigger_send();
-  probe_fpga_update_local();
 
-  if (memcmp(&f, &f_curr, sizeof(filter_t)) == 0) {
+  if (check_fpga_filter_matches(f_curr)) {
     printf("successful! apply confirmed via probing FPGA\n");
   } else {
     printf("failed! apply cannot be confirmed via probing FPGA\n");

@@ -13,7 +13,10 @@ int test_dns_empty(filter_t& f) {
   form_packet(srcmac, admin_dst_mac, srcip, dstip, srcport, dstport,
     file_payload, file_payload_length);
   trigger_send();
-  probe_fpga_update_local();
+  if (!check_fpga_filter_matches(f)) {
+    print_admin_mismatch_msg();
+    return -1;
+  }
 
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
@@ -52,7 +55,10 @@ int test_dns_filter_one(filter_t& f) {
   form_packet(srcmac, admin_dst_mac, srcip, dstip, srcport, dstport,
     file_payload, file_payload_length);
   trigger_send();
-  probe_fpga_update_local();
+  if (!check_fpga_filter_matches(f)) {
+    print_admin_mismatch_msg();
+    return -1;
+  }
 
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
@@ -125,7 +131,10 @@ int test_dns_filter_two(filter_t& f) {
   form_packet(srcmac, admin_dst_mac, srcip, dstip, srcport, dstport,
     file_payload, file_payload_length);
   trigger_send();
-  probe_fpga_update_local();
+  if (!check_fpga_filter_matches(f)) {
+    print_admin_mismatch_msg();
+    return -1;
+  }
 
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
@@ -190,7 +199,10 @@ int test_dns_empty_white(filter_t& f) {
   form_packet(srcmac, admin_dst_mac, srcip, dstip, srcport, dstport,
     file_payload, file_payload_length);
   trigger_send();
-  probe_fpga_update_local();
+  if (!check_fpga_filter_matches(f)) {
+    print_admin_mismatch_msg();
+    return -1;
+  }
 
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
@@ -229,7 +241,10 @@ int test_dns_filter_one_white(filter_t& f) {
   form_packet(srcmac, admin_dst_mac, srcip, dstip, srcport, dstport,
     file_payload, file_payload_length);
   trigger_send();
-  probe_fpga_update_local();
+  if (!check_fpga_filter_matches(f)) {
+    print_admin_mismatch_msg();
+    return -1;
+  }
 
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();
@@ -302,7 +317,10 @@ int test_dns_filter_two_white(filter_t& f) {
   form_packet(srcmac, admin_dst_mac, srcip, dstip, srcport, dstport,
     file_payload, file_payload_length);
   trigger_send();
-  probe_fpga_update_local();
+  if (!check_fpga_filter_matches(f)) {
+    print_admin_mismatch_msg();
+    return -1;
+  }
 
   for (size_t i = 0; i < 10; i++) {
     mac_addr_t srcmac = random_mac();

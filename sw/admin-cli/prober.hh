@@ -144,3 +144,8 @@ void probe_fpga_update_local () {
   s = pr.s;
   printf("probe done\n");
 }
+
+bool check_fpga_filter_matches (const filter_t& f_new) {
+  probe_fpga_update_local();
+  return (memcmp(&f, &f_new, sizeof(filter_t)) == 0);
+}
