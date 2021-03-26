@@ -10,7 +10,8 @@ ENTITY corein IS
     g_admin_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ffffff350a00";
     g_admin_key : STD_LOGIC_VECTOR(127 DOWNTO 0) := x"decaface1eadf1a91713440219990927";
     g_query_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"ad91be350a00";
-    g_normal_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"000000350a00"
+    g_normal_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"000000350a00";
+    g_dns_rcode : STD_LOGIC_VECTOR(3 DOWNTO 0) := x"3"
   );
   PORT (
     clk : IN STD_LOGIC;
@@ -981,7 +982,7 @@ BEGIN
           ELSE
             -- Copying 15 DOWNTO 0 as unique ID
             -- Byte 2
-            rd.dnsPkt(27 DOWNTO 24) <= x"3"; -- RCODE 3 NameError (not exist)
+            rd.dnsPkt(27 DOWNTO 24) <= g_dns_rcode; -- RCODE 3 NameError (not exist)
             rd.dnsPkt(28) <= '1'; -- CD Do not check DNSSEC
             rd.dnsPkt(29) <= '1'; -- AD Answer authenticated
             rd.dnsPkt(30) <= '0'; -- Z
