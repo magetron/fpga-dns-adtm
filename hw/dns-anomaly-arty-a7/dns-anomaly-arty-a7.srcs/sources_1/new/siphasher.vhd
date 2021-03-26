@@ -9,7 +9,7 @@ GENERIC (
   g_compression_rounds : NATURAL RANGE 0 TO 15 := 1; -- 2 - 1 = 1
   g_finalise_rounds : NATURAL RANGE 0 TO 15 := 3; -- 4 - 1 = 3
   g_siphash_length : STD_LOGIC_VECTOR(63 DOWNTO 0) := x"7800000000000000";
-  g_siphash_finalise_constant : STD_LOGIC_VECTOR(63 DOWNTO 0) := x"00000000000000ff";
+  g_siphash_finalise_constant : STD_LOGIC_VECTOR(63 DOWNTO 0) := x"00000000000000ff"
 );
 PORT (
   clk : IN STD_LOGIC;
@@ -31,7 +31,7 @@ ARCHITECTURE rtl OF siphasher IS
     CompressionAfter,
     CompressionLengthBefore,
     CompressionLengthSIPRound,
-    CompressionLengthAfter
+    CompressionLengthAfter,
     FinaliseBefore,
     FinaliseSIPRound,
     FinaliseAfter,
@@ -76,7 +76,7 @@ ARCHITECTURE rtl OF siphasher IS
     SIGNAL v0_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
     SIGNAL v1_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
     SIGNAL v2_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v3_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+    SIGNAL v3_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0)
   ) IS
   VARIABLE v0, v1, v2, v3: UNSIGNED(63 downto 0);
   BEGIN
@@ -136,7 +136,7 @@ BEGIN
           sin.v1 <= s.v1 xor (k(63 DOWNTO 0));
           sin.v0 <= s.v0 xor (k(127 DOWNTO 64));
           sin.dpc <= 0;
-          sin.s <= Compression;
+          sin.s <= CompressionBefore;
 
         WHEN CompressionBefore =>
           IF (s.dpc = 960) THEN

@@ -7,22 +7,30 @@
          <top_modules>
             <top_module name="common" />
             <top_module name="pck_crc32_d4" />
+            <top_module name="test_dns_pkts" />
+            <top_module name="test_dstip_pkts" />
+            <top_module name="test_dstmac_pkts" />
+            <top_module name="test_dstport_pkts" />
             <top_module name="test_main" />
             <top_module name="test_pkt_infra" />
+            <top_module name="test_reply_pkts" />
+            <top_module name="test_siphash_pkts" />
+            <top_module name="test_srcip_pkts" />
             <top_module name="test_srcmac_pkts" />
+            <top_module name="test_srcport_pkts" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="1113000001fs"></ZoomEndTime>
-      <Cursor1Time time="601000000fs"></Cursor1Time>
+      <ZoomStartTime time="37340000fs"></ZoomStartTime>
+      <ZoomEndTime time="37689201fs"></ZoomEndTime>
+      <Cursor1Time time="37668800fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="288"></NameColumnWidth>
-      <ValueColumnWidth column_width="136"></ValueColumnWidth>
+      <ValueColumnWidth column_width="130"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="15" />
+   <WVObjectSize size="16" />
    <wvobject fp_name="/test_main/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -82,6 +90,11 @@
    <wvobject fp_name="/test_main/uut/ci/rd" type="array">
       <obj_property name="ElementShortName">rd</obj_property>
       <obj_property name="ObjectShortName">rd</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_main/uut/ci/siphash/s" type="array">
+      <obj_property name="ElementShortName">s</obj_property>
+      <obj_property name="ObjectShortName">s</obj_property>
       <obj_property name="isExpanded"></obj_property>
    </wvobject>
 </wave_config>
