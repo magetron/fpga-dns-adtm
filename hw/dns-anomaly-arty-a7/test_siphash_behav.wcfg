@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="sim_siphash_main_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="sim_siphash_main" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="968708fs"></ZoomStartTime>
+      <ZoomEndTime time="991459fs"></ZoomEndTime>
+      <Cursor1Time time="1000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="288"></NameColumnWidth>
+      <ValueColumnWidth column_width="130"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="10" />
+   <wvobject fp_name="/sim_siphash_main/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_siphash_main/IN_KEY" type="array">
+      <obj_property name="ElementShortName">IN_KEY[127:0]</obj_property>
+      <obj_property name="ObjectShortName">IN_KEY[127:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_siphash_main/IN_DATA" type="array">
+      <obj_property name="ElementShortName">IN_DATA[959:0]</obj_property>
+      <obj_property name="ObjectShortName">IN_DATA[959:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_siphash_main/IN_START" type="logic">
+      <obj_property name="ElementShortName">IN_START</obj_property>
+      <obj_property name="ObjectShortName">IN_START</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_siphash_main/OUT_DATA" type="array">
+      <obj_property name="ElementShortName">OUT_DATA[63:0]</obj_property>
+      <obj_property name="ObjectShortName">OUT_DATA[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_siphash_main/OUT_READY" type="logic">
+      <obj_property name="ElementShortName">OUT_READY</obj_property>
+      <obj_property name="ObjectShortName">OUT_READY</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_siphash_main/clk_period" type="other">
+      <obj_property name="ElementShortName">clk_period</obj_property>
+      <obj_property name="ObjectShortName">clk_period</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_siphash_main/uut/s" type="array">
+      <obj_property name="ElementShortName">s</obj_property>
+      <obj_property name="ObjectShortName">s</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_siphash_main/uut/d" type="array">
+      <obj_property name="ElementShortName">d[959:0]</obj_property>
+      <obj_property name="ObjectShortName">d[959:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_siphash_main/uut/k" type="array">
+      <obj_property name="ElementShortName">k[127:0]</obj_property>
+      <obj_property name="ObjectShortName">k[127:0]</obj_property>
+   </wvobject>
+</wave_config>

@@ -8,6 +8,10 @@ void print_not_block_msg() {
   printf("FPGA validation failed, block not successful.\n");
 }
 
+void print_admin_mismatch_msg() {
+  printf("FPGA validation failed, admin packet and FPGA configuration mismatch\n");
+}
+
 #include "tests/test-srcmac.hh"
 #include "tests/test-dstmac.hh"
 #include "tests/test-srcip.hh"

@@ -26,19 +26,28 @@ PACKAGE BODY test_reply_pkts IS
     E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"2"; WAIT FOR E_RX_CLK_period;
 
-    FOR i IN 0 TO 5 LOOP
+    FOR i IN 0 TO 69 LOOP
       E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
     END LOOP;
 
-    -- HASH
-    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"f"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+    -- SipHash MAC
+    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
-    E_RXD <= x"e"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"9"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"6"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"8"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"0"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"4"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"7"; WAIT FOR E_RX_CLK_period;
     E_RXD <= x"d"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"c"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"b"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"6"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"4"; WAIT FOR E_RX_CLK_period;
+    E_RXD <= x"a"; WAIT FOR E_RX_CLK_period;
+
   END receive_reply_admin_dns_payload;
 
 
@@ -50,8 +59,8 @@ PACKAGE BODY test_reply_pkts IS
     E_RX_DV <= '1';
     receive_preamble(E_RX_CLK_period, E_RXD);
     receive_ethernet_header(E_RX_CLK_period, x"b043df1bb706", x"000a35ffffff", E_RXD);
-    receive_ip_header(E_RX_CLK_period, x"0ac4e67a", x"0a6b1ba0", x"0078", E_RXD);
-    receive_udp_header(E_RX_CLK_period, x"2ba3", x"2ebc", x"0064", E_RXD);
+    receive_ip_header(E_RX_CLK_period, x"0ac4e67a", x"0a6b1ba0", x"009c", E_RXD);
+    receive_udp_header(E_RX_CLK_period, x"2ba3", x"2ebc", x"0088", E_RXD);
     receive_reply_admin_dns_payload(E_RX_CLK_period, E_RXD);
     receive_null_fcs(E_RX_CLK_period, E_RXD);
     E_RX_DV <= '0';

@@ -4,11 +4,16 @@
 #include <cstdint>
 #include <cstdio>
 
+extern "C" {
+  #include "siphash-ref-impl/siphash.c"
+}
+
 FILE* admin_pkt;
 uint64_t admin_buf = 0;
 uint8_t admin_buf_bits_clean = 64;
-uint32_t admin_buf_key = 0xdecaface;
-uint32_t admin_buf_hash_val;
+uint64_t admin_buf_key[2] = {0xdecaface1eadf1a9UL, 0x1713440219990927UL};
+size_t admin_buf_data_ptr = 0;
+uint64_t admin_buf_data[16] = {};
 
 uint64_t reverse_bits_64 (uint64_t n) {
   size_t s = sizeof(n) * 8;
@@ -29,8 +34,8 @@ uint64_t reverse_bits_byte_64 (uint64_t n) {
 }
 
 void write_admin_buf_item_and_hash (uint64_t admin_buf, uint8_t bytes_to_write) {
-  admin_buf_hash_val ^= (admin_buf & 0xffffffff);
-  admin_buf_hash_val ^= (admin_buf & 0xffffffff00000000) >> 32;
+  memcpy(reinterpret_cast<uint8_t*>(admin_buf_data) + admin_buf_data_ptr, &admin_buf, bytes_to_write);
+  admin_buf_data_ptr += bytes_to_write;
   fwrite(&admin_buf, bytes_to_write, 1, admin_pkt);
 }
 
@@ -59,8 +64,9 @@ void write_admin_buf (uint64_t info, uint8_t bits) {
 }
 
 void append_auth_hash () {
-  uint32_t save_admin_buf_hash_val = admin_buf_hash_val;
-  write_admin_buf(save_admin_buf_hash_val, 32);
+  uint64_t admin_buf_hash_val = 0;
+  siphash(admin_buf_data, 120, admin_buf_key, reinterpret_cast<uint8_t*>(&admin_buf_hash_val), 8);
+  write_admin_buf(admin_buf_hash_val, 64);
   write_admin_buf(0, 0);
 }
 
@@ -70,7 +76,8 @@ void write_to_admin_pkt (filter_t& f, const char* filename) {
     fprintf(stderr, "ERROR invalid filename to write\n");
   }
 
-  admin_buf_hash_val = admin_buf_key;
+  admin_buf_data_ptr = 0;
+  memset(admin_buf_data, 0, 120); // 960 bits = 120 bytes
 
   write_admin_buf(f.srcMACBW, 1);
   write_admin_buf(f.srcMACLength, 2);
@@ -112,8 +119,11 @@ void write_to_admin_pkt (filter_t& f, const char* filename) {
 
   write_admin_buf(f.replyType, 1);
 
-  // closing
   write_admin_buf(0, 0);
+
+  for (size_t i = 0; i < 4; i++) write_admin_buf(0, 64);
+
+  // closing
   append_auth_hash();
   fclose(admin_pkt);
 }
