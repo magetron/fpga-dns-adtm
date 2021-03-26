@@ -1,7 +1,5 @@
 #pragma once
 
-#define DEBUG
-
 #include <cstdlib>
 #include <cstdint>
 #include <cstdio>
@@ -67,7 +65,6 @@ void write_admin_buf (uint64_t info, uint8_t bits) {
 
 void append_auth_hash () {
   uint64_t admin_buf_hash_val = 0;
-  for (size_t i = 0; i < 15; i++) printf("%016" PRIx64 "\n", admin_buf_data[i]);
   siphash(admin_buf_data, 120, admin_buf_key, reinterpret_cast<uint8_t*>(&admin_buf_hash_val), 8);
   write_admin_buf(admin_buf_hash_val, 64);
   write_admin_buf(0, 0);
