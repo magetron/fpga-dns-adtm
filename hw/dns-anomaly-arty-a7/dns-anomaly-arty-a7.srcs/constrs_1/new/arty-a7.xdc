@@ -225,21 +225,4 @@ create_clock -period 40.000 -name E_TX_CLK -waveform {0.000 20.000} [get_ports E
 
 
 
-create_debug_core u_ila_0 ila
-set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
-set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
-set_property C_ADV_TRIGGER false [get_debug_cores u_ila_0]
-set_property C_DATA_DEPTH 1024 [get_debug_cores u_ila_0]
-set_property C_EN_STRG_QUAL false [get_debug_cores u_ila_0]
-set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
-set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
-set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
-set_property port_width 1 [get_debug_ports u_ila_0/clk]
-connect_debug_port u_ila_0/clk [get_nets [list clk50_BUFG]]
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
-set_property port_width 64 [get_debug_ports u_ila_0/probe0]
-connect_debug_port u_ila_0/probe0 [get_nets [list {ci/s_reg[ahv][0]} {ci/s_reg[ahv][1]} {ci/s_reg[ahv][2]} {ci/s_reg[ahv][3]} {ci/s_reg[ahv][4]} {ci/s_reg[ahv][5]} {ci/s_reg[ahv][6]} {ci/s_reg[ahv][7]} {ci/s_reg[ahv][8]} {ci/s_reg[ahv][9]} {ci/s_reg[ahv][10]} {ci/s_reg[ahv][11]} {ci/s_reg[ahv][12]} {ci/s_reg[ahv][13]} {ci/s_reg[ahv][14]} {ci/s_reg[ahv][15]} {ci/s_reg[ahv][16]} {ci/s_reg[ahv][17]} {ci/s_reg[ahv][18]} {ci/s_reg[ahv][19]} {ci/s_reg[ahv][20]} {ci/s_reg[ahv][21]} {ci/s_reg[ahv][22]} {ci/s_reg[ahv][23]} {ci/s_reg[ahv][24]} {ci/s_reg[ahv][25]} {ci/s_reg[ahv][26]} {ci/s_reg[ahv][27]} {ci/s_reg[ahv][28]} {ci/s_reg[ahv][29]} {ci/s_reg[ahv][30]} {ci/s_reg[ahv][31]} {ci/s_reg[ahv][32]} {ci/s_reg[ahv][33]} {ci/s_reg[ahv][34]} {ci/s_reg[ahv][35]} {ci/s_reg[ahv][36]} {ci/s_reg[ahv][37]} {ci/s_reg[ahv][38]} {ci/s_reg[ahv][39]} {ci/s_reg[ahv][40]} {ci/s_reg[ahv][41]} {ci/s_reg[ahv][42]} {ci/s_reg[ahv][43]} {ci/s_reg[ahv][44]} {ci/s_reg[ahv][45]} {ci/s_reg[ahv][46]} {ci/s_reg[ahv][47]} {ci/s_reg[ahv][48]} {ci/s_reg[ahv][49]} {ci/s_reg[ahv][50]} {ci/s_reg[ahv][51]} {ci/s_reg[ahv][52]} {ci/s_reg[ahv][53]} {ci/s_reg[ahv][54]} {ci/s_reg[ahv][55]} {ci/s_reg[ahv][56]} {ci/s_reg[ahv][57]} {ci/s_reg[ahv][58]} {ci/s_reg[ahv][59]} {ci/s_reg[ahv][60]} {ci/s_reg[ahv][61]} {ci/s_reg[ahv][62]} {ci/s_reg[ahv][63]}]]
-set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
-set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
-set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
-connect_debug_port dbg_hub/clk [get_nets clk50_BUFG]
+
