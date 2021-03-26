@@ -179,7 +179,7 @@ BEGIN
           sin.s <= CompressionSIPRound2;
 
         WHEN CompressionSIPRound2 =>
-          siphash_round_1(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          siphash_round_2(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
           IF (s.crc = g_compression_rounds) THEN
             sin.s <= CompressionAfter;
           ELSE
