@@ -5,6 +5,12 @@ USE ieee.numeric_std.ALL;
 LIBRARY work;
 
 ENTITY siphasher IS
+GENERIC (
+  g_compression_rounds : NATURAL RANGE 0 TO 15 := 1; -- 2 - 1 = 1
+  g_finalise_rounds : NATURAL RANGE 0 TO 15 := 3; -- 4 - 1 = 3
+  g_siphash_length : STD_LOGIC_VECTOR(63 DOWNTO 0) := x"7800000000000000";
+  g_siphash_finalise_constant : STD_LOGIC_VECTOR(63 DOWNTO 0) := x"00000000000000ff";
+);
 PORT (
   clk : IN STD_LOGIC;
   in_key : IN STD_LOGIC_VECTOR(127 DOWNTO 0);
@@ -20,15 +26,27 @@ ARCHITECTURE rtl OF siphasher IS
     Idle,
     InitV,
     InitKey,
-    Compression,
-    CompressionLength,
-    Finalise,
+    CompressionBefore,
+    CompressionSIPRound,
+    CompressionAfter,
+    CompressionLengthBefore,
+    CompressionLengthSIPRound,
+    CompressionLengthAfter
+    FinaliseBefore,
+    FinaliseSIPRound,
+    FinaliseAfter,
     Output
   );
 
   TYPE hstate_t IS RECORD
     s : state_t;
-    c : NATURAL RANGE 0 TO 1023;
+
+    crc : NATURAL RANGE 0 TO 15; -- Compression round counter
+    frc : NATURAL RANGE 0 TO 15; -- Finalise round counter
+
+    dpc : NATURAL RANGE 0 TO 1023; -- Data pointer counter
+
+
     v0 : STD_LOGIC_VECTOR(63 DOWNTO 0);
     v1 : STD_LOGIC_VECTOR(63 DOWNTO 0);
     v2 : STD_LOGIC_VECTOR(63 DOWNTO 0);
@@ -38,7 +56,9 @@ ARCHITECTURE rtl OF siphasher IS
   SIGNAL s, sin : hstate_t
   := hstate_t' (
     s => Idle,
-    c => 0,
+    crc => 0,
+    frc => 0,
+    dpc => 0,
     v0 => (OTHERS => '0'),
     v1 => (OTHERS => '0'),
     v2 => (OTHERS => '0'),
@@ -48,7 +68,7 @@ ARCHITECTURE rtl OF siphasher IS
   SIGNAL d : STD_LOGIC_VECTOR(959 DOWNTO 0) := (OTHERS => '0');
   SIGNAL k : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
 
-  PROCEDURE compression_sipround_2(
+  PROCEDURE siphash_round(
     SIGNAL v0_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
     SIGNAL v1_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
     SIGNAL v2_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
@@ -57,89 +77,34 @@ ARCHITECTURE rtl OF siphasher IS
     SIGNAL v1_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
     SIGNAL v2_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
     SIGNAL v3_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
-    d_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0)
   ) IS
-  VARIABLE v0, v1, v2, v3, d : UNSIGNED(63 downto 0);
-  begin
-    v0 := UNSIGNED(v0_in);
-    v1 := UNSIGNED(v1_in);
-    v2 := UNSIGNED(v2_in);
-    v3 := UNSIGNED(v3_in);
-    d := UNSIGNED(d_in);
-
-    v3 := v3 xor d;
-
-    FOR i in 0 TO 1 LOOP
-      v0 := v0 + v1;
-      v2 := v2 + v3;
-      v1 := rotate_left(v1, 13);
-      v3 := rotate_left(v3, 16);
-      v1 := v1 xor v0;
-      v3 := v3 xor v2;
-      v0 := rotate_left(v0, 32);
-      v0 := v0 + v3;
-      v2 := v2 + v1;
-      v1 := rotate_left(v1, 17);
-      v3 := rotate_left(v3, 21);
-      v1 := v1 xor v2;
-      v3 := v3 xor v0;
-      v2 := rotate_left(v2, 32);
-    END LOOP;
-
-    v0 := v0 xor d;
-
-    v0_out <= STD_LOGIC_VECTOR(v0);
-    v1_out <= STD_LOGIC_VECTOR(v1);
-    v2_out <= STD_LOGIC_VECTOR(v2);
-    v3_out <= STD_LOGIC_VECTOR(v3);
-
-  END compression_sipround_2;
-
-  PROCEDURE finalise_sipround_4(
-    SIGNAL v0_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v1_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v2_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v3_in : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v0_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v1_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v2_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
-    SIGNAL v3_out : OUT STD_LOGIC_VECTOR(63 DOWNTO 0)
-  ) IS
-  VARIABLE v0, v1, v2, v3 : UNSIGNED(63 downto 0);
+  VARIABLE v0, v1, v2, v3: UNSIGNED(63 downto 0);
   BEGIN
-
     v0 := UNSIGNED(v0_in);
     v1 := UNSIGNED(v1_in);
     v2 := UNSIGNED(v2_in);
     v3 := UNSIGNED(v3_in);
 
-    v2 := v2 xor x"00000000000000ff";
-
-    FOR i in 0 TO 3 LOOP
-      v0 := v0 + v1;
-      v2 := v2 + v3;
-      v1 := rotate_left(v1, 13);
-      v3 := rotate_left(v3, 16);
-      v1 := v1 xor v0;
-      v3 := v3 xor v2;
-      v0 := rotate_left(v0, 32);
-      v0 := v0 + v3;
-      v2 := v2 + v1;
-      v1 := rotate_left(v1, 17);
-      v3 := rotate_left(v3, 21);
-      v1 := v1 xor v2;
-      v3 := v3 xor v0;
-      v2 := rotate_left(v2, 32);
-    END LOOP;
-
-    v0 := v0 xor v1 xor v2 xor v3;
+    v0 := v0 + v1;
+    v2 := v2 + v3;
+    v1 := rotate_left(v1, 13);
+    v3 := rotate_left(v3, 16);
+    v1 := v1 xor v0;
+    v3 := v3 xor v2;
+    v0 := rotate_left(v0, 32);
+    v0 := v0 + v3;
+    v2 := v2 + v1;
+    v1 := rotate_left(v1, 17);
+    v3 := rotate_left(v3, 21);
+    v1 := v1 xor v2;
+    v3 := v3 xor v0;
+    v2 := rotate_left(v2, 32);
 
     v0_out <= STD_LOGIC_VECTOR(v0);
     v1_out <= STD_LOGIC_VECTOR(v1);
     v2_out <= STD_LOGIC_VECTOR(v2);
     v3_out <= STD_LOGIC_VECTOR(v3);
-
-  END finalise_sipround_4;
+  END siphash_round;
 
 BEGIN
   hash : PROCESS (clk)
@@ -170,23 +135,64 @@ BEGIN
           sin.v2 <= s.v2 xor (k(127 DOWNTO 64));
           sin.v1 <= s.v1 xor (k(63 DOWNTO 0));
           sin.v0 <= s.v0 xor (k(127 DOWNTO 64));
-          sin.c <= 0;
+          sin.dpc <= 0;
           sin.s <= Compression;
 
-        WHEN Compression =>
-          IF (s.c = 960) THEN
-            sin.s <= CompressionLength;
+        WHEN CompressionBefore =>
+          IF (s.dpc = 960) THEN
+            sin.s <= CompressionLengthBefore;
           ELSE
-            compression_sipround_2(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3, d(s.c + 63 DOWNTO s.c));
-            sin.c <= s.c + 64;
+            sin.v3 <= s.v3 xor d((s.dpc + 63) DOWNTO s.dpc);
+            sin.crc <= 0;
+            sin.s <= CompressionSIPRound;
           END IF;
 
-        WHEN CompressionLength =>
-          compression_sipround_2(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3, x"7800000000000000");
-          sin.s <= Finalise;
+        WHEN CompressionSIPRound =>
+          siphash_round(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          IF (s.crc = g_compression_rounds) THEN
+            sin.s <= CompressionAfter;
+          ELSE
+            sin.crc <= s.crc + 1;
+          END IF;
 
-        WHEN Finalise =>
-          finalise_sipround_4(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+        WHEN CompressionAfter =>
+          sin.v0 <= s.v0 xor d((s.dpc + 63) DOWNTO s.dpc);
+          sin.dpc <= s.dpc + 64;
+          sin.s <= CompressionBefore;
+
+        WHEN CompressionLengthBefore =>
+          sin.v3 <= s.v3 xor g_siphash_length;
+          sin.crc <= 0;
+          sin.s <= CompressionLengthSIPRound;
+
+        WHEN CompressionLengthSIPRound =>
+          siphash_round(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          IF (s.crc = g_compression_rounds) THEN
+            sin.s <= CompressionLengthAfter;
+          ELSE
+            sin.crc <= s.crc + 1;
+          END IF;
+
+        WHEN CompressionLengthAfter =>
+          sin.v0 <= s.v0 xor g_siphash_length;
+          sin.dpc <= s.dpc + 64;
+          sin.s <= FinaliseBefore;
+
+        WHEN FinaliseBefore =>
+          sin.v2 <= s.v2 xor g_siphash_finalise_constant;
+          sin.crc <= 0;
+          sin.s <= FinaliseSIPRound;
+
+        WHEN FinaliseSIPRound =>
+          siphash_round(s.v0, s.v1, s.v2, s.v3, sin.v0, sin.v1, sin.v2, sin.v3);
+          IF (s.crc = g_finalise_rounds) THEN
+            sin.s <= FinaliseAfter;
+          ELSE
+            sin.crc <= s.crc + 1;
+          END IF;
+
+        WHEN FinaliseAfter =>
+          sin.v0 <= s.v0 xor s.v1 xor s.v2 xor s.v3;
           sin.s <= Output;
 
         WHEN Output =>

@@ -5,7 +5,7 @@ USE ieee.numeric_std.ALL;
 LIBRARY work;
 USE work.common.ALL;
 
-entity coreout is
+ENTITY coreout IS
   GENERIC (
     --g_reply_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"d3f0f3d6f694" -- Patrick's Mac Pro eth0 MAC
     --g_reply_mac : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"7dce1feb27b8" -- Raspberry Pi 2 B eth0 MAC
@@ -23,9 +23,9 @@ entity coreout is
     el_snd_en : OUT STD_LOGIC
 
   );
-end coreout;
+END coreout;
 
-architecture rtl of coreout is
+ARCHITECTURE rtl OF coreout IS
   TYPE state_t IS (
     -- MINDFUL: must have odd number of stages to slip in an update
     -- within TX clk cycles
