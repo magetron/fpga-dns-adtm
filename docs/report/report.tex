@@ -1,12 +1,13 @@
 \documentclass[a4paper]{report}
 \usepackage{setspace}
-%\usepackage{subfigure}
-
 \pagestyle{plain}
 \usepackage{amssymb,graphicx,color}
 \usepackage{amsfonts}
 \usepackage{latexsym}
 \usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage[backend=biber,style=numeric,sortcites,sorting=none]{biblatex}
+\addbibresource{report.bib}
 \usepackage[a4paper, margin = 3cm, bottom = 2.5cm]{geometry}
 
 \newtheorem{theorem}{THEOREM}
@@ -26,32 +27,26 @@ PROOF:
 \begin{quotation}}{
 $\Box$ \end{quotation}}
 
-
-
 \newcommand{\nats}{\mbox{\( \mathbb N \)}}
 \newcommand{\rat}{\mbox{\(\mathbb Q\)}}
 \newcommand{\rats}{\mbox{\(\mathbb Q\)}}
 \newcommand{\reals}{\mbox{\(\mathbb R\)}}
 \newcommand{\ints}{\mbox{\(\mathbb Z\)}}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\title{{\vspace{-14em}}
+{{\Huge Leveraging FPGAs for building low-latency DNS Anomaly Detection and high-performance Firewall Solution}} \\
+{\large}}
 
-\title{{\vspace{-14em}}\\
-{{\Huge Project Title}}\\
-{\large Optional Subtitle}\\}
-
-\date{Submission date: 27 Mar 2020}
+\date{Submission date: 27 March 2021}
 \author{Patrick (Daiqi) Wu\thanks{
 {\bf Disclaimer:}
 This report is submitted as part requirement for Patrick (Daiqi) Wu's BSc Computer Science degree at UCL. It is
 substantially the result of my own work except where explicitly indicated in the text.
-The report will be distributed to the internal and external examiners, but thereafter may be copied and distributed under the Attribution 4.0 International (CC BY 4.0) License.}
-\\ \\
+The report will be distributed to the internal and external examiners, but thereafter may be copied and distributed under the Creative Commons -- Attribution 4.0 International License \cite{cc-by-4.0}.}
+\\
 BSc Computer Science\\ \\
-Prof. Stephen Hailes and Phil Demetriou}
-
-
+Supervisors: Professor Stephen Hailes, Phil Demetriou}
 
 \begin{document}
  
@@ -63,23 +58,38 @@ Summarise your report concisely.
 \tableofcontents
 \setcounter{page}{1}
 
-
 \chapter{Introduction}
-This is just a bare minimum to get started.
 
-\section{Section 1}
-Chapters should contain numbered sections and sub-sections.
+\section{Problem Statement}
+The Domain Name System (DNS) Protocol is nowadays one of the most widely and prominently used protocols built-upon the Internet Protocol. As Akamai Technologies aggregated publicly available DNS data, the total amount of DNS traffic across the Internet quadrupled from $ 2 \times 10^{12}$ transactions/month (a query-reply pair) in January 2016, to $8 \times 10^{12}$ transactions/month in October 2020 \cite{DNS-Trends-and-Traffic}.
 
-\subsection{Sub-Section 1}
-Remember that this is a structured technical/academic report, not an essay.
 
-\chapter{Background and Related Works}
+\section{Project Aim}
 
-\chapter{Requirement Gathering}
+\section{Tools and Utilities}
 
-\chapter{Design and Implementation}
+\chapter{Background and Related Work}
 
-\chapter{Testing and Performance Evaluation}
+\section{Background}
+
+\subsection{Domain Name System (DNS)}
+DNS is a distributed and hierarchical naming system for computing nodes or resources within a network \cite{RFC-1034}. It provides the backbone service of associating each entity's information with the domain names assigned to them \cite{RFC-1034, RFC-1035}. Notably on the Internet, DNS service is used when translating more readily memorised domain names to numerical IP addresses needed for locating servicing nodes in the network with the underlying IP Protocol \cite{RFC-1034, RFC-791}.
+
+\subsection{Field Programmable Gate Arrays (FPGA)}
+
+\subsection{Motivation}
+
+\section{Related Work}
+
+\chapter{Design}
+
+\chapter{Simulation}
+
+\chapter{Hardware Implementation}
+
+\chapter{Hardware Debugging}
+
+\chapter{Testing and Evaluation}
 
 \chapter{Conclusion and Future Work}
 
@@ -97,9 +107,10 @@ Evaluation of the work (this may be in a separate chapter if there is substantia
 \section{Future Work}
 How the project might be continued, but don't give the impression you ran out of time!
 
-\appendix
+\addcontentsline{toc}{chapter}{References}
+\printbibliography[title=References]
 
-\chapter{References}
+\appendix
 
 \chapter{Code}
 
