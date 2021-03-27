@@ -1,3 +1,11 @@
+Run `git submodule update --init --recursive` to fetch `siphash-ref-impl`.
+
+Prerequisites:
+- GCC 10.0+
+- libedit
+
+Make sure the key in `sw/admin-cli/fpga-filter.hh` `admin_buf_key` is the same key used in hardware.
+
 Run `make` to build useful toolkits for this project.
 
 Read `./main.out -h` before proceeding with launching the CLI.

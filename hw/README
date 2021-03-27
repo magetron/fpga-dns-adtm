@@ -11,4 +11,8 @@ Enable / Disable test suites by commenting (out) VHDL procedure calls in `test_m
 
 HDL Design Sources are availabe in `xil_defaultlib` with `main.vhd` as the top module. Use `arty-a7.xdc` as the default constraint file for the Digilent Arty Artix-7 35 (xc7a35ticsg324-1L) board. When debugging with ILA, use `arty-a7-debug.xdc` instead.
 
-NOTE : Set `o.vhd`, GENERIC `g_reply_mac` to the interface MAC FPGA is responding to.
+NOTE :
+
+Set `i.vhd`, GENERIC `g_admin_key` to the SIPhash key, make sure software it's the same key in software.
+Set `i.vhd`, GENERIC `g_dns_rcode` to the RCODE reply in DNS replies.
+Set `o.vhd`, GENERIC `g_reply_mac` to the interface MAC FPGA is responding to.
