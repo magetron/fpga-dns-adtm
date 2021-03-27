@@ -18,7 +18,7 @@
 #include "net-ops.hh"
 #include "sender.hh"
 #include "receiver.hh"
-#include "prober.hh"
+#include "fpga-prober.hh"
 
 #include "args-parser.hh"
 #include "commands.hh"
