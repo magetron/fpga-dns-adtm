@@ -124,6 +124,7 @@ void write_to_admin_pkt (filter_t& f, const char* filename) {
   for (size_t i = 0; i < 4; i++) write_admin_buf(0, 64);
 
   // closing
+  write_admin_buf(0, 0);
   append_auth_hash();
   fclose(admin_pkt);
 }
