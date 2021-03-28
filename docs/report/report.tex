@@ -41,7 +41,7 @@ $\Box$ \end{quotation}}
 \date{Submission date: 27 March 2021}
 \author{Patrick (Daiqi) Wu\thanks{
 {\bf Disclaimer:}
-This report is submitted as part requirement for Patrick (Daiqi) Wu's BSc Computer Science degree at UCL. It is
+This report is submitted as part requirement for Patrick (Daiqi) Wu's BSc Computer Science degree at University College London (UCL). It is
 substantially the result of my own work except where explicitly indicated in the text.
 The report will be distributed to the internal and external examiners, but thereafter may be copied and distributed under the Creative Commons -- Attribution 4.0 International License \cite{cc-by-4.0}.}
 \\
@@ -55,16 +55,29 @@ Supervisors: Professor Stephen Hailes, Phil Demetriou}
 \begin{abstract}
 Summarise your report concisely.
 \end{abstract}
+
+\renewcommand{\abstractname}{Acknowledgements}
+\begin{abstract}
+Thanks Steve, Phil, Monica, Parents. COVID-19, life is hard.
+\end{abstract}
+
 \tableofcontents
 \setcounter{page}{1}
 
 \chapter{Introduction}
 
 \section{Problem Statement}
-The Domain Name System (DNS) Protocol is nowadays one of the most widely and prominently used protocols built-upon the Internet Protocol. As Akamai Technologies aggregated publicly available DNS data, the total amount of DNS traffic across the Internet quadrupled from $ 2 \times 10^{12}$ transactions/month (a query-reply pair) in January 2016, to $8 \times 10^{12}$ transactions/month in October 2020 \cite{DNS-Trends-and-Traffic}.
+The Domain Name System (DNS) Protocol is nowadays one of the most widely and prominently used protocols built-upon the Internet Protocol. As Akamai Technologies aggregated publicly available DNS data, the total amount of DNS traffic across the Internet quadrupled from $ 2 \times 10^{12}$ transactions/month (a query-reply pair) in January 2016, to $8 \times 10^{12}$ transactions/month in October 2020 \cite{DNS-Trends-and-Traffic}. Moreover, as the Internet of Things (IoT) continues to trend, an increasing number of clients including but not limited to cars, home appliances will be able to connect to the Internet. While every one of them would require domain name resolving service to a certain extent, DNS will play a more paramount role in the Internet infrastructure \cite{satam2015anomaly}.
 
+The DNS lookup service is provided to Internet users from Domain Name Servers across the globe. There are two types of name servers, namely authoritative name servers and caching name servers. Authoritative name servers provide domain name translation records or delegation records designated by administrators within a given zone \cite{BCP-219}. The authoritative name servers' DNS replies to queries within their respective authoritative zones are called Authoritative Answers (AA), which records are considered to be final and correct within those records' Time-To-Live (TTL) period \cite{BCP-219, RFC-1035}. In theory, the Internet will be able to operate without caching name servers. However, caching name servers largely improve DNS lookup efficiency by caching resolved records within their TTL and further reduce DNS traffic across the Internet. Typically, caching name servers also implement recursive resolution of domain names, which essentially resolves a query from root name servers to the authoritative name server of the queried domain \cite{finch-2015}.
+
+As demonstrated previously, DNS operate based on a query/reply system between clients and name servers. Since the original DNS protocol start operating on the Internet back in 1985, security concerns were not the major design considerations at that time, as Internet was not accessible by the general public. Therefore, the security flaw in the DNS protocol unveils attacking opportunities for anomalies to sabotage the DNS infrastructure of the Internet \cite{antonakakis2010centralized}. For example, an attacker can easily spoof the source address of a DNS request so as to launch a DNS amplification attack, where the DNS resolver will continuously respond to a victim client which didn't even make a request \cite{kambourakis2007detecting}. This wastes resources both for the resolver to resolve such unneeded domains and the client to deal with malicious packet flood. Moreover, the increase in total DNS traffic makes it even harder to detect, filter and further block these anomaly DNS requests. Those current protection methods are proven increasingly incapable of defending against these attacks. In October 2016, Mirai botnet consisting of more than $100,000$ infected IoT devices launched a DDoS attack against DYN DNS servers, resulting in major service outage in DYN's clients' websites (GitHub, Spotify, Twitter and etc.) \cite{bisson-2016}. The typical solution of adding multiple extra layers in front of DNS name servers throttles the overall network traffic and causes DNS reply latencies to be much higher than usual\cite{Mahjabin-2020}.
+
+...Present Problem - Need a solution towards against malicious DNS traffic
 
 \section{Project Aim}
+
+...Develop a solution, Low latency, performance critical!
 
 \section{Tools and Utilities}
 
@@ -72,26 +85,37 @@ The Domain Name System (DNS) Protocol is nowadays one of the most widely and pro
 
 \section{Background}
 
-\subsection{Domain Name System (DNS)}
+\subsection{Domain Name System (DNS) and its Vulnerabilities}
 DNS is a distributed and hierarchical naming system for computing nodes or resources within a network \cite{RFC-1034}. It provides the backbone service of associating each entity's information with the domain names assigned to them \cite{RFC-1034, RFC-1035}. Notably on the Internet, DNS service is used when translating more readily memorised domain names to numerical IP addresses needed for locating servicing nodes in the network with the underlying IP Protocol \cite{RFC-1034, RFC-791}.
 
 \subsection{Field Programmable Gate Arrays (FPGA)}
 
 \subsection{Motivation}
 
+
 \section{Related Work}
 
 \chapter{Design}
 
-\chapter{Simulation}
+\section{System Design}
 
-\chapter{Hardware Implementation}
+\section{System Usage Sample Topology}
 
-\chapter{Hardware Debugging}
+\chapter{Implementation}
 
-\chapter{Software Control System}
+\section{Hardware Implementation}
+
+\section{Hardware Debugging}
+
+\section{Software Control System}
 
 \chapter{Testing and Evaluation}
+
+\section{Simulation Unit Test-bench}
+
+\section{Hardware Integration Testing}
+
+\section{Performance Evaluation}
 
 \chapter{Conclusions and Future Work}
 
