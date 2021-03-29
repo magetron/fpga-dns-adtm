@@ -17,6 +17,54 @@
 
 @misc{BCP-219, title={BCP 219, DNS Terminology}, url={https://tools.ietf.org/html/bcp219}, journal={BCP 219}, publisher={Internet Engineering Task Force (IETF)}, author={Paul Hoffman; Andrew Sullivan; Kazunori Fujiwara}, year={2019}, month={1}}
 
+@misc{RFC-4033,
+	series =	{Request for Comments},
+	number =	4033,
+	howpublished =	{RFC 4033},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC4033},
+	url =		{https://rfc-editor.org/rfc/rfc4033.txt},
+        author =	{Scott Rose and Matt Larson and Dan Massey and Rob Austein and Roy Arends},
+	title =		{{DNS Security Introduction and Requirements}},
+	pagetotal =	21,
+	year =		2005,
+	month =		mar,
+	abstract =	{The Domain Name System Security Extensions (DNSSEC) add data origin authentication and data integrity to the Domain Name System. This document introduces these extensions and describes their capabilities and limitations. This document also discusses the services that the DNS security extensions do and do not provide. Last, this document describes the interrelationships between the documents that collectively describe DNSSEC. {[}STANDARDS-TRACK{]}},
+}
+
+@misc{RFC-2535,
+	series =	{Request for Comments},
+	number =	2535,
+	howpublished =	{RFC 2535},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC2535},
+	url =		{https://rfc-editor.org/rfc/rfc2535.txt},
+        author =	{Donald E. Eastlake 3rd},
+	title =		{{Domain Name System Security Extensions}},
+	pagetotal =	47,
+	year =		1999,
+	month =		mar,
+	abstract =	{This document incorporates feedback on RFC 2065 from early implementers and potential users. {[}STANDARDS-TRACK{]}},
+}
+
+@misc{RFC-3833,
+	series =	{Request for Comments},
+	number =	3833,
+	howpublished =	{RFC 3833},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC3833},
+	url =		{https://rfc-editor.org/rfc/rfc3833.txt},
+        author =	{Derek Atkins and Rob Austein},
+	title =		{{Threat Analysis of the Domain Name System (DNS)}},
+	pagetotal =	16,
+	year =		2004,
+	month =		aug,
+	abstract =	{Although the DNS Security Extensions (DNSSEC) have been under development for most of the last decade, the IETF has never written down the specific set of threats against which DNSSEC is designed to protect. Among other drawbacks, this cart-before-the-horse situation has made it difficult to determine whether DNSSEC meets its design goals, since its design goals are not well specified. This note attempts to document some of the known threats to the DNS, and, in doing so, attempts to measure to what extent (if any) DNSSEC is a useful tool in defending against these threats. This memo provides information for the Internet community.},
+}
+
+
+
+
 @misc{DNS-Trends-and-Traffic, title={ DNS Trends and Traffic }, url={https://www.akamai.com/uk/en/why-akamai/dns-trends-and-traffic.jsp}, journal={DNS Trends and Traffic }, publisher={Akamai Technologies}}
 
 @article{satam2015anomaly,
@@ -59,4 +107,110 @@
   pages={986-1000},
   doi={10.1109/JIOT.2019.2947659}}
 
-@misc{bisson-2016, url={https://www.tripwire.com/state-of-security/latest-security-news/100000-bots-infected-mirai-malware-caused-dyn-ddos-attack/}, journal={100,000 Bots Infected with Mirai Malware Behind Dyn DDoS Attack}, author={Bisson, David}, year={2016}, month={Oct}}
+@misc{bisson-2016, url={https://www.tripwire.com/state-of-security/latest-security-news/100000-bots-infected-mirai-malware-caused-dyn-ddos-attack/}, journal={100,000 Bots Infected with Mirai Malware Behind Dyn DDoS Attack}, author={Bisson, David}, year={2016}, month={10}}
+
+@article{chung-2017, title={Understanding the role of registrars in DNSSEC deployment}, DOI={10.1145/3131365.3131373}, journal={Proceedings of the 2017 Internet Measurement Conference}, author={Chung, Taejoong and Rijswijk-Deij, Roland Van and Choffnes, David and Levin, Dave and Maggs, Bruce M. and Mislove, Alan and Wilson, Christo}, year={2017}}
+
+@inproceedings {chung-2017-1,
+author = {Taejoong Chung and Roland van Rijswijk-Deij and Balakrishnan Chandrasekaran and David Choffnes and Dave Levin and Bruce M. Maggs and Alan Mislove and Christo Wilson},
+title = {A Longitudinal, End-to-End View of the {DNSSEC} Ecosystem},
+booktitle = {26th {USENIX} Security Symposium ({USENIX} Security 17)},
+year = {2017},
+isbn = {978-1-931971-40-9},
+address = {Vancouver, BC},
+pages = {1307--1322},
+url = {https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/chung},
+publisher = {{USENIX} Association},
+month = aug,
+}
+
+@article{nadler-201936,
+title = {Detection of malicious and low throughput data exfiltration over the DNS protocol},
+journal = {Computers and Security},
+volume = {80},
+pages = {36-53},
+year = {2019},
+issn = {0167-4048},
+doi = {https://doi.org/10.1016/j.cose.2018.09.006},
+url = {https://www.sciencedirect.com/science/article/pii/S0167404818304000},
+author = {Asaf Nadler and Avi Aminov and Asaf Shabtai},
+keywords = {DNS, Data exfiltration, DNS tunneling, Anomaly detection, Isolation forest}
+}
+
+@INPROCEEDINGS{das-8260721,
+
+  author={A. {Das} and M. {Shen} and M. {Shashanka} and J. {Wang}},
+
+  booktitle={2017 16th IEEE International Conference on Machine Learning and Applications (ICMLA)}, 
+
+  title={Detection of Exfiltration and Tunneling over DNS}, 
+
+  year={2017},
+
+  volume={},
+
+  number={},
+
+  pages={737-742},
+
+  doi={10.1109/ICMLA.2017.00-71}}
+
+@misc{grunzweig_scott_lee_2018, title={New Wekby Attacks Use DNS Requests As Command and Control Mechanism}, url={https://unit42.paloaltonetworks.com/unit42-new-wekby-attacks-use-dns-requests-as-command-and-control-mechanism/}, journal={Unit42}, author={Grunzweig, Josh and Scott, Mike and Lee, Bryan}, year={2018}, month={11}}
+
+@misc{singh-2016, title={Targeted Attacks against Banks in the Middle East}, url={https://www.fireeye.com/blog/threat-research/2016/05/targeted_attacksaga.html}, journal={FireEye}, author={Singh, Sudeep}, year={2016}, month={5}}
+
+@article{bromberger2011dns,
+  title={DNS as a covert channel within protected networks},
+  author={Bromberger, Seth},
+  year={2011}
+}
+
+@misc{xilinx-documentation-2011, title={RSpartan-3E FPGA Starter Kit Board User Guide}, url={https://www.xilinx.com/support/documentation/boards_and_kits/ug230.pdf}, journal={Xilinx Documentation}, publisher={Xilinx}, year={2011}, month={1}}
+
+@misc{xilinx-documentation-2011-core, title={Spartan-3 FPGA Family}, url={https://www.xilinx.com/products/silicon-devices/fpga/spartan-3.html}, journal={Xilinx Documentation}}
+
+@misc{xilinx-documentation-ise, title={ISE Design Suite}, url={https://www.xilinx.com/products/design-tools/ise-design-suite.html}, journal={Xilinx Documentation}}
+
+@misc{digilent-arty, title={Arty A7 Reference Manual}, url={https://reference.digilentinc.com/reference/programmable-logic/arty-a7/reference-manual}, journal={Arty A7 Reference Manual - Digilent Reference}, author={Brown, Arthur}}
+
+@misc{xilinx-documentation-artix, title={Artix-7 FPGA Family}, url={https://www.xilinx.com/products/silicon-devices/fpga/artix-7.html}, journal={Xilinx Documentation}}
+
+@misc{xilinx-documentation-vivado, title={Vivado Design Suite}, url={https://www.xilinx.com/products/design-tools/vivado.html}, journal={Xilinx Documentation}}
+
+@misc{ieee-vhdl, title={IEEE 1076-2008 - IEEE Standard VHDL Language Reference Manual}, url={https://standards.ieee.org/standard/1076-2008.html}, journal={IEEE SA - The IEEE Standards Association - Home}}
+
+@ARTICLE{ieee-verilog,
+
+  author={},
+
+  journal={IEEE Std 1364-2005 (Revision of IEEE Std 1364-2001)}, 
+
+  title={IEEE Standard for Verilog Hardware Description Language}, 
+
+  year={2006},
+
+  volume={},
+
+  number={},
+
+  pages={1-590},
+
+  doi={10.1109/IEEESTD.2006.99495}}
+
+@misc{easics-crc, title={CRC Generation Tool}, url={https://www.easics.com/crctool/}, journal={CRC Generation Tool - Easics}}
+
+@misc{iso-c, title={Programming languages — C — Technical Corrigendum 1}, url={https://www.iso.org/standard/61717.html}, journal={ISO/IEC 9899:2011/Cor 1:2012}, publisher={International Organization for Standardization}, year={2011}, month={7}}
+
+@misc{iso-cc, title={Programming languages — C }, url={https://www.iso.org/standard/68564.html}, journal={ISO/IEC 14882:2017}, publisher={International Organization for Standardization}, year={2017}, month={12}}
+
+@misc{thrysoee-2004, title={Editline Library (libedit)}, url={https://thrysoee.dk/editline/}, journal={Editline Library (libedit) - Port of NetBSD Command Line Editor Library}, author={Thrysoee, Jess}, year={2004}, month={9}}
+
+@misc{kroah-hartman-2021, title={CHANGELOG - Linux Kernel 5.10.23}, url={https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.10.23}, journal={The Linux Kernel Archives}, publisher={Linux Kernel Organization}, author={ Kroah-Hartman, Greg}, year={2021}, month={3}}
+
+@article{aumasson-bernstein-2012, title={SipHash: A Fast Short-Input PRF}, DOI={10.1007/978-3-642-34931-7_28}, journal={Lecture Notes in Computer Science Progress in Cryptology - INDOCRYPT 2012}, author={Aumasson, Jean-Philippe and Bernstein, Daniel J.}, year={2012}, pages={489–508}}
+
+@misc{wireshark-2021, title={Wireshark 3.4.4 Release Notes}, url={https://www.wireshark.org/docs/relnotes/wireshark-3.4.4.html}, journal={Wireshark · Wireshark 3.4.4 Release Notes}, publisher={Wireshark Foundation }, year={2021}, month={3}}
+
+@misc{tcpdump-2020, title={TCPDUMP 4.99.0 CHANGELOG}, url={https://www.tcpdump.org/tcpdump-changes.txt}, journal={TCPDUMP/LIBPCAP public repository}, publisher={The Tcpdump Group}, author={mcr@sandelman.ca}, year={2020}, month={12}}
+
+@misc{jwbensley-2020, title={jwbensley/Ethernet-CRC32}, url={https://github.com/jwbensley/Ethernet-CRC32}, journal={GitHub}, author={Jwbensley}}
