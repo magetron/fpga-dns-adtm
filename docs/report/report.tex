@@ -40,7 +40,7 @@ $\Box$ \end{quotation}}
 
 
 \title{{\vspace{-14em}}
-{{\Huge High-performance network anomaly detection via hardware-accelerated DNS spoofing and traffic filtering}} \\
+{{\Huge High-performance network anomaly detection and threat mitigation via hardware accelerated DNS spoofing and traffic filtering}} \\
 {\large}}
 
 \date{Submission date: 27 March 2021}
@@ -92,7 +92,7 @@ The project aims to develop a detection and mitigation solution against DNS exfi
 
 Leveraging the unparalleled network processing capability of computing hardware, namely Application-Specific Integrated Circuit (ASIC) and Field Programmable Gate Arrays (FPGA), the solution will bring an extra level of security with minimal overhead during the DNS transaction process. Furthermore, we aim to provide an easily adaptable computing hardware solution that can be side-loaded / connected to a network without any significant firewall or overall topology changes.
 
-The final delivered product shall include a piece of computing hardware that detects malicious DNS transactions in real-time and mitigate/stop the attack from executing properly. DNS data exfiltration can be prevented via hardware-accelerated DNS spoofing, while DNS flood can be mitigated via hardware traffic filtering. The delivered solution shall be versatile and instantly re-configurable via a software control system to defend against changing malicious sources. Finally, the whole solution shall be extensible, maintainable and scalable on different hardware platforms for various budgets, traffic loads, and processing power needs in different types of networked systems.
+The final delivered product shall include a piece of computing hardware that detects malicious DNS transactions in real-time and mitigate/stop the attack from executing properly. DNS data exfiltration can be prevented via hardware-accelerated DNS filtering and spoofing, while DNS flood can be mitigated via hardware traffic blocking. The delivered solution shall be versatile and instantly re-configurable via a software control system to defend against changing malicious sources. Finally, the whole solution shall be extensible, maintainable and scalable on different hardware platforms for various budgets, traffic loads, and processing power needs in different types of networked systems.
 
 \section{Project Approach}
 
@@ -147,24 +147,26 @@ The report will be laid out as follows:
 \end{enumerate}
 
 
-
-
 \chapter{Background and Related Work}
+
+In this chapter, we will be introducing the DNS, including how it works, some security improvements to DNS, and the major security issues of DNS this project is targetting. Also, we will be covering how computing hardware, most notably FPGAs will be applicable in computer networks and the reason why it is particularly useful in solving the aforementioned DNS issues. In addition, we will be briefing Sip Hash, a hash message authentication code (MAC) algorithm that is used in the project. Lastly, we will be presenting related work in DNS anomaly detection and threat mitigation, as well as relevant FPGA/hardware work in this area.
 
 \section{Background}
 
-\subsection{Domain Name System (DNS) and its Vulnerabilities}
+\subsection{Domain Name System (DNS)}
 DNS is a distributed, hierarchical naming system for computing nodes or resources within a network \cite{RFC-1034}. It provides the backbone service of associating each entity's information with the domain names assigned to them \cite{RFC-1034, RFC-1035}. Notably, on the Internet, DNS service is used when translating more readily memorised domain names to numerical IP addresses needed for locating servicing nodes in the network with the underlying IP Protocol \cite{RFC-1034, RFC-791}.
 
-Over the years, there are more secured replacement of DNS proposed, most notably the Domain Name System Security Extensions (DNSSEC), originally proposed in 1997\cite{RFC-2535, RFC-4033}. Conversely, a study from Chung et al. \cite{chung-2017} showed that only 3 of the top 20 registrars support DNSSEC when the registrar is the DNS operator, and only 1 of the top 20 enables DNSSEC by default in their more expensive domains. On second-level domains, roughly 1\% of \url{.com}, \url{.net} and \url{.org} domains deploy DNSSEC \cite{chung-2017-1}. RFC-3833 \cite{RFC-3833} outlines several major weakness of DNSSEC, including but not limited to:
-\begin{itemize}
-    \item DNSSEC is too complex to implement
-    \item DNSSEC significantly increases the DNS packet sizes
-    \item DNSSEC verification increases resolvers' workload
-    \item DNSSEC's trust model is similar to DNS's hierarchical model
-\end{itemize}
+An DNS resolution example will be provided below to illustrate how DNS work in a typical network environment. When the IP address of a domain name is requested by a person or a service (i.e. \url{www.apple.com}), the local cache will be the first look-up point of the query. If no match is found, the DNS query will be forwarded to a local DNS resolver, than to a public DNS resolver (i.e. Cloudflare's public DNS server at IPv4 \url{1.1.1.1}). If the query remains unresolved, it will then get forwarded to the root name servers to obtain authoritative name servers' address of \url{.com}. Then, querying \url{.com} authoritative name servers will provide further information of of \url{apple.com}'s authoritative name servers. This happens recursively until the domain name gets resolved and the final IP address is obtained and replied back to the inquirer.
+
+Over the years, there are more secured replacement of DNS proposed, most notably the Domain Name System Security Extensions (DNSSEC), originally proposed in 1997\cite{RFC-2535, RFC-4033}. Conversely, a study from Chung et al. \cite{chung-2017} showed that only 3 of the top 20 registrars support DNSSEC when the registrar is the DNS operator, and only 1 of the top 20 enables DNSSEC by default in their more expensive domains. On second-level domains, roughly 1\% of \url{.com}, \url{.net} and \url{.org} domains deploy DNSSEC \cite{chung-2017-1}. RFC-3833 \cite{RFC-3833} outlines several major weakness of DNSSEC, including but not limited to complexity of implementation, significant increase and packet sizes and inability to defend against certain security issues (DNS exfiltration, DNS flood).
+
+\subsection{DNS Data Exfiltration}
+
+\subsection{DNS Flood}
 
 \subsection{Field Programmable Gate Arrays (FPGA)}
+
+\subsection{Sip Hash}
 
 \section{Project Motivation}
 
@@ -172,9 +174,28 @@ Over the years, there are more secured replacement of DNS proposed, most notably
 
 \chapter{Design}
 
+In this chapter, we will be presenting both the internal system design of the solution, and the overall network design that this system will be put into practice. We will be elaborating on the design thought process and several design choices and considerations we made for the computing hardware and software control system. Also, we will be discussing some example topologies to illustrate how the solution will work to secure the network.
+
 \section{System Design}
 
+\begin{figure}[ht]
+  \includegraphics[width=\textwidth]{imgs/hardware-design.png}
+  \caption{Hardware Architectural Design}
+\end{figure}
+
+\begin{figure}[ht]
+  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{imgs/hardware-signal.png}}
+  \caption{Hardware Signal Design}
+\end{figure}
+
+\begin{figure}[ht]
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/software-design.png}}
+  \caption{Software Design}
+\end{figure}
+
 \section{System Usage Sample Topology}
+
+
 
 \chapter{Implementation}
 
