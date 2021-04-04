@@ -164,14 +164,39 @@ Over the years, there are more secured replacement of DNS proposed, most notably
 
 \subsection{DNS Data Exfiltration}
 
-Arbitrary data exchange was never the design purpose of the DNS protocol \cite{nadler-201936}. DNS query messages are typically short and compact, while their corresponding DNS response would not be guaranteed to arrive in the same order as they were queried \cite{RFC-1034}. Yet, it is still achievable to exchange data reliably or secretly over the DNS protocol. As demonstrated earlier in section \ref{section:introduction-problemstatement}, the query of resolving a uncached domain name would always reach its authoritative name server.  
+Arbitrary data exchange was never the design purpose of the DNS protocol \cite{nadler-201936}. DNS query messages are typically short and compact, while their corresponding DNS response would not be guaranteed to arrive in the same order as they were queried \cite{RFC-1034}. Yet, it is still achievable to exchange data reliably or secretly over the DNS protocol.
+We will illustrate two examples of malware extracting secret data from a host, or executes commands from the attacking C\&C. 
+
+In Figure \ref{fig:dns-data-exfil-cycle}, the malware detects a secret file from its host, hence it constructs a DNS query with the secret phrase, or more likely a \code{base64} encoded phrase to circumvent more secured firewall, as the Third-Level Domain (3LD) in the DNS query. As demonstrated in Section \ref{section:introduction-problemstatement}, the local DNS resolver would be unable to find it cache and hence this query will eventually reach \url{malicious.com}'s authoritative name server. Since the attacker has full control over \url{malicious.com}, it would then be able to retrieve the secret phrase from a highly secured host.
+
+\begin{figure}[h!]
+  \includegraphics[width=\textwidth]{docs/report/imgs/dns-data-exfil-out.png}
+  \caption{Malware extracting password from host through DNS}
+  \label{fig:dns-data-exfil-out}
+\end{figure}
+
+Similarly, Figure \ref{fig:dns-data-exfil-cycle} demonstrates an example where the malware queries C\&C for next steps so as to archive remote control on the compromised host. The DNS query remains similar to the example above in Figure \ref{fig:dns-data-exfil-out}, the difference lies in the DNS reply from the \url{malicious.com} name server. The attacker can respond with a Canonical Name (CNAME) Record indicating the instruction, usually with a very short TTL, so as to avoid this instruction getting cached. This DNS query getting resolved will on the compromised host will instruct the malware to act as instructed, in this particular figure, to read files and folders in \url{~/Documents}.
+
+\begin{figure}[h!]
+  \includegraphics[width=\textwidth]{docs/report/imgs/dns-data-exfil-cycle.png}
+  \caption{Malware executing commands from remote C\&C}
+  \label{fig:dns-data-exfil-cycle}
+\end{figure}
+
+Malware exploiting DNS for data exchanges can mainly be divided into two major approaches, namely high-throughput tunnelling and low-throughput tunnelling.
+
+As of high-throughput tunnelling, the malware would establish a bi-directional communication channel on top of the DNS, via emulating a reliable and packet ordered network session between the compromised server and its C\&C. For example, the malware can enforce a Transmission Control Protocol (TCP) on top of DNS, or send constant ping messages throughout communication to understand the order of replies. However, applying these methodologies would significantly increase the total amount of DNS traffic and the length of each DNS packet, while largely decreasing the meantime between DNS transactions \cite{nadler-2017, nadler-201936}. As seen in Figure \ref{fig:dns-high-throughput-tunnelling}, the query intervals are less than 1 second due to the constant session keep-alive messages, the response towards the same queried domain \url{paaqfiiq.iodine.exfiltration.party} varies notably to signal a two-way communication tunnel, and some query length exceeds 200 bytes. These unusual characteristics compared to normal DNS traffic implies the existence of data exchange and exfiltration on top of DNS \cite{nadler-2017}.
+
+\begin{figure}[h!]
+  \includegraphics[width=\textwidth]{docs/report/imgs/data-exfil-high-throughput-pcap.jpg}
+  \caption{Sample \url{.pcap} file captured when running high-throughput DNS tunnelling}
+  \label{fig:dns-high-throughput-tunnelling}
+\end{figure}
+
+Compared to high-throughput tunnelling, low-throughput tunnelling could be extremely hard to detect and remains overlooked within the cyber-security community \cite{nadler-2017, nadler-201936, ahmed-2020}.
 
 
-
-Malware exploiting DNS for data exchanges can circumvent this limitation with two major approaches, namely high -throughput tunnelling and low-throughput tunnelling.
-
-As of high-throughput tunnelling, the malware would establish a bi-directional communication channel on top of the DNS, via emulating a reliable and packet ordered network session between the compromised server and its C\&C. For example, the malware can enforce a Transmission Control Protocol (TCP) on top of DNS, or send constant ping messages throughout communication to understand the order of replies. However, applying these methodologies would significantly increase the total amount of DNS traffic and the length of each DNS packet, while largely decreasing the meantime between DNS transactions \cite{nadler-2017, nadler-201936}.
-
+-- TO BE EDITED
 The DNS protocol was not designed for arbitrary data ex- change; DNS messages are relatively short and responses are uncorrelated which means that they do not necessarily ar- rive in the same order as the corresponding requests were sent ( Mockapetris, 1987 ). These limitations can be dealt with by an attacker using one of two approaches: (1) establishing a bidirectional communication channel on top of the DNS (e.g., by emulating a reliable session between the malware and the C\&C server), or (2) using the channel to send small data points with minimal overhead and requests that are short and in- dependent (e.g., credit card numbers, user credentials, key- logging and geographical locations). We refer to these two ap- proaches as high throughput tunneling and low throughput mal- ware , respectively. The complete threat landscape of DNS ex- filtration is comprised of these two classes, and therefore, any solution for detecting or preventing data leakage over the DNS protocol must deal with both of them.
 
 \subsection{DNS Flood}
