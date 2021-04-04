@@ -158,9 +158,15 @@ DNS is a distributed, hierarchical naming system for computing nodes or resource
 
 An DNS resolution example will be provided below to illustrate how DNS work in a typical network environment. When the IP address of a domain name is requested by a person or a service (i.e. \url{www.apple.com}), the local cache will be the first look-up point of the query. If no match is found, the DNS query will be forwarded to a local DNS resolver, than to a public DNS resolver (i.e. Cloudflare's public DNS server at IPv4 \url{1.1.1.1}). If the query remains unresolved, it will then get forwarded to the root name servers to obtain authoritative name servers' address of \url{.com}. Then, querying \url{.com} authoritative name servers will provide further information of of \url{apple.com}'s authoritative name servers. This happens recursively until the domain name gets resolved and the final IP address is obtained and replied back to the inquirer.
 
-Over the years, there are more secured replacement of DNS proposed, most notably the Domain Name System Security Extensions (DNSSEC), originally proposed in 1997\cite{RFC-2535, RFC-4033}. Conversely, a study from Chung et al. \cite{chung-2017} showed that only 3 of the top 20 registrars support DNSSEC when the registrar is the DNS operator, and only 1 of the top 20 enables DNSSEC by default in their more expensive domains. On second-level domains, roughly 1\% of \url{.com}, \url{.net} and \url{.org} domains deploy DNSSEC \cite{chung-2017-1}. RFC-3833 \cite{RFC-3833} outlines several major weakness of DNSSEC, including but not limited to complexity of implementation, significant increase and packet sizes and inability to defend against certain security issues (DNS exfiltration, DNS flood).
+Over the years, there are more secured replacement of DNS proposed, most notably the Domain Name System Security Extensions (DNSSEC), originally proposed in 1997\cite{RFC-2535, RFC-4033}. Conversely, a study from Chung et al. \cite{chung-2017} showed that only 3 of the top 20 registrars support DNSSEC when the registrar is the DNS operator, and only 1 of the top 20 enables DNSSEC by default in their more expensive domains. On second-level domains, roughly 1\% of \url{.com}, \url{.net} and \url{.org} domains deploy DNSSEC \cite{chung-2017-1}. RFC-3833 \cite{RFC-3833} outlines several major weakness of DNSSEC, including but not limited to complexity of implementation, significant increase and packet sizes and inability to defend against certain security issues (DNS exfiltration, DNS flood). Moreover, DNS spoofing used in this project against malicious data exfiltration will be impossible if DNSSEC were to be used within the network.
 
 \subsection{DNS Data Exfiltration}
+
+Arbitrary data exchange was never the design purpose of the DNS protocol \cite{nadler-201936}. DNS query messages are typically short and compact, while their corresponding DNS response would not be guaranteed to arrive in the same order as they were queried \cite{RFC-1034}. Malware exploiting DNS for data exchanges can circumvent this limitation with two major approaches, namely high -throughput tunnelling and low-throughput tunnelling.
+
+As of high-throughput tunnelling, the malware would establish a bi-directional communication channel on top of the DNS, via emulating a reliable and packet ordered network session between the compromised server and its C\&C. However, this approach would induce a unusually high number of network communication between the host and the suspicious name server. 
+
+The DNS protocol was not designed for arbitrary data ex- change; DNS messages are relatively short and responses are uncorrelated which means that they do not necessarily ar- rive in the same order as the corresponding requests were sent ( Mockapetris, 1987 ). These limitations can be dealt with by an attacker using one of two approaches: (1) establishing a bidirectional communication channel on top of the DNS (e.g., by emulating a reliable session between the malware and the C\&C server), or (2) using the channel to send small data points with minimal overhead and requests that are short and in- dependent (e.g., credit card numbers, user credentials, key- logging and geographical locations). We refer to these two ap- proaches as high throughput tunneling and low throughput mal- ware , respectively. The complete threat landscape of DNS ex- filtration is comprised of these two classes, and therefore, any solution for detecting or preventing data leakage over the DNS protocol must deal with both of them.
 
 \subsection{DNS Flood}
 
@@ -252,6 +258,8 @@ How the project might be continued, but don't give the impression you ran out of
 \chapter{Project Demo}
 
 \chapter{Code Listing}
+
+URL \url{https://github.com/magetron/cpu-fpga-nwofle}
 
 \chapter{Original Project Proposal}
 
