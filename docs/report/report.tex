@@ -160,17 +160,17 @@ DNS is a distributed, hierarchical naming system for computing nodes or resource
 
 An DNS resolution example will be provided below to illustrate how DNS work in a typical network environment. When the IP address of a domain name is requested by a person or a service (i.e. \url{www.apple.com}), the local cache will be the first look-up point of the query. If no match is found, the DNS query will be forwarded to a local DNS resolver, than to a public DNS resolver (i.e. Cloudflare's public DNS server at IPv4 \url{1.1.1.1}). If the query remains unresolved, it will then get forwarded to the root name servers to obtain authoritative name servers' address of \url{.com}. Then, querying \url{.com} authoritative name servers will provide further information of of \url{apple.com}'s authoritative name servers. This happens recursively until the domain name gets resolved and the final IP address is obtained and replied back to the inquirer.
 
-Over the years, there are more secured replacement of DNS proposed, most notably the Domain Name System Security Extensions (DNSSEC), originally proposed in 1997\cite{RFC-2535, RFC-4033}. Conversely, a study from Chung et al. \cite{chung-2017} showed that only 3 of the top 20 registrars support DNSSEC when the registrar is the DNS operator, and only 1 of the top 20 enables DNSSEC by default in their more expensive domains. On second-level domains, roughly 1\% of \url{.com}, \url{.net} and \url{.org} domains deploy DNSSEC \cite{chung-2017-1}. RFC-3833 \cite{RFC-3833} outlines several major weakness of DNSSEC, including but not limited to complexity of implementation, significant increase and packet sizes and inability to defend against certain security issues (DNS exfiltration, DNS flood). Moreover, DNS spoofing used in this project against malicious data exfiltration will be impossible if DNSSEC were to be used within the network.
+Over the years, there are more secured replacement of DNS proposed, most notably the Domain Name System Security Extensions (DNSSEC), originally proposed in 1997\cite{RFC-2535, RFC-4033}. Conversely, a study from Chung et al. \cite{chung-2017} showed that only 3 of the top 20 registrars support DNSSEC when the registrar is the DNS operator, and only 1 of the top 20 enables DNSSEC by default in their more expensive domains. On second-level domains, roughly 1\% of \url{.com}, \url{.net} and \url{.org} domains deploy DNSSEC \cite{chung-2017-1}. RFC-3833 \cite{RFC-3833} outlines several major weakness of DNSSEC, including but not limited to complexity of implementation, significant increase and packet sizes and inability to defend against certain security issues (DNS exfiltration, DNS flood). Moreover, this project utilises spoofed DNS records against malicious DNS tunnelling. Implementing DNSSEC would deem this method invalid across the network.
 
 \subsection{DNS Data Exfiltration}
 
 Arbitrary data exchange was never the design purpose of the DNS protocol \cite{nadler-201936}. DNS query messages are typically short and compact, while their corresponding DNS response would not be guaranteed to arrive in the same order as they were queried \cite{RFC-1034}. Yet, it is still achievable to exchange data reliably or secretly over the DNS protocol.
 We will illustrate two examples of malware extracting secret data from a host, or executes commands from the attacking C\&C. 
 
-In Figure \ref{fig:dns-data-exfil-cycle}, the malware detects a secret file from its host, hence it constructs a DNS query with the secret phrase, or more likely a \code{base64} encoded phrase to circumvent more secured firewall, as the Third-Level Domain (3LD) in the DNS query. As demonstrated in Section \ref{section:introduction-problemstatement}, the local DNS resolver would be unable to find it cache and hence this query will eventually reach \url{malicious.com}'s authoritative name server. Since the attacker has full control over \url{malicious.com}, it would then be able to retrieve the secret phrase from a highly secured host.
+In Figure \ref{fig:dns-data-exfil-cycle}, the malware detects a secret file from its host, hence it constructs a DNS query with the secret phrase, or more likely a \code{base64} encoded phrase to circumvent firewall, as the Third-Level Domain (3LD) in the DNS query. As demonstrated in Section \ref{section:introduction-problemstatement}, the local DNS resolver would be unable to find it in cache and hence this query will eventually reach \url{malicious.com}'s authoritative name server. Since the attacker has full control over \url{malicious.com}, it would then be able to retrieve the secret phrase from a highly secured host.
 
 \begin{figure}[h!]
-  \includegraphics[width=\textwidth]{docs/report/imgs/dns-data-exfil-out.png}
+  \includegraphics[width=\textwidth]{imgs/dns-data-exfil-out.png}
   \caption{Malware extracting password from host through DNS}
   \label{fig:dns-data-exfil-out}
 \end{figure}
@@ -178,7 +178,7 @@ In Figure \ref{fig:dns-data-exfil-cycle}, the malware detects a secret file from
 Similarly, Figure \ref{fig:dns-data-exfil-cycle} demonstrates an example where the malware queries C\&C for next steps so as to archive remote control on the compromised host. The DNS query remains similar to the example above in Figure \ref{fig:dns-data-exfil-out}, the difference lies in the DNS reply from the \url{malicious.com} name server. The attacker can respond with a Canonical Name (CNAME) Record indicating the instruction, usually with a very short TTL, so as to avoid this instruction getting cached. This DNS query getting resolved will on the compromised host will instruct the malware to act as instructed, in this particular figure, to read files and folders in \url{~/Documents}.
 
 \begin{figure}[h!]
-  \includegraphics[width=\textwidth]{docs/report/imgs/dns-data-exfil-cycle.png}
+  \includegraphics[width=\textwidth]{imgs/dns-data-exfil-cycle.png}
   \caption{Malware executing commands from remote C\&C}
   \label{fig:dns-data-exfil-cycle}
 \end{figure}
@@ -188,18 +188,56 @@ Malware exploiting DNS for data exchanges can mainly be divided into two major a
 As of high-throughput tunnelling, the malware would establish a bi-directional communication channel on top of the DNS, via emulating a reliable and packet ordered network session between the compromised server and its C\&C. For example, the malware can enforce a Transmission Control Protocol (TCP) on top of DNS, or send constant ping messages throughout communication to understand the order of replies. However, applying these methodologies would significantly increase the total amount of DNS traffic and the length of each DNS packet, while largely decreasing the meantime between DNS transactions \cite{nadler-2017, nadler-201936}. As seen in Figure \ref{fig:dns-high-throughput-tunnelling}, the query intervals are less than 1 second due to the constant session keep-alive messages, the response towards the same queried domain \url{paaqfiiq.iodine.exfiltration.party} varies notably to signal a two-way communication tunnel, and some query length exceeds 200 bytes. These unusual characteristics compared to normal DNS traffic implies the existence of data exchange and exfiltration on top of DNS \cite{nadler-2017}.
 
 \begin{figure}[h!]
-  \includegraphics[width=\textwidth]{docs/report/imgs/data-exfil-high-throughput-pcap.jpg}
+  \includegraphics[width=\textwidth]{imgs/data-exfil-high-throughput-pcap.jpg}
   \caption{Sample \url{.pcap} file captured when running high-throughput DNS tunnelling}
   \label{fig:dns-high-throughput-tunnelling}
 \end{figure}
 
-Compared to high-throughput tunnelling, low-throughput tunnelling could be extremely hard to detect and remains overlooked within the cyber-security community \cite{nadler-2017, nadler-201936, ahmed-2020}.
+Compared to high-throughput tunnelling, low-throughput tunnelling is generally harder to detect and remains overlooked within the cyber-security community \cite{nadler-2017, nadler-201936, ahmed-2020}.
+To circumvent anomaly detection methods and firewalls, attackers would typically avoid using TCP tunnels or sending constant ping messages. Alternatively, the malware would wake up periodically, or triggered by certain activities, to deliver poll messages and summary of machine activities to the C\&C \cite{nadler-2018}. For example, an infected Point-of-Sale (POS) terminal would be triggered upon a swipe and send transaction and card details to the attacker's C\&C without waiting for a response.
 
+Detecting DNS tunnelling has been widely researched over the last decade, including detecting covert tunnelling \cite{gilbert-2009, davis-2016}, and high-throughput DNS tunnelling detection \cite{wang-2016, buczak-2016, cambiaso-2016, engelstad-2017, homem-2017, kara-2014, sheridan-2015}. However, most  publicly available detection solutions focus on high-throughput tunnelling due to its distinguishable network behaviour. These detection solutions relies heavily on the volume and variety of requests DNS tunnelling tools generate \cite{nadler-2017, nadler-2018}. One of the most popular solution is DNS traffic rate control, offered by most security vendors \cite{homem-2017, nadler-2017}. More sophisticated solutions include supervised learning models on tunnelling DNS traffic and non-tunnelling DNS traffic \cite{buczak-2016}, and anomaly detection models that would trigger upon notable change over DNS traffic as a whole \cite{davis-2016, sheridan-2015}.
 
--- TO BE EDITED
-The DNS protocol was not designed for arbitrary data ex- change; DNS messages are relatively short and responses are uncorrelated which means that they do not necessarily ar- rive in the same order as the corresponding requests were sent ( Mockapetris, 1987 ). These limitations can be dealt with by an attacker using one of two approaches: (1) establishing a bidirectional communication channel on top of the DNS (e.g., by emulating a reliable session between the malware and the C\&C server), or (2) using the channel to send small data points with minimal overhead and requests that are short and in- dependent (e.g., credit card numbers, user credentials, key- logging and geographical locations). We refer to these two ap- proaches as high throughput tunneling and low throughput mal- ware , respectively. The complete threat landscape of DNS ex- filtration is comprised of these two classes, and therefore, any solution for detecting or preventing data leakage over the DNS protocol must deal with both of them.
+\begin{table}[h]
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l|l|l|l}
+Year & Malware       & Targets    & Malicious Domain Name   \\ \hline
+2017 & DNS Messenger & Enterprise & \url{cspg.pw, algew.me}                          \\
+2016 & MULTIGRAIN    & POS        & \url{dojfgj.com}                                 \\
+2015 & BernhardPOS   & POS        & \url{29a.de}                                     \\
+2015 & JAKU          & Botnet     & \url{LS4.com}                                    \\
+2015 & Wekby         & Enterprise & \url{ns1.logitech-usa.com}                       \\
+2014 & FrameworkPOS  & POS        & \url{a23-33-37-54-deploy.akamaitechnologies.com} \\
+2014 & PlugX         & RDP/RAT    & \url{ns4.msftncsl.com}                           \\
+2011 & FeederBot     & Botnet     & \url{images.moviedyear.net}                      \\
+2011 & Morto         & RDP/RAT    & \url{ms.jifr.co.cc., ms.jifr.net.}      
+\end{tabular}
+}
+\caption{A survery of malware from 2011-2018 exploiting DNS for low-throughput data exfiltration and exchange \cite{nadler-201936}}
+\label{table:survey-malware-low-throughput-dns}
+\end{table}
+
+Although the topic of high-throughput DNS tunnelling has been studied thoroughly, little progress has been made on low-throughput DNS data exfiltration/exchange \cite{nadler-201936, steadman-2018, ahmed-2020}. A recent survey conducted by Nadler et al. \cite{nadler-201936} shown in Table \ref{table:survey-malware-low-throughput-dns} listed a number of malware exploiting DNS for low-throughput data exfiltration/exchange exposed during 2011 to 2018. The targets of these malware varies from enterprise networks, botnets, POS terminals to Remote Desktop Protocol (RDP) / Remote Access Trojan (RAT). Meanwhile, the set of internet domains used by these malware includes very short ones (i.e. \url{29a.de}) to maximise the data exchange rate under the 255 byte query limit, and misleading ones (i.e. \url{ns1.logitech-usa.com}) imitating well-known brands to better hide under human inspection of DNS traffic \cite{nadler-201936}. Detecting and blocking this type of malicious DNS traffic is much more difficult given its minimal proportion across the overall DNS traffic within a large network. Defending against these malware would require Deep Packet Inspection (DPI) from Layer-7 firewall to at least parse through all DNS packets. This would induce extra latency to DNS transactions and slows down performance-critical services within the network. 
+
+Hence, in this project, we will be targetting at building a solution that detects, and blocks upon request, both types of DNS data exfiltration/exchange methods reliably without introducing any significant latency to the network.
 
 \subsection{DNS Flood}
+
+\begin{figure}[h!]
+  \includegraphics[width=\textwidth]{imgs/dns-flood.png}
+  \caption{Botnet commencing DNS flood attack targetting a DNS name server}
+  \label{fig:dns-flood}
+\end{figure}
+
+DNS Flood attack is a type of DDoS attack, where the junk incoming traffic floods the victims the server, making it unable to provide normal service to legitimate users for a prolonged period of time \cite{cloudflare-dns-flood}. 
+
+
+* Rise of botnet
+
+
+--TO BE EDITED
+The function of the Domain Name System is to translate between easy to remember names (e.g. example.com) and hard to remember addresses of website servers (e.g. 192.168.0.1), so successfully attacking DNS infrastructure makes the Internet unusable for most people. DNS flood attacks constitute a relatively new type of DNS-based attack that has proliferated with the rise of high bandwidth Internet of Things (IoT) botnets like Mirai. DNS flood attacks use the high bandwidth connections of IP cameras, DVR boxes and other IoT devices to directly overwhelm the DNS servers of major providers. The volume of requests from IoT devices overwhelms the DNS provider’s services and prevents legitimate users from accessing the provider's DNS servers.
+DNS floods represent a change from traditional amplification-based attack methods. With easily accessible high bandwidth botnets, attackers can now target large organizations. Until compromised IoT devices can be updated or replaced, the only way to withstand these types of attacks is to use a very large and highly distributed DNS system that can monitor, absorb, and block the attack traffic in realtime. Learn about how Cloudflare's DDoS Protection protects against DNS flood attacks. 
 
 \subsection{Field Programmable Gate Arrays (FPGA)}
 
@@ -226,34 +264,39 @@ In this chapter, we will be presenting both the internal system design of the so
 \end{figure}
 
 \begin{figure}[h!]
-  \includegraphics[width=\textwidth]{imgs/software-design.png}
+  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{imgs/software-design.png}}
   \caption{Software Design}
 \end{figure}
 
 \section{System Usage Sample Topology}
 
 \begin{figure}[h!]
-  \includegraphics[width=\textwidth]{imgs/man-in-the-middle-topology.png}
+  \makebox[\textwidth][c]{\includegraphics[width=1\textwidth]{imgs/man-in-the-middle-topology.png}}
+  \caption{Man-in-the-Middle DNS Server FPGA sample topology}
+\end{figure}
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{imgs/man-in-the-middle-amp-topology.png}}
+  \caption{Man-in-the-Middle DNS Client FPGA sample topology}
+\end{figure}
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{imgs/man-on-the-side-malicious-dns-query.png}}
   \caption{Man-in-the-Middle FPGA sample topology}
 \end{figure}
 
 \begin{figure}[h!]
-  \includegraphics[width=\textwidth]{imgs/man-on-the-side-malicious-dns-query.png}
+  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{imgs/man-on-the-side-malicious-dns-reply.png}}
   \caption{Man-in-the-Middle FPGA sample topology}
 \end{figure}
 
 \begin{figure}[h!]
-  \includegraphics[width=\textwidth]{imgs/man-on-the-side-malicious-dns-reply.png}
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/man-on-the-side-valid-dns-query.png}}
   \caption{Man-in-the-Middle FPGA sample topology}
 \end{figure}
 
 \begin{figure}[h!]
-  \includegraphics[width=\textwidth]{imgs/man-on-the-side-valid-dns-query.png}
-  \caption{Man-in-the-Middle FPGA sample topology}
-\end{figure}
-
-\begin{figure}[h!]
-  \includegraphics[width=\textwidth]{imgs/man-on-the-side-valid-dns-reply.png}
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/man-on-the-side-valid-dns-reply.png}}
   \caption{Man-in-the-Middle FPGA sample topology}
 \end{figure}
 
