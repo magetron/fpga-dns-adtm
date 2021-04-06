@@ -223,23 +223,23 @@ Hence, in this project, we will be targetting at building a solution that detect
 
 \subsection{DNS Flood}
 
+DNS flood attack is a type of DDoS attack, as shown in Figure \ref{fig:dns-flood}, where the junk incoming traffic floods the victim's server, making it unable to provide normal service to legitimate users for a prolonged period of time \cite{cloudflare-dns-flood}. Given DNS is the backbone service of translating domain names to IPv4 addresses, successfully attacking DNS name servers can make a significant proportion of the Internet unusable for most people. Furthermore, in recent years, there's been a substantial rise in IoT devices, a considerable amount of which are poorly secured \cite{mahjabin-2019}. In 2016, a botnet malware, Mirai\cite{bisson-2016}, utilises the high-bandwidth connections of IP cameras, Network Video Recorder (NVR) boxes and many other IoT devices to directly overwhelm name servers owned by DYN, a major DNS service provider. The peak flood bandwidth reached more $12$ Gigabits per second, with more than $1$ million packets on a single DNS name server, resulting in major take-downs of multiple popular websites, including GitHub, Netflix, Amazon, etc. \cite{bisson-2016, akamai-dns-flood}.
+
 \begin{figure}[h!]
   \includegraphics[width=\textwidth]{imgs/dns-flood.png}
   \caption{Botnet commencing DNS flood attack targetting a DNS name server}
   \label{fig:dns-flood}
 \end{figure}
 
-DNS Flood attack is a type of DDoS attack, where the junk incoming traffic floods the victims the server, making it unable to provide normal service to legitimate users for a prolonged period of time \cite{cloudflare-dns-flood}. 
+DNS flood attacks are designed to circumvent caching of DNS resolvers and continuously enable DNS queries to go to certain authoritative name servers. It is done via a technique named Pseudo Random Subdomain (PRSD) \cite{akamai-dns-flood}. The botnet attacker targetting a domain would generate a great number of non-existent prefixed subdomain requests, causing each bots corresponding DNS resolver to continuously query the authoritative name server with a \code{NXDOMAIN} reply. In the cases where bots conducting DNS flood are making requests to name servers directly, blocking such clients and imposing a request rate limit could be straight forward. However, it is more likely that these malicious DNS queries are coming from upstream ISP DNS resolvers or public resolves, which would not cache \code{NXDOMAIN} reply for saving resources on these resolvers \cite{akamai-dns-flood}. This complicates DNS flood mitigation process as rate limiting or blocking these public / ISP DNS resolvers risk throttling legitimate queries from users which happens to share the same resolvers.
 
-
-* Rise of botnet
-
-
---TO BE EDITED
-The function of the Domain Name System is to translate between easy to remember names (e.g. example.com) and hard to remember addresses of website servers (e.g. 192.168.0.1), so successfully attacking DNS infrastructure makes the Internet unusable for most people. DNS flood attacks constitute a relatively new type of DNS-based attack that has proliferated with the rise of high bandwidth Internet of Things (IoT) botnets like Mirai. DNS flood attacks use the high bandwidth connections of IP cameras, DVR boxes and other IoT devices to directly overwhelm the DNS servers of major providers. The volume of requests from IoT devices overwhelms the DNS provider’s services and prevents legitimate users from accessing the provider's DNS servers.
-DNS floods represent a change from traditional amplification-based attack methods. With easily accessible high bandwidth botnets, attackers can now target large organizations. Until compromised IoT devices can be updated or replaced, the only way to withstand these types of attacks is to use a very large and highly distributed DNS system that can monitor, absorb, and block the attack traffic in realtime. Learn about how Cloudflare's DDoS Protection protects against DNS flood attacks. 
+As a Cloudflare paper \cite{cloudflare-dns-flood} points out, DNS flood attack represents a change from traditional DNS amplification based attack methods. DNS flood is an application attack (Layer 7) rather than a volumetric attack (Layer 3). There's no spoofing required for DNS flood, nor does the request comes directly from attacking source, but upstream DNS resolvers \cite{akamai-dns-flood, cloudflare-dns-flood}. Realistically, DNS flood would not be gone until most compromised IoT devices can be secured by updating firmware or replacing easy-to-guess passwords. Therefore, besides building a large and distributed DNS name server group, we would attempt to tackle this problem via building a performant packet processing solution to absorb and block the attack traffic in real-time.
 
 \subsection{Field Programmable Gate Arrays (FPGA)}
+
+FPGA is a type of integrated circuit designed to be customised by a designer after its fabrication, hence "programmable on the field". It contains a matrix of of Configurable Logic Blocks (CLBs), and higher levels of configurable interconnects which activates and links the blocks in the manner the developer specifies \cite{xilinx-fpga}. There are two types of FPGAs, one-time programmable (OTP) ones and re-programmable ones. Since OTP FPGAs are rare and out-dated, we will be mainly discussing Static RAM based re-programmable FPGAs.
+
+
 
 \subsection{Sip Hash}
 
