@@ -237,9 +237,16 @@ As a Cloudflare paper \cite{cloudflare-dns-flood} points out, DNS flood attack r
 
 \subsection{Field Programmable Gate Arrays (FPGA)}
 
-FPGA is a type of integrated circuit designed to be customised by a designer after its fabrication, hence "programmable on the field". It contains a matrix of of Configurable Logic Blocks (CLBs), and higher levels of configurable interconnects which activates and links the blocks in the manner the developer specifies \cite{xilinx-fpga}. There are two types of FPGAs, one-time programmable (OTP) ones and re-programmable ones. Since OTP FPGAs are rare and out-dated, we will be mainly discussing Static RAM based re-programmable FPGAs.
+FPGA is a type of integrated circuit designed to be customised by a designer after its fabrication, hence "programmable on the field". As shown in Figure \ref{fig:fpga-arch}, it contains a matrix of of Configurable Logic Blocks (CLBs), and higher levels of configurable interconnects which activates and links the blocks in the manner the developer specifies \cite{xilinx-fpga}. There are two types of FPGAs, one-time programmable (OTP) ones and re-programmable ones \cite{xilinx-fpga}. Since OTP FPGAs are rare and out-dated, we will be mainly discussing Static RAM based re-programmable FPGAs.
 
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\textwidth]{docs/report/imgs/fpga-arch.png}
+  \caption{FPGA Architecture \cite{xilinx-fpga}}
+  \label{fig:fpga-arch}
+\end{figure}
 
+Software network middlewares including firewalls \code{netfilter}/\code{iptables} \cite{netfilter-iptables}, \code{pf} \cite{pf}, \code{ipfw} \cite{ipfw} has been widely used in industrial and enterprise networks. As the network bandwidth grows, these software-based network middlewares are heavily limited by the parallelism and processing power of a single CPU. They can no longer meet the line rate packet processing requirements for large networks with high link speeds, typically $40$ Gbps and beyond \cite{fiessler-2016}. Therefore, we've seen an increasing number of packet processing systems built upon special purpose hardware, such as netwrok processors (NPUs) \cite { }, FPGAs\cite{ } and even ASICs \cite{ }. These hardware based solutions provides an abundant amount of parallelism and can scale up linearly without complicated network setups. Certain ASIC packet processor can archive network throughput of more than 1280 Gbps \cite{ cisco-some-website } .
 
 \subsection{Sip Hash}
 
