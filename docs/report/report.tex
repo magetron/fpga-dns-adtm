@@ -222,6 +222,7 @@ Although the topic of high-throughput DNS tunnelling has been studied thoroughly
 Hence, in this project, we will be targetting at building a solution that detects, and blocks upon request, both types of DNS data exfiltration/exchange methods reliably without introducing any significant latency to the network.
 
 \subsection{DNS Flood}
+\label{section:background-dnsflood}
 
 DNS flood attack is a type of DDoS attack, as shown in Figure \ref{fig:dns-flood}, where the junk incoming traffic floods the victim's server, making it unable to provide normal service to legitimate users for a prolonged period of time \cite{cloudflare-dns-flood}. Given DNS is the backbone service of translating domain names to IPv4 addresses, successfully attacking DNS name servers can make a significant proportion of the Internet unusable for most people. Furthermore, in recent years, there's been a substantial rise in IoT devices, a considerable amount of which are poorly secured \cite{mahjabin-2019}. In 2016, a botnet malware, Mirai\cite{bisson-2016}, utilises the high-bandwidth connections of IP cameras, Network Video Recorder (NVR) boxes and many other IoT devices to directly overwhelm name servers owned by DYN, a major DNS service provider. The peak flood bandwidth reached more $12$ Gigabits per second, with more than $1$ million packets on a single DNS name server, resulting in major take-downs of multiple popular websites, including GitHub, Netflix, Amazon, etc. \cite{bisson-2016, akamai-dns-flood}.
 
@@ -260,10 +261,13 @@ SipHash has several unique characteristics that makes it a suitable candidate fo
 
 \section{Related Work}
 
-Although FPGA has been used to build various network appliances, there's limited work 
+Although FPGA has been used to build various network appliances, there's only few public research that considered using FPGA against DNS exfiltration attacks. Thomas et al. \cite{thomas-2011} purposed an FPGA-based system for detecting malicious DNS network traffic, which only extracts DNS query domains and match it by hash against a list of hard-coded domain names with the memory. This approach is limited by the lack of real-time adaptability of the filter list and inability to mitigate DNS exfiltration and flood attacks on the fly. 
 
+With regards to using FPGA to mitigate DNS flood attacks, most related research aims at mitigating DDoS attacks as a whole instead of DNS flood attacks in particular \cite{hoque-2017, nagy-2018, tokusashi-2016, thinh-2016}. FPGAs have been used to detect DDoS attacks in real-time \cite{hoque-2017} and mitigate such attacks with very low reaction time \cite{nagy-2018}. However, most research aimed at mitigating DDoS attacks using FPGA focused primarily on DNS Amplification attacks \cite{nagy-2018, thinh-2016, tokusashi-2016}, as it was more prevalent and could be used to target individuals or smaller networks with low protection facilities in place. As suggested previously in Section \ref{section:background-dnsflood}, the Mirai botnet's successful DNS flood attack against major DNS providers proves the inability of traditional mitigation methods against these new types of Layer 7 DDoS attacks. 
 
 \section{Project Motivation}
+
+We are developing an innovative approach that nobody has ever done so before...
 
 \chapter{Design}
 
