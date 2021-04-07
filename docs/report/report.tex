@@ -148,7 +148,6 @@ The report will be laid out as follows:
 \item Conclusion of the project progress and future work directions if this project were to be further developed and deployed commercially
 \end{enumerate}
 
-
 \chapter{Background and Related Work}
 
 In this chapter, we will be introducing the DNS, including how it works, some security improvements to DNS, and the major security issues of DNS this project is targetting. Also, we will be covering how computing hardware, most notably FPGAs will be applicable in computer networks and the reason why it is particularly useful in solving the aforementioned DNS issues. In addition, we will be briefing Sip Hash, a hash message authentication code (MAC) algorithm that is used in the project. Lastly, we will be presenting related work in DNS anomaly detection and threat mitigation, as well as relevant FPGA/hardware work in this area.
@@ -237,6 +236,7 @@ DNS flood attacks are designed to circumvent caching of DNS resolvers and contin
 As a Cloudflare paper \cite{cloudflare-dns-flood} points out, DNS flood attack represents a change from traditional DNS amplification based attack methods. DNS flood is an application attack (Layer 7) rather than a volumetric attack (Layer 3). There's no spoofing required for DNS flood, nor does the request comes directly from attacking source, but upstream DNS resolvers \cite{akamai-dns-flood, cloudflare-dns-flood}. Realistically, DNS flood would not be gone until most compromised IoT devices can be secured by updating firmware or replacing easy-to-guess passwords. Therefore, besides building a large and distributed DNS name server group, we would attempt to tackle this problem via building a performant packet processing solution to absorb and block the attack traffic in real-time.
 
 \subsection{Field Programmable Gate Arrays (FPGA)}
+\label{section:background-fpga}
 
 FPGA is a type of integrated circuit designed to be customised by a designer after its fabrication, hence "programmable on the field". As shown in Figure \ref{fig:fpga-arch}, it contains a matrix of of Configurable Logic Blocks (CLBs), and higher levels of configurable interconnects which activates and links the blocks in the manner the developer specifies \cite{xilinx-fpga}. There are two types of FPGAs, one-time programmable (OTP) ones and re-programmable ones \cite{xilinx-fpga}. Since OTP FPGAs are rare and out-dated, we will be mainly discussing Static RAM based re-programmable FPGAs.
 
@@ -263,11 +263,16 @@ SipHash has several unique characteristics that makes it a suitable candidate fo
 
 Although FPGA has been used to build various network appliances, there's only few public research that considered using FPGA against DNS exfiltration attacks. Thomas et al. \cite{thomas-2011} purposed an FPGA-based system for detecting malicious DNS network traffic, which only extracts DNS query domains and match it by hash against a list of hard-coded domain names with the memory. This approach is limited by the lack of real-time adaptability of the filter list and inability to mitigate DNS exfiltration and flood attacks on the fly. 
 
-With regards to using FPGA to mitigate DNS flood attacks, most related research aims at mitigating DDoS attacks as a whole instead of DNS flood attacks in particular \cite{hoque-2017, nagy-2018, tokusashi-2016, thinh-2016}. FPGAs have been used to detect DDoS attacks in real-time \cite{hoque-2017} and mitigate such attacks with very low reaction time \cite{nagy-2018}. However, most research aimed at mitigating DDoS attacks using FPGA focused primarily on DNS Amplification attacks \cite{nagy-2018, thinh-2016, tokusashi-2016}, as it was more prevalent and could be used to target individuals or smaller networks with low protection facilities in place. As suggested previously in Section \ref{section:background-dnsflood}, the Mirai botnet's successful DNS flood attack against major DNS providers proves the inability of traditional mitigation methods against these new types of Layer 7 DDoS attacks. 
+With regards to using FPGA to mitigate DNS flood attacks, most related research aims at mitigating DDoS attacks as a whole instead of DNS flood attacks in particular \cite{hoque-2017, nagy-2018, tokusashi-2016, thinh-2016}. FPGAs have been used to detect DDoS attacks in real-time \cite{hoque-2017} and mitigate such attacks with very low reaction time \cite{nagy-2018}. However, most research aimed at mitigating DDoS attacks using FPGA focused primarily on DNS Amplification attacks \cite{nagy-2018, thinh-2016, tokusashi-2016}, as it was more prevalent and could be used to target individuals or smaller networks with low protection facilities in place. With reference to Section \ref{section:background-dnsflood}, the Mirai botnet's successful DNS flood attack against major DNS providers proves the inability of traditional mitigation methods against these new types of Layer 7 DDoS attacks. 
 
 \section{Project Motivation}
 
-We are developing an innovative approach that nobody has ever done so before...
+In this project, we introduce a FPGA-based solution that tackles two major rising threats exploiting the DNS protocol, DNS exfiltration attacks and DNS flood attacks. We will be improving on Thomas et al. \cite{thomas-2011}'s FPGA DNS filter by bringing real-time reconfigurability to our FPGA-based system. Innovatively, we will be further providing instantaneous	mitigation against DNS exfiltration transactions via hardware-accelerated DNS spoofing. Meanwhile, legitimate DNS transactions can proceed safely with minimal overhead.
+
+Moreover, since the majority of FPGA logic can be reused, namely traffic filtering and packet parsing in the aforementioned system, we further develop a separate FPGA operation mode to act as a low-latency Layer 7 firewall mitigating DNS flood attacks.
+
+As the system will be used in high-bandwidth and latency-sensitive environments, we deem it necessary to develop an application specific hardware solution for this task. Given the analysis in Section \ref{section:background-fpga} of ASIC and FPGA network processors, we preferred FPGA in our project implementation due to cost and time limitations of a single-person final-year project.
+
 
 \chapter{Design}
 
