@@ -253,7 +253,7 @@ There are various types of trade-offs among different implementations of network
 
 \subsection{SipHash}
 
-SipHash is an Add-Rotate-Xor (ARX) family of pseudo-random hash functions created in 2012 \cite{aumasson-bernstein-2012}, aimed at mitigating various "hash-flooding" DDoS attacks in late 2011 \cite{ERROR wikipedia-siphash}. SipHash has typically used as a Message Authentication Code (MAC) calculation method to guarantee the sender's authority and message's integrity. 
+SipHash is an Add-Rotate-Xor (ARX) family of pseudo-random hash functions created in 2012 \cite{aumasson-bernstein-2012}, aimed at mitigating various "hash-flooding" DDoS attacks in late 2011 \cite{lennon-2011}. SipHash has typically used as a Message Authentication Code (MAC) calculation method to guarantee the sender's authority and message's integrity. 
 
 Let $X$ be a message string, and $k$ be a key string, SipHash guarantees that even if an attacker have seen $X$ and $\code{SipHash}(X, k)$, an attacker who does not know $k$ would not be able to find out $k$ nor construct $\code{SipHash}(Y, k)$ for any message $Y \neq X$ which they have not seen before. Further cryptanalysis and mathematical proof of the promise above have been done by Christoph et al. \cite{dobraunig-2014} and Xin et al. \cite{xin-2019}.
 
@@ -280,18 +280,32 @@ In this chapter, we will be presenting both the internal system design of the so
 
 \section{System Design}
 
+\subsection{Hardware Design}
+
+Since we are designing a network processing circuit, it is crucial that we are aware of the hardware interface we are interacting with. With Ethernet-II PHY ASIC available on most development boards with RJ45 connectors, we assumed that our design would retrieve incoming bits from a certain type of Media-Independent Interface (MII) family \footnote{See Section \ref{section:implementation-hardware-implementation} for introduction to MII family and implementation details} \cite{}. Similarly, we will be outputting bits to an MII-type interface as well at the end of processing. Hence, we can derive an initial architecture of a core processing component receiving from an input circuit and sending to an output circuit, as shown in Figure \ref{fig:hardware-design}.
+
+Retrospectively speaking, clock domains was not thought through carefully at the design stages and later became a pitfall that cost significant amount of effort on regression and fixing. It's worth considering each component's clock domain, and several clock domain crossing methods when designing the system. Generally, PHY ASIC chips operates at a lower clock frequency than the FPGA core, resulting in different clock domains within the system. The initial clock signal from the FPGA's clock path is designed to go through a clock divider that generates suitable clock signals for each of the components in various domains. Inevitably throughout the design, there would be signals crossing clock domains (i.e. from receiver to core module). If left unsynchronised, the destination domain would experience various meta-stability issues \footnote{See Section \ref{section:implementation-hardware-debugging} for more information on Clock Domain Crossing (CDC) and signal metastability in hardware}. Thus, we introduce two asynchronous First-In-First-Out (FIFO) buffers that connections receiver to core, core to sender respectively, as shown between the clock regions in Figure \ref{fig:hardware-design}.
+
 \begin{figure}[h!]
   \includegraphics[width=\textwidth]{imgs/hardware-design.png}
   \caption{Hardware Architectural Design}
+  \label{fig:hardware-design}
 \end{figure}
 
+Within the Receiver and Sender component shown on the left and right side of Figure \ref{fig:hardware-design}, we aim to design a sequential circuit that utilises a Finite State Machine (FSM)  that mainly comprised of three parsing / packing stages, Ethernet-II, IPv4 and UDP. The sender ideally shall have an extra Ethernet Cyclic Redundancy Check 32-bit (CRC32) \cite{ieee802.3ethernet-2018} generation module that appends a 32-bit checksum to the packet. As of the core processing module, we would split it into two sub-component, one handling DNS parsing, Layer 7 filtering, FPGA administration and security checks, while the other one working on constructing proper DNS / payload response and calculating sizes and checksums for higher layer protocols (IPv4, UDP and DNS), as demonstrated in the Core section of Figure \ref{fig:hardware-design}.
+
+After designing the 
+
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{imgs/hardware-signal.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/hardware-signal.png}}
   \caption{Hardware Signal Design}
 \end{figure}
 
+
+\subsection{Software Design}
+
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{imgs/software-design.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/software-design.png}}
   \caption{Software Design}
 \end{figure}
 
@@ -303,17 +317,17 @@ In this chapter, we will be presenting both the internal system design of the so
 \end{figure}
 
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{imgs/man-in-the-middle-amp-topology.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-in-the-middle-amp-topology.png}}
   \caption{Man-in-the-Middle DNS Client FPGA sample topology}
 \end{figure}
 
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{imgs/man-on-the-side-malicious-dns-query.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-on-the-side-malicious-dns-query.png}}
   \caption{Man-in-the-Middle FPGA sample topology}
 \end{figure}
 
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{imgs/man-on-the-side-malicious-dns-reply.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-on-the-side-malicious-dns-reply.png}}
   \caption{Man-in-the-Middle FPGA sample topology}
 \end{figure}
 
@@ -327,12 +341,13 @@ In this chapter, we will be presenting both the internal system design of the so
   \caption{Man-in-the-Middle FPGA sample topology}
 \end{figure}
 
-
 \chapter{Implementation}
 
 \section{Hardware Implementation}
+\label{section:implementation-hardware-implementation}
 
 \section{Hardware Debugging}
+\label{section:implementation-hardware-debugging}
 
 \section{Software Control System}
 
