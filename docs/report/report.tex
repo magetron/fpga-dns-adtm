@@ -406,12 +406,12 @@ This FPGA-based system can also be used to counter DNS flood attack on DNS name 
 Notably, we are placing the FPGA system as a hardware-based simple Layer 7 firewall in front of the system's software-based firewall. Utilising the unparalleled packet processing speed of FPGAs, the majority of flood traffic can be examined, logged and discarded by the FPGA with minimal latency before reaching the software firewall. Moreover, FPGAs can be scaled up linearly without extra overhead to accept and filter more flood traffic by simply connecting more FPGAs in parallel between the WAN and the software firewall. Therefore, the software firewall would enjoy much lower network load when under attack, as a large percentage of the junk traffic has already been blocked by the FPGAs. Thus, more complex checkups can be performed by the software firewall with its spare CPU time. With this setup, we can make sure the DNS name servers are well-protected with minimal performance and latency impact on the overall system.
 
 \begin{figure}[H]
-  \makebox[\textwidth][c]{\includegraphics[width=0.82\textwidth]{imgs/man-in-the-middle-topology.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=0.8\textwidth]{imgs/man-in-the-middle-topology.png}}
   \caption{Man-in-the-Middle DNS Name Server FPGA sample topology - FPGA in the middle}
   \label{fig:dns-flood-man-in-the-middle}
 \end{figure}
 
-When it comes to certain  networks that serves not only DNS queries, the aforementioned topology in Figure \ref{fig:dns-flood-man-in-the-middle} might not be the best solution since all traffic except DNS are discarded by the FPGA. Instead, we can resort to the sample topology shown in Figure \ref{fig:dns-flood-man-in-the-middle-asic}. In this approach, we put FPGA on-the-side of the network only monitoring DNS transactions. The incoming traffic from WAN would ideally pass through an ASIC-based Layer 3 firewall which diverts all DNS traffic to the FPGA, and keeps other traffic on the normal route towards a Layer 7 firewall or directly towards a switch (in a less secure environment). Similar to the previous configuration, the FPGA would detect, log and drop packets not meeting the filter requirements. Legitimate payload is expected to pass the filter and get forwarded directly to the switch.
+When it comes to certain  networks that serves not only DNS queries, the aforementioned topology in Figure \ref{fig:dns-flood-man-in-the-middle} might not be the best solution since all traffic except DNS are discarded by the FPGA. Instead, we can resort to the sample topology shown in Figure \ref{fig:dns-flood-man-in-the-middle-asic}. In this approach, we put FPGA on the side of the network only monitoring DNS transactions. Technically, this approach shall be no different as FPGA is still in the middle of all DNS traffic. The incoming traffic from WAN would ideally pass through an ASIC-based Layer 3 firewall which diverts all DNS traffic to the FPGA, and keeps other traffic on the normal route towards a Layer 7 firewall or directly towards a switch (in a less secure environment). Similar to the previous configuration, the FPGA would detect, log and drop packets not meeting the filter requirements. Legitimate payload is expected to pass the filter and get forwarded directly to the switch.
 
 \begin{figure}[H]
   \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-in-the-middle-amp-topology.png}}
@@ -428,6 +428,9 @@ When it comes to certain  networks that serves not only DNS queries, the aforeme
 \label{section:implementation-hardware-debugging}
 
 \section{Software Control System}
+
+
+
 
 \chapter{Validation and Evaluation}
 
