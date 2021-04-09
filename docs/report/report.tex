@@ -329,19 +329,12 @@ The receiver socket operates like a daemon thread that is listening to all netwo
 
 The sender socket, on the other side of the spectrum, is only called when necessary. When an command is issued by the controller logic, the corresponding packet builder would build an administrative, test or probe packet that will be sent to the FPGA. A response might later be received and then coordinated by the receiver as discussed above.
 
-With the aim to provide a future proof system, we also designed and exposed Application Programming Interfaces (APIs) for more complex algorithms such as entropy-based anomaly detectors to fetch and analyse the metrics captured by the FPGA. Therefore, smarter decisions can be made in software and relevant changes can be configured on the FPGA instantaneously. 
+With the aim to provide a future proof system, we also designed Application Programming Interfaces (APIs) for more complex algorithms such as entropy-based anomaly detectors to fetch and analyse the metrics captured by the FPGA. After the analysis, the algorithms can proactively re-configure the FPGA with several simple function calls. The APIs are designed as an extension, enabling developers to engineer complex algorithms making smarter decisions and push operational changes to FPGA instantaneously.
+
 
 \section{System Usage Sample Topology}
 
-\begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=1\textwidth]{imgs/man-in-the-middle-topology.png}}
-  \caption{Man-in-the-Middle DNS Server FPGA sample topology}
-\end{figure}
-
-\begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-in-the-middle-amp-topology.png}}
-  \caption{Man-in-the-Middle DNS Client FPGA sample topology}
-\end{figure}
+\subsection{DNS Data Exfiltration}
 
 \begin{figure}[h!]
   \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-on-the-side-malicious-dns-query.png}}
@@ -361,6 +354,35 @@ With the aim to provide a future proof system, we also designed and exposed Appl
 \begin{figure}[h!]
   \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/man-on-the-side-valid-dns-reply.png}}
   \caption{Man-in-the-Middle FPGA sample topology}
+\end{figure}
+
+\subsection{DNS Flood}
+
+This FPGA-based system can be used to counter DNS flood attack on DNS name servers. As specified in Figure \ref{fig:dns-flood-man-in-the-middle}, we deploy the system in a man-in-the-middle manner in front of the DNS name servers. The FPGA operation mode is set to "Man-in-the-middle Filter", which would forward the exact payload upon passing the filter. With regards to the filters, we can configure filters to:
+\begin{itemize}
+    \item Allow trusted Ethernet MACs from upstream ISP providers
+    \item Block a list of known IP address sending malicious IP addresses
+    \item Allow only DNS port 53
+    \item Allow only white-listed domain names and blocks all unknown domain names
+\end{itemize}
+
+Notably, we are placing the FPGA system as a hardware-based simple Layer 7 firewall in front of the system's software-based firewall. Utilising the unparalleled packet processing speed of FPGAs, the majority of flood traffic can be examined and discarded by the FPGA with minimal latency before reaching the software firewall. Moreover, FPGAs can be scaled up linearly without extra overhead to accept and filter more flood traffic by simply connecting more FPGAs in parallel between the WAN and the software firewall. Therefore, the software firewall would enjoy much lower network load when under attack, as a large percentage of the junk traffic has already been blocked by the FPGAs. Thus, more complex checkups can be performed by the software firewall with its spare CPU time. With this setup, we can make sure the DNS name servers are well-protected with minimal performance and latency impact on the overall system.
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=1\textwidth]{imgs/man-in-the-middle-topology.png}}
+  \caption{Man-in-the-Middle DNS Name Server FPGA sample topology - FPGA in the middle}
+  \label{fig:dns-flood-man-in-the-middle}
+\end{figure}
+
+When it comes to certain smaller networks that serves not only  DNS queries, the aforementioned topology in Figure \ref{fig:dns-flood-man-in-the-middle} might not be the best solution since all traffic except DNS are discarded by the FPGA. Therefore, we can resort to the sample topology shown in Figure \ref{fig:dns-flood-man-in-the-middle-asic}. In this approach, we put FPGA on-the-side of the network only monitoring DNS transactions. 
+
+... TO BE EDITED
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-in-the-middle-amp-topology.png}}
+  \caption{Man-in-the-Middle DNS Name Server FPGA sample topology - FPGA on the side}
+    \label{fig:dns-flood-man-in-the-middle-asic}
+
 \end{figure}
 
 \chapter{Implementation}
