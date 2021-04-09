@@ -424,13 +424,46 @@ When it comes to certain  networks that serves not only DNS queries, the aforeme
 \section{Hardware Implementation}
 \label{section:implementation-hardware-implementation}
 
+Finite State Machine Design Methodology
+
+Top Level Module - Connection
+
+Clock Divider
+
+Recv & Send FIFO - multiple sequential circuit driven by their respective clock
+
+Receiver - PHY Input, Parsing, Verify packet elements, packet structure, sizes, packet segmentation
+
+Core Input - Prober, Filter, Administrator
+
+SipHash Unit - 
+
+Core Output - Packet Constructor, Checksum generator, size checker, DNS header generation
+
+Sender - PHY Output, stream based CRC calculation
+
 \section{Hardware Debugging}
 \label{section:implementation-hardware-debugging}
 
+Clock domain crossing
+
+Timing Constraint
+
+Signal Meta-stability
+
+Variable length comparison in HDL
+
+Chipscope and LED
+
+.. better read the process.txt
+
 \section{Software Control System}
 
+CLI parser / command execution structure, function pointers
 
+bit manipulation in C/C++, endianess
 
+Other tools developed to streamline software development process
 
 \chapter{Validation and Evaluation}
 
