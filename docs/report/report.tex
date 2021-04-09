@@ -311,7 +311,27 @@ Besides clocking and activation signals, we also need to design data transfer po
 \begin{figure}[h!]
   \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/software-design.png}}
   \caption{Software Design}
+  \label{fig:software-design}
 \end{figure}
+
+As part of our goal to develop a resilient system, we also designed an administrative software to control, monitor and reconfigure the FPGA in real-time. As with most network configuration software, we provide a Command Line Interface (CLI) front end to administrators. The top layers of Figure \ref{fig:software-design} the software front-end is comprised of a argument parser that understands launch options, a CLI parser that splits commands into function calls and their corresponding argument string, and several supporting features, namely CLI history and CLI auto-complete functionalities.
+
+The software is designed to provide three main command families, \code{stats}, \code{test} and \code{admin}, corresponding to the three utilities in the middle layer of Figure \ref{fig:software-design}. 
+\begin{itemize}
+    \item \code{stats} commands provides user with the ability to understand the accumulated statistics and metrics on the FPGA filter, including packets received, DNS replies sent and etc.
+    \item \code{test} commands enables user to test the hardware implementation of the FPGA system with integration tests and stress tests. This is to make sure the system on FPGA is functioning as expected and within the performance threshold.
+    \item \code{admin} commands allows user to read and write DNS filter and operation mode configurations on the FPGA. It also provides convenience features for admins to save and load FPGA admin configurations as files on the controlling system.
+\end{itemize}
+
+Since certain commands such as \code{admin show curr} (which shows the currently editing admin configuration) do not need direct information exchange with the FPGA, we utilises a central controller logic to determine back-end operations and avoid unnecessary probes of the FPGA. Therefore, as shown in the bottom layers of Figure \ref{fig:software-design}, we provide various packaged functions that interfaces with the FPGA for the controller to interact with. These functions are mainly divided into senders and receivers, which relies two different raw sockets.
+
+The receiver socket operates like a daemon thread that is listening to all network traffic on the FPGA interface. Noteworthy replies and metrics from the FPGA will be highlighted and saved to cache automatically upon capture. Then, relevant parsers or checkers will be called to verify or understand FPGA messages accordingly. 
+The sender socket, on the other side of the spectrum, is only called when necessary. When an command is issued by the controller logic, the corresponding packet builder would build an administrative, test or probe packet that will be sent to the FPGA. A response might later be received and then coordinated by the receiver as discussed above.
+
+
+-- TODO:
+We also provide upper level APIs to allow more complicated analysis of metrics data retrieved from FPGA to dynamically adjust the FPGA. Meaning, could be used in more complex DNS anomaly detection methods with software-based machine learning algorithms and hardware-based realtime configurable solution controlled by the software.
+
 
 \section{System Usage Sample Topology}
 
