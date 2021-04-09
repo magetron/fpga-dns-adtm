@@ -326,12 +326,10 @@ The software is designed to provide three main command families, \code{stats}, \
 Since certain commands such as \code{admin show curr} (which shows the currently editing admin configuration) do not need direct information exchange with the FPGA, we utilises a central controller logic to determine back-end operations and avoid unnecessary probes of the FPGA. Therefore, as shown in the bottom layers of Figure \ref{fig:software-design}, we provide various packaged functions that interfaces with the FPGA for the controller to interact with. These functions are mainly divided into senders and receivers, which relies two different raw sockets.
 
 The receiver socket operates like a daemon thread that is listening to all network traffic on the FPGA interface. Noteworthy replies and metrics from the FPGA will be highlighted and saved to cache automatically upon capture. Then, relevant parsers or checkers will be called to verify or understand FPGA messages accordingly. 
+
 The sender socket, on the other side of the spectrum, is only called when necessary. When an command is issued by the controller logic, the corresponding packet builder would build an administrative, test or probe packet that will be sent to the FPGA. A response might later be received and then coordinated by the receiver as discussed above.
 
-
--- TODO:
-We also provide upper level APIs to allow more complicated analysis of metrics data retrieved from FPGA to dynamically adjust the FPGA. Meaning, could be used in more complex DNS anomaly detection methods with software-based machine learning algorithms and hardware-based realtime configurable solution controlled by the software.
-
+With the aim to provide a future proof system, we also designed and exposed Application Programming Interfaces (APIs) for more complex algorithms such as entropy-based anomaly detectors to fetch and analyse the metrics captured by the FPGA. Therefore, smarter decisions can be made in software and relevant changes can be configured on the FPGA instantaneously. 
 
 \section{System Usage Sample Topology}
 
