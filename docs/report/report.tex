@@ -7,6 +7,7 @@
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage{enumitem}
+\usepackage{float}
 \usepackage[backend=biber,style=numeric,sortcites,sorting=none]{biblatex}
 \addbibresource{report.bib}
 \usepackage[a4paper, margin = 3cm, bottom = 2.5cm]{geometry}
@@ -14,6 +15,9 @@
 \newcommand{\proglang}{\textsf}
 \newcommand{\pkg}{\textbf}
 \newcommand{\code}{\texttt}
+\newcommand{\SubItem}[1]{
+    {\setlength\itemindent{15pt} \item[-] #1}
+}
 
 \newtheorem{theorem}{THEOREM}
 \newtheorem{lemma}[theorem]{LEMMA}
@@ -331,58 +335,88 @@ The sender socket, on the other side of the spectrum, is only called when necess
 
 With the aim to provide a future proof system, we also designed Application Programming Interfaces (APIs) for more complex algorithms such as entropy-based anomaly detectors to fetch and analyse the metrics captured by the FPGA. After the analysis, the algorithms can proactively re-configure the FPGA with several simple function calls. The APIs are designed as an extension, enabling developers to engineer complex algorithms making smarter decisions and push operational changes to FPGA instantaneously.
 
-
 \section{System Usage Sample Topology}
 
 \subsection{DNS Data Exfiltration}
 
-\begin{figure}[h!]
+The main innovative application of the FPGA-based system is to detect and mitigate DNS exfiltration attacks in real-time. Typically, the system would be deployed in a secured enterprise network with confidential information on its hosts (i.e. a cloud-based POS network, a military network with restricted Internet access). Assuming the network is originally setup with a firewall comprised of ASIC-based Layer 3 firewall and software-based Layer 7 firewall, bridging the connection between Wide Area Network (WAN) and the internal network switches. The FPGA shall connect to the network in a man-on-the-side manner with its operation mode set to "Man-on-the-Side DNS spoofing".  In this particular configuration, as an example, the FPGA checkers are set to:
+
+\begin{itemize}
+    \item MAC checkers: Disabled
+    \item IP checkers: Check against a known list of internal DNS server IPs
+    \item UDP Port checkers: Check for port 53
+    \item DNS checkers: Check for \url{enterprise.local} and \url{essential.service}
+\end{itemize}
+
+If a DNS transaction satisfies all checker requirements, the packet would then be deemed legitimate and passed on to its intended recipients. If not, the FPGA would send out a Spoofed \code{NXDOMAIN} reply (or any administrator configured DNS \code{RCODE} reply) to the host.
+
+We can further configure the ASIC-based Layer 3 firewall, or use a Network Test Access Point (TAP) device with the FPGA filter to archive the following:
+
+\begin{itemize}
+    \item When sending a DNS packet to WAN:
+        \SubItem    {If it is not sent from the FPGA, redirect it to the FPGA}
+        \SubItem    {If it is sent from the FPGA, send to WAN}
+    \item When receiving a DNS packet from WAN
+        \SubItem    {Redirect it to the FPGA}
+\end{itemize}
+
+
+\begin{figure}[H]
   \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-on-the-side-malicious-dns-query.png}}
-  \caption{Man-in-the-Middle FPGA sample topology}
+  \caption{Man-on-the-Side FPGA sample topology - Sending malicious DNS exfiltration / tunnelling query}
+  \label{fig:man-on-the-side-FPGA-send-malicious}
 \end{figure}
 
-\begin{figure}[h!]
+Generally, the initiative of data exfiltration usually starts from a compromised host within the network. In the event where the host sends a malicious DNS query exfiltrating data / establishing a tunnel in Figure \ref{fig:man-on-the-side-FPGA-send-malicious}, the firewall would first redirect the query to FPGA. The FPGA would spot this DNS query suspicious and send a spoofed DNS reply back to the compromised host stopping the data exfiltration. 
+
+\begin{figure}[H]
+  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-on-the-side-valid-dns-query.png}}
+  \caption{Man-on-the-Side FPGA sample topology - Sending legitimate DNS query}
+  \label{fig:man-on-the-side-FPGA-send-legit}
+\end{figure}
+
+Legitimate DNS queries would not be affected within the network, as shown in Figure \ref{fig:man-on-the-side-FPGA-send-legit}. The packet will first be redirected to the FPGA for security checks. Once the FPGA deems the packet legitimate, it will forward the packet to the firewall, which will dispatch the packet to the upstream network. 
+
+\begin{figure}[H]
   \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-on-the-side-malicious-dns-reply.png}}
-  \caption{Man-in-the-Middle FPGA sample topology}
+  \caption{Man-on-the-Side FPGA sample topology - Receiving malicious DNS exfiltration / tunnelling reply}
+  \label{fig:man-on-the-side-FPGA-recv-malicious}
 \end{figure}
 
-\begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/man-on-the-side-valid-dns-query.png}}
-  \caption{Man-in-the-Middle FPGA sample topology}
+In the extremely rare case where a malicious DNS exfiltration/tunnelling query did get sent to the attacker's C\&C due unknown issues, the reply can still be blocked by the FPGA if configured properly. In the case where the networks receives a DNS remote control reply, the firewall would divert the packet to FPGA for examination. The checker in the FPGA would fail and this would also trigger a spoofed DNS reply sent to the compromised host, as shown in Figure \ref{fig:man-on-the-side-FPGA-recv-malicious}.
+
+\begin{figure}[H]
+  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-on-the-side-valid-dns-reply.png}}
+  \caption{Man-on-the-Side FPGA sample topology - Receiving legitimate DNS reply}
 \end{figure}
 
-\begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/man-on-the-side-valid-dns-reply.png}}
-  \caption{Man-in-the-Middle FPGA sample topology}
-\end{figure}
+As expected, legitimate DNS responses would remain unaffected throughout the process except for a minimal overhead added by the FPGA scrutinising the packet. The reply will be received by the firewall, forwarded to the FPGA. The FPGA will inspect the packet rapidly and deliver the verified response to the intended host untouched.
 
 \subsection{DNS Flood}
 
-This FPGA-based system can be used to counter DNS flood attack on DNS name servers. As specified in Figure \ref{fig:dns-flood-man-in-the-middle}, we deploy the system in a man-in-the-middle manner in front of the DNS name servers. The FPGA operation mode is set to "Man-in-the-middle Filter", which would forward the exact payload upon passing the filter. With regards to the filters, we can configure filters to:
+This FPGA-based system can also be used to counter DNS flood attack on DNS name servers. As specified in Figure \ref{fig:dns-flood-man-in-the-middle}, we deploy the system in a man-in-the-middle manner in front of the DNS name servers. The FPGA operation mode is set to "Man-in-the-middle Filter", which would forward the exact payload upon passing the filter. With regards to the filters, we can configure them as:
+
 \begin{itemize}
-    \item Allow trusted Ethernet MACs from upstream ISP providers
-    \item Block a list of known IP address sending malicious IP addresses
-    \item Allow only DNS port 53
-    \item Allow only white-listed domain names and blocks all unknown domain names
+    \item MAC filters: Allow trusted Ethernet MACs from upstream ISP providers
+    \item IP filters: Block a list of known IP address sending malicious IP addresses
+    \item UDP Port filters: Allow only DNS port 53
+    \item DNS filters: Allow only white-listed domain names and blocks all unknown domain names
 \end{itemize}
 
-Notably, we are placing the FPGA system as a hardware-based simple Layer 7 firewall in front of the system's software-based firewall. Utilising the unparalleled packet processing speed of FPGAs, the majority of flood traffic can be examined and discarded by the FPGA with minimal latency before reaching the software firewall. Moreover, FPGAs can be scaled up linearly without extra overhead to accept and filter more flood traffic by simply connecting more FPGAs in parallel between the WAN and the software firewall. Therefore, the software firewall would enjoy much lower network load when under attack, as a large percentage of the junk traffic has already been blocked by the FPGAs. Thus, more complex checkups can be performed by the software firewall with its spare CPU time. With this setup, we can make sure the DNS name servers are well-protected with minimal performance and latency impact on the overall system.
+Notably, we are placing the FPGA system as a hardware-based simple Layer 7 firewall in front of the system's software-based firewall. Utilising the unparalleled packet processing speed of FPGAs, the majority of flood traffic can be examined, logged and discarded by the FPGA with minimal latency before reaching the software firewall. Moreover, FPGAs can be scaled up linearly without extra overhead to accept and filter more flood traffic by simply connecting more FPGAs in parallel between the WAN and the software firewall. Therefore, the software firewall would enjoy much lower network load when under attack, as a large percentage of the junk traffic has already been blocked by the FPGAs. Thus, more complex checkups can be performed by the software firewall with its spare CPU time. With this setup, we can make sure the DNS name servers are well-protected with minimal performance and latency impact on the overall system.
 
-\begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=1\textwidth]{imgs/man-in-the-middle-topology.png}}
+\begin{figure}[H]
+  \makebox[\textwidth][c]{\includegraphics[width=0.82\textwidth]{imgs/man-in-the-middle-topology.png}}
   \caption{Man-in-the-Middle DNS Name Server FPGA sample topology - FPGA in the middle}
   \label{fig:dns-flood-man-in-the-middle}
 \end{figure}
 
-When it comes to certain smaller networks that serves not only  DNS queries, the aforementioned topology in Figure \ref{fig:dns-flood-man-in-the-middle} might not be the best solution since all traffic except DNS are discarded by the FPGA. Therefore, we can resort to the sample topology shown in Figure \ref{fig:dns-flood-man-in-the-middle-asic}. In this approach, we put FPGA on-the-side of the network only monitoring DNS transactions. 
+When it comes to certain  networks that serves not only DNS queries, the aforementioned topology in Figure \ref{fig:dns-flood-man-in-the-middle} might not be the best solution since all traffic except DNS are discarded by the FPGA. Instead, we can resort to the sample topology shown in Figure \ref{fig:dns-flood-man-in-the-middle-asic}. In this approach, we put FPGA on-the-side of the network only monitoring DNS transactions. The incoming traffic from WAN would ideally pass through an ASIC-based Layer 3 firewall which diverts all DNS traffic to the FPGA, and keeps other traffic on the normal route towards a Layer 7 firewall or directly towards a switch (in a less secure environment). Similar to the previous configuration, the FPGA would detect, log and drop packets not meeting the filter requirements. Legitimate payload is expected to pass the filter and get forwarded directly to the switch.
 
-... TO BE EDITED
-
-\begin{figure}[h!]
+\begin{figure}[H]
   \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/man-in-the-middle-amp-topology.png}}
   \caption{Man-in-the-Middle DNS Name Server FPGA sample topology - FPGA on the side}
-    \label{fig:dns-flood-man-in-the-middle-asic}
-
+  \label{fig:dns-flood-man-in-the-middle-asic}
 \end{figure}
 
 \chapter{Implementation}
