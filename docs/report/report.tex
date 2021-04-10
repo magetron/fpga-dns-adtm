@@ -8,16 +8,52 @@
 \usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{float}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{footmisc}
+\usepackage{xcolor}
 \usepackage[backend=biber,style=numeric,sortcites,sorting=none]{biblatex}
+\usepackage{subfig}
 \addbibresource{report.bib}
 \usepackage[a4paper, margin = 3cm, bottom = 2.5cm]{geometry}
+\usepackage{fontspec}
+\setmonofont[
+  Contextuals={Alternate}
+]{Fira Code}
 
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 \newcommand{\proglang}{\textsf}
 \newcommand{\pkg}{\textbf}
 \newcommand{\code}{\texttt}
 \newcommand{\SubItem}[1]{
     {\setlength\itemindent{15pt} \item[-] #1}
 }
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{code-style}{
+  backgroundcolor=\color{backcolour},   commentstyle=\color{codegreen},
+  keywordstyle=\color{magenta},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=b,                    
+  keepspaces=true,                 
+  numbers=left,                    
+  numbersep=5pt,                  
+  showspaces=false,                
+  showstringspaces=false,
+  showtabs=false,                  
+  tabsize=2
+}
+\lstset{style=code-style}
 
 \newtheorem{theorem}{THEOREM}
 \newtheorem{lemma}[theorem]{LEMMA}
@@ -261,7 +297,7 @@ SipHash is an Add-Rotate-Xor (ARX) family of pseudo-random hash functions create
 
 Let $X$ be a message string, and $k$ be a key string, SipHash guarantees that even if an attacker have seen $X$ and $\code{SipHash}(X, k)$, an attacker who does not know $k$ would not be able to find out $k$ nor construct $\code{SipHash}(Y, k)$ for any message $Y \neq X$ which they have not seen before. Further cryptanalysis and mathematical proof of the promise above have been done by Christoph et al. \cite{dobraunig-2014} and Xin et al. \cite{xin-2019}.
 
-SipHash has several unique characteristics that make it a suitable candidate for hardware implementation, namely simplicity, simple middle states, and minimal overhead \cite{aumasson-bernstein-2012}. The algorithm iterates a simple SipRound function utilised multiple times; hence the hardware component and circuit can be reused at different clock cycles. Siphash's middle states consists of only four 64-bit variables $v_0 ... v_4$. From a hardware implementation perspective, it minimises flip-flop usages, easing the design implementation on the board. Most importantly, the generated MAC is concise and of designated length (64 bits), bringing minimal and fixed consumption of hardware units.
+SipHash has several unique characteristics that make it a suitable candidate for hardware implementation, namely simplicity, simple middle states, and minimal overhead \cite{aumasson-bernstein-2012}. The algorithm iterates a simple SipRound function utilised multiple times; hence the hardware component and circuit can be reused at different clock cycles. Siphash's middle states consists of only four 64-bit variables $v_0 ... v_4$. From a hardware implementation perspective, it minimises Flip-Flop (FF) usages, easing the design implementation on the board. Most importantly, the generated MAC is concise and of designated length (64 bits), bringing minimal and fixed consumption of hardware units.
 
 \section{Related Work}
 
@@ -306,7 +342,7 @@ Within the Receiver and Sender component shown on the left and right side of Fig
 
 After designing the top-level components and their main functionalities, we will be sketching the signal schematic of the design so as to determine each component's incoming and outgoing ports, as laid out in Figure \ref{fig:hardware-signal-design} The common input for almost all synchronous sequential logic is the clock pin (\code{CLK}). As suggested previously in the section, components within different clock domains shall receive \code{CLK} with their corresponding frequencies. The only exception here being the cross-domain asynchronous FIFOs which shall be activated by both \code{CLK} signals, one for writing to the FIFO queue and the other one for reading.
 
-To avoid actively reading and writing data when not required, we utilised various Data Valid (DV), Enable (EN) and ACKnowledgement (ACK) signals in our components, as seen in Figure \ref{fig:hardware-signal-design}. Each sequential component in hardware has a sensitivity list, which comprises of a list of signals that triggers the execution of a process (in VHDL) / an always-block (in Verilog). When any one of the signals on the sensitivity list is at Voltage Common Collector (VCC) level, the sequential logic will take in the data input at that instant and start its execution. For example, in the core input (\code{corein}) module (Figure \ref{fig:hardware-signal-design}), we utilise two sensitive signals, \code{CLK} and \code{RCV\_DV} to ensure logic execution when both are on VCC, meaning the receiving data is ready to be read and further processed at a rising clock edge.
+To avoid actively reading and writing data when not required, we utilised various Data Valid (DV), Enable (EN) and ACKnowledgement (ACK) signals in our components, as seen in Figure \ref{fig:hardware-signal-design}. Each sequential component in hardware is designed to constantly check against a set of signals when in idle state. The set of signals shall be specified by the hardware designer as the sensitivity list of a \proglang{VHDL}'s process, or a \proglang{Verilog}'s always-block. When the activation signal reaches Voltage Common Collector (VCC) level upon a rising clock edge, the sequential component shall transit into a working state and start reading and processing the bits from other incoming signals. For example, in the core input (\code{corein}) module (Figure \ref{fig:hardware-signal-design}), we utilise two sensitive signals, \code{CLK} and \code{RCV\_DV} to ensure the data processing starts when both are at VCC level. The receiving data will then be read and further processed at later rising clocked edges.
 
 Besides clocking and activation signals, we also need to design data transfer ports across signals. We define a custom data struct (\code{D\_STRUCT}) to maintain all signals we need for processing and discards the rest unneeded packet information. The \code{D\_STRUCT} is an internal representation of the packet with relevant metadata and parsed DNS payload. This design allows us to keep a fixed length representation of variable length packets within the hardware system\footnote{See Section \ref{section:implementation-hardware-debugging} for issues with variable length descriptors in hardware}. Moreover, we made very effort to keep the \code{D\_STRUCT} nimble so as to avoid using unnecessary FIFOs delaying data transfers or wasting FPGA resources. Given the trade-off being the lack of support for payload longer than a pre-determined limit (128 bytes in our implementation\footnote{See Section \ref{section:implementation-hardware-implementation} for our detailed implementation of packet segmentation and the 128-byte limit}), we think it's worthwhile to proceed with this appoarch as we focus primarily on processing typically shorter DNS packets with minimal latency.
 
@@ -421,34 +457,141 @@ When it comes to certain  networks that serves not only DNS queries, the aforeme
 
 \chapter{Implementation}
 
+In this chapter, we will be discussing implementation details of the FPGA-based system, including hardware engineering and debugging processes, as well as software development and integration steps.
+
 \section{Hardware Implementation}
 \label{section:implementation-hardware-implementation}
 
 \subsection{Finite State Machine (FSM) Implementation}
 
-FSM is one of the most commonly used design technique in stateful logic hardware circuits. More specifically, a hardware implementation of FSM requires a $n$-bit register comprised of $n$ flip flops to store state variables, a block of combinational circuit to determine the state, a block of sequential circuit to operate the input according to the state, and a block of combinational output circuit to forward the resulting signals, as shown in Figure TODO: Figure here.
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/FSM-impl.png}}
+  \caption{Final State Machine Hardware Implementation}
+  \label{fig:fsm-impl}
+\end{figure}
+
+FSM is one of the most commonly used design technique in stateful logic hardware circuits. More specifically, a hardware implementation of a $n$-state FSM requires three main logic blocks, as shown in Figure \ref{fig:fsm-impl}:
+\begin{itemize}
+    \item Next State Logic : a block of combinational circuit to determine the next state.
+    \item State FFs and Current State Logic : a set of registers storing state information and a sequential logic circuit operating input signals based on the state. The number of FFs used is dependent on the encoding method, varying from $\ceil*{\log_2 n}$(binary encoded) - $n$(one-hot encoded).
+    \item Output Logic : another stateless combinational circuit to output processed signals.
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{imgs/binary-encoding-fsm.png}
+    \end{minipage}%
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{imgs/grey-encoding-fsm.png}
+    \end{minipage}
+    \begin{minipage}{0.35\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{imgs/one-hot-fsm.png}
+    \end{minipage}
+    \caption{Binary-Encoded, Grey-Encoded and One-Hot-Encoded FSM}
+    \label{fig:binary-grey-one-hot-encoded-FSM}
+\end{figure}
+
+With regards to the number of FFs in the state register, there are three main encoding methods shown in Figure \ref{fig:binary-grey-one-hot-encoded-FSM}, namely binary encoding, grey encoding and one-hot encoding.
+
+Binary encoding is the most intuitive one to use when assigning numerical value to sequential states, and we are using as few bits as possible to encode the states. For an $n$-state FSM, binary encoding them sequentially shall yield $\ceil*{\log_2 n}$ bits. With the $4$-state FSM shown on the left side of Figure \ref{fig:binary-grey-one-hot-encoded-FSM}, $\ceil*{\log_2 4} = 2$ FFs would be needed. Binary encoding uses the least amount of memory, but the transitions can be very strict with timing\footnote{See Section \ref{section:implementation-hardware-debugging} for more information on hardware timing constraints \label{foot:timing-constraints}} in cases like going from $\mathtt{0x7f}$ to $\mathtt{0x80}$, with 8 bits to drive within one clock cycle (7 bits to set 0 and 1 bits to set 1).
+
+Grey encoding consists of a sequence where only one bit shall change between the current value and next. This encoding developed aiming to minimise the bit flips when transitioning states so as to further relief the timing constraints and reduce dynamic power consumption\footref{foot:timing-constraints}. Notice the difference of encoding at State $S2$ and $S3$ in between the left FSM and the middle FSM in Figure \ref{fig:binary-grey-one-hot-encoded-FSM}, the grey-encoded FSM encodes $S2$ as $\mathtt{0b11}$ instead of $\mathtt{0b10}$ to ensure $S1 (\mathtt{0b01})\xrightarrow{}S2(\mathtt{0b11})$ flips only one bit, and similarly for $S2 (\mathtt{0b11})\xrightarrow{}S3(\mathtt{0b10})$.
+
+Lastly, one-hot encoding is a scheme where each bit represents one single state. Thus, at any point in time, there shall only be one VCC (1) in states, while all other bits shall be Ground (GND) (0). With reference to the $4$-state FSM on the right side of Figure \ref{fig:binary-grey-one-hot-encoded-FSM}, the four states are encoded as $\mathtt{0b0001}$, $\mathtt{0b0010}$,  $\mathtt{0b0100}$ and $\mathtt{0b1000}$. This encoding method seems inefficient as encoding a $n$-state FSM requires $n$ FFs. However, one-hot encoding particularly useful in strict timing scenarios and simpflies the stimulus logic\footref{foot:timing-constraints}. The bits represents the states directly, and there shall be no state-decoding delay.
+
+\begin{lstlisting}[language=VHDL, caption=One-Hot Encoded FSM Minimal Example in \proglang{VHDL}, label={lst:one-hot-fsm-minimal}]
+TYPE state_t IS (IDLE, START, RUN, DONE);
+
+ATTRIBUTE enum_encoding : STRING;
+ATTRIBUTE enum_encoding OF state_t : TYPE IS "one-hot";
+
+SIGNAL s, sin : state_t;
+
+stim : PROCESS (clk)
+BEGIN
+  IF rising_edge(clk) THEN
+    CASE s IS
+      WHEN IDLE =>
+        sin <= START;
+      WHEN START =>
+        sin <= RUN;
+      WHEN RUN =>
+        sin <= DONE;
+      WHEN DONE =>
+        sin <= IDLE;
+    END CASE;
+  END IF;
+END PROCESS;
+
+reg : PROCESS (clk)
+BEGIN
+  IF falling_edge(clk) THEN
+    s <= sin;
+  END IF;
+END PROCESS;
+\end{lstlisting}
+
+Typically, we can provide behavioural description of the FSM states in \proglang{VHDL} and the synthesizer would be able to decide the encoding based on the complexity of the algorithm and the number of states. However, in certain cases where timing constraints are strict, we will have to specify encoding methods precisely via providing a signal description of the state registers.
+
+Listing \ref{lst:one-hot-fsm-minimal} is a minimal example of One-Hot Encoded FSM in \proglang{VHDL}. Note that at line $4$ we set the attribute specifically to \code{one-hot}, and the synthesizer would generate One-Hot-Encoded FSM netlist accordingly. It is also worth noting that we store state \code{s} changes in signal \code{sin} on a rising clock edge and refresh the current state \code{s} on a falling edge. This is an attempt to make sure signal \code{s} would not run into metastability in a clock cycle when it is instantly used after modification\footnote{See Section 4.2 for more information on signal metastability in hardware}.
+
+FSM is implemented in most components within the FPGA-based system, as parsing, processing and constructing network packets are all sequential logic and fits nicely with the stateful design of FSM.
+
+\subsection{Top Level Module and Clock Divider}
+
+Figure \ref{fig:top-level-design} shows the implemented top-level design of the FPGA. As a streamlined packet processing system, the components are connected linearly 
+
+\begin{figure}
+  \centering
+  \includegraphics*[viewport={0 0 950 600}, width=0.95\textheight, height=\textwidth, keepaspectratio, angle=270]{imgs/top-level-module.png}
+  \caption{Top Level Module Overview - 1}
+  \label{fig:top-level-design}
+\end{figure}
+\begin{figure}
+  \ContinuedFloat
+  \centering
+  \includegraphics*[viewport={950 0 1900 600}, width=0.95\textheight, height=\textwidth, keepaspectratio, angle=270]{imgs/top-level-module.png}
+  \caption{Top Level Module Overview - 2}
+  \label{fig:top-level-design}
+\end{figure}
+\begin{figure}
+  \ContinuedFloat
+  \centering
+  \includegraphics*[viewport={1900 0 2850 600}, width=0.95\textheight, height=\textwidth, keepaspectratio, angle=270]{imgs/top-level-module.png}
+  \caption{Top Level Module Overview - 3}
+  \label{fig:top-level-design}
+\end{figure}
 
 
-Finite State Machine Design Methodology
 
-Top Level Module - Connection
 
-Clock Divider
-
+\subsection{Clock-Domain-Crossing FIFO}
 Recv \& Send FIFO - multiple sequential circuit driven by their respective clock
 
+\subsection{PHY Interface, Receiver and Sender}
 Receiver - PHY Input, Parsing, Verify packet elements, packet structure, sizes, packet segmentation
-
-Core Input - Prober, Filter, Administrator
-
-SipHash Unit - 
-
-Core Output - Packet Constructor, Checksum generator, size checker, DNS header generation
 
 Sender - PHY Output, stream based CRC calculation
 
+\subsection{SipHash Verification Component}
+
+\subsection{Core Input Component}
+Core Input - Prober, Filter, Administrator
+
+\subsection{Core Output Checksum Calculation }
+Core Output - Packet Constructor, Checksum generator, size checker, DNS header generation
+
+
 \section{Hardware Debugging}
 \label{section:implementation-hardware-debugging}
+
+Although HDL has many similarities with software programming languages like C and Ada, they are fundamentally different as HDL describes electric circuits which is executed in parallel, while programming languages expresses a sequential set of instructions.
+
+Sequential execution
 
 Clock domain crossing
 
@@ -457,6 +600,9 @@ Timing Constraint
 Signal Meta-stability
 
 Variable length comparison in HDL
+
+AND SOMETHING WORKS in SIMULATOR doesn't mena it works?
+behavioural simulation and synthesised netlist simulation
 
 Chipscope and LED
 
@@ -474,7 +620,7 @@ Other tools developed to streamline software development process
 
 \section{Simulation Unit Test-bench}
 
-\section{Hardware Software Integration}
+\section{Hardware Integration Testing via Software}
 
 \section{Performance Evaluation}
 
