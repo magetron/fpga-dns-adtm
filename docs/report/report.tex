@@ -589,10 +589,26 @@ As seen at the bottom of left of Figure \ref{fig:top-level-design}, \code{inst\_
 
 \subsection{PHY Interface, Receiver and Sender}
 
-As described earlier, Arty-A7 35T has an on-chip Ethernet PHY peripheral (TI DP83848J), which operates under two interfaces 
+As described earlier, Arty-A7 35T has an on-chip Ethernet PHY ASIC peripheral (TI DP83848J), which operates under two interfaces, two Cat 5 speed grades and two duplex modes: RMII / MII, $10$ / $100$ Mbps and half/full duplex respectively \cite{texas-instruments-dp83848x}. All three settings can be configured via functional pins \code{LED\_LINK}, \code{LED\_SPEED} and \code{MII\_MODE}. In this project, we configure the PHY chip to operate with MII interface, $100$ Mbps full-duplex PHY link.
+
+The MII-family interface is standard by IEEE 802.3u \cite{ieee802.3ethernet-2018} as the interface to connect a Ethernet Media Access Control (MAC) block to a PHY ASIC. It is considered to be an universal abstraction interface above various physical network medias (i.e. twisted pair, fiber optic and etc.). With the MII-family interface, any MAC hardware/software can connect to any PHY independent of the network signal transmission media.
+
+The main receiving and transmitting signals on the interface includes:
+\begin{itemize}
+    \item \code{CRS}: Carrier Sense
+    \item \code{COL}: Collision, which would not be used in full-duplex connections
+    \item \code{RX\_CLK}, \code{TX\_CLK}: Receive / Transmit Clock
+    \item \code{RXD[0-3]}: Receive Data [0-3],  (4 bits per clock cycle)
+    \item \code{TXD[0-3]}: Transmit Data [0-3],  (4 bits per clock cycle)
+    \item \code{RX\_DV}: Receive Data Valid (GND on this signal means data received on \code{RXD[0-3]} are just noise on the PHY)
+    \item \code{TX\_EN}: Transmit enable (VCC on this signal means data provided on \code{TXD[0-3]} will be sent to the wire)
+    \item \code{RX\_ER}, \code{TX\_ER}: Receive / Transmit Error (VCC on this signal means the PHY has received undecodable data / was unable to transmit data, possibly due to broken connections or unsuccessful negotiations)
+\end{itemize}
+
+Using the FSM sequential logic, we implemented our Receiver FSM as shown in Figure XXFIGUREHERE!
 
 
-
+\newpage
 Receiver - PHY Input, Parsing, Verify packet elements, packet structure, sizes, packet segmentation
 
 Sender - PHY Output, stream based CRC calculation
@@ -641,6 +657,8 @@ bit manipulation in C/C++, endianess
 Other tools developed to streamline software development process
 
 \chapter{Validation and Evaluation}
+
+Power consumption low, performance high
 
 \section{Simulation Unit Test-bench}
 
