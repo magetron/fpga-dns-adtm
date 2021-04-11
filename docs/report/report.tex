@@ -608,7 +608,7 @@ The main receiving and transmitting signals on the interface includes:
     \item \code{RX\_ER}, \code{TX\_ER}: Receive / Transmit Error (VCC on this signal means the PHY has received undecodable data / was unable to transmit data, possibly due to broken connections or unsuccessful negotiations)
 \end{itemize}
 
-Using the FSM sequential logic, we implemented our Receiver FSM as shown in Figure XX. When ...
+Using the FSM sequential logic, we implemented our Receiver FSM as shown in Figure XXTBD. When \code{RX_DV} is at VCC level, the receiver will be start listening for Ethernet-II preambles at state \code{Preamble} and proceed with state transitions accordingly. During the parsing states, the receiver will parse the packet as the bits comes in, forms a \code{RCV_PKT_STRUCT} and checks for packet integrity via ...
 
 
 \newpage
