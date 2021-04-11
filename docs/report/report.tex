@@ -295,6 +295,7 @@ Software network middlewares including firewalls \code{netfilter}/\code{iptables
 There are various types of trade-offs among different implementations of network processors with regards to development time and cost, as well as flexibility and long-term adaptability. Among all three, ASIC-based Network Interface Cards (NICs) have the highest performance and power efficiency but suffers from a long development cycle, high development cost, and minimal flexibility after fabrication \cite{amara-2006, deierling-2018}. Oppositely, CPU-based or System-on-Chip (SoC) NICs are easier to program and can be deployed for highly complex use cases, as CPU provides general computability and the highest flexibility among all three \cite{deierling-2018}. FPGA-based NICs strikes a balance between ASIC and SoC by providing "field-programmable" hardware. In other words, FPGA would have performance similar to that of ASIC since they are both integrated circuit for application-specific purposes while maintaining the flexibility of being adapting and upgrading after fabrication. Due to circuit limitations, the performance, energy efficiency and achievable timing frequency of FPGAs would be inferior to that of ASICs. On the other hand, FPGAs would be much more complex to program than SoC due to hardware timing constraints and electrical uncertainties, and deployed FPGA algorithm would ultimately be limited by the number of logic units on the FPGA chip \cite{deierling-2018}.
 
 \subsection{SipHash}
+\label{section:background-siphash}
 
 SipHash is an Add-Rotate-Xor (ARX) family of pseudo-random hash functions created in 2012 \cite{aumasson-bernstein-2012}, aimed at mitigating various "hash-flooding" DDoS attacks in late 2011 \cite{lennon-2011}. SipHash has typically used as a Message Authentication Code (MAC) calculation method to guarantee the sender's authority and message's integrity. 
 
@@ -687,6 +688,18 @@ Since an attacker can potentially disable the FPGA system via an admin packet, i
 
 \subsection{SipHash Authentication Component}
 \label{section:implementation-hardware-implementation-siphash}
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=0.5\textwidth]{imgs/siphasher-fsm.png}}
+  \caption{\code{siphasher.vhd} Module FSM Overview}
+  \label{fig:siphasher-fsm}
+\end{figure}
+
+Given the complexity of SipHash calculations, we implemented a separate hardware component for its sole purpose. Across multiple variants of hash algorithms in the SipHash family, we adopted SipHash 2-4 due to its balance in security and computation complexity. With reference to the paper written by Jean-Philippe Aumasson \cite{aumasson-bernstein-2012}, SipHash 2-4 process is comprised of a key round, 2 compression rounds on every 64 bits of the payload, 2 compression rounds on the payload length and 4 finalising rounds. Each round involves the same set of obfuscation calculations named SipRound.
+
+Given the steps, we therefore implemented the \code{siphasher} unit with the FSM shown in Figure \ref{fig:siphasher-fsm}. The 1024-bit (128-byte) payload of the admin packet is allocated with 960 bits (120 bytes) of payload and 64 bits (8 bytes) of MAC. Before the admin packet acknowledgement, the output of \code{siphasher} will be checked against the final 64 bits (8 bytes) in the payload to confirm the validity of the admin information. The key used in the algorithm shall be edited in the \proglang{VHDL} module before synthesis and implementation and will be hardcoded into the FPGA core. The admin packet shall  DESCRIBE HOW TO USE IT
+
+
 
 
 \subsection{Core Output Packet Constructor}
