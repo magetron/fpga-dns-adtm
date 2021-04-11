@@ -22,6 +22,8 @@
   Contextuals={Alternate}
 ]{Fira Code}
 
+\counterwithout{footnote}{chapter}
+
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 \newcommand{\proglang}{\textsf}
@@ -677,14 +679,11 @@ The Core Input Processor is where the core processing and handling of network pa
     \item Normal Network Packet : Packet that shall be checked and acted upon based on current on-board filter and operation configurations.
 \end{itemize}
 
-For a normal network packet received, it will be filtered / checked in the areas of MAC addresses, IP addresses, UDP ports, DNS headers and domain names. The filter will compare these information to given lists in the configuration. Dependent on the lists being blacklists or whitelists, the processor will provide a binary decision at the end of each procedure. By the end of all checks, the checkers will reach a final binary decision of pass or not pass. Then, based on the FPGA operation mode (man-in-the-middle filter mode, man-on-the-side spoof mode), the FPGA will take one of the four actions as instructed: forward the payload, forward the DNS transaction, spoof a DNS transaction, or discard the packet. Depending on the result, the core output module will be notified accordingly to deal with packet checksums and other relevant metadata. This is estimated to take at least 10 clock cycles (200 nanoseconds) under the best cases, and at most 120 clock cycles (2400 nanoseconds) with the largest payload and the most complex filters.  
+For a normal network packet received, it will be filtered / checked in the areas of MAC addresses, IP addresses, UDP ports, DNS headers and domain names. The filter will compare these information to given lists in the configuration. Dependent on the lists being blacklists or whitelists, the processor will provide a binary decision at the end of each procedure. By the end of all checks, the checkers will reach a final binary decision of pass or not pass. Then, based on the FPGA operation mode (man-in-the-middle filter mode, man-on-the-side spoof mode), the FPGA will take one of the four actions as instructed: forward the payload, forward the DNS transaction, spoof a DNS transaction, or discard the packet. Depending on the result, the core output module will be notified accordingly to deal with packet checksums and other relevant metadata. This is estimated to take at least 10 clock cycles (200 ns) under the best cases, and at most 120 clock cycles (2400 ns) with the largest payload and the most complex filters.  
 
-Once a probe packet is logged, the FPGA will pack the current filter configurations and logger metrics by bits in a compact packet and pass on to the core output constructor for checksum calculations in less than 20 clock cycles (400 nanoseconds), relatively quick and straightforward.
+Once a probe packet is logged, the FPGA will pack the current filter configurations and logger metrics by bits in a compact packet and pass on to the core output constructor for checksum calculations in less than 20 clock cycles (400 ns), relatively quick and straightforward.
 
-
-\newpage
-
-Admin packet and reference to next subsection
+Since an attacker can potentially disable the FPGA system via an admin packet, it requires extra authentication for the FPGA to recognise it as an legitimate administration update. The FPGA uses SipHash\footnote{See Section \ref{section:implementation-hardware-implementation-siphash} for more information about SipHash authentication} to validate the 64-bit MAC appended to the admin payload. Once it is verified, the FPGA will then update filter configurations and reset loggers and the system as instructed. Given the enhanced security on this section of the sequential circuit, it is expected to cost around 400 clock cycles (8000 ns) for a full filter update and a logger reset. This is acceptable even for latency sensitive use cases as updating filters could be rather rare and there is no reply actions needed afterwards
 
 \subsection{SipHash Authentication Component}
 \label{section:implementation-hardware-implementation-siphash}
