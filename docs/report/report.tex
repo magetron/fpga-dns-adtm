@@ -12,6 +12,7 @@
 \usepackage{listings}
 \usepackage{footmisc}
 \usepackage{xcolor}
+\usepackage{pdflscape}
 \usepackage[backend=biber,style=numeric,sortcites,sorting=none]{biblatex}
 \usepackage{subfig}
 \addbibresource{report.bib}
@@ -543,28 +544,30 @@ FSM is implemented in most components within the FPGA-based system, as parsing, 
 
 \subsection{Top Level Module and Clock Divider}
 
+Figure \ref{fig:top-level-design} shows the implemented top-level design of the FPGA. As a streamlined packet processing system, the components are connected linearly as the packet flows from the incoming PHY receiver to the outgoing PHY transmitter.
+
+\begin{landscape}
 \begin{figure}[h!]
   \centering
-  \includegraphics*[viewport={0 0 950 600}, width=0.95\textheight, height=\textwidth, keepaspectratio, angle=270]{imgs/top-level-module.png}
+  \includegraphics*[viewport={0 0 950 600}, height=\textwidth, width=2\textheight, keepaspectratio]{imgs/top-level-module.png}
   \caption{Top Level Module Overview - 1}
   \label{fig:top-level-design}
 \end{figure}
 \begin{figure}[h!]
   \ContinuedFloat
   \centering
-  \includegraphics*[viewport={950 0 1900 600}, width=0.95\textheight, height=\textwidth, keepaspectratio, angle=270]{imgs/top-level-module.png}
+  \includegraphics*[viewport={950 0 1900 600}, height=\textwidth, width=2\textheight, keepaspectratio]{imgs/top-level-module.png}
   \caption{Top Level Module Overview - 2}
   \label{fig:top-level-design}
 \end{figure}
 \begin{figure}[h!]
   \ContinuedFloat
   \centering
-  \includegraphics*[viewport={1900 0 2850 600}, width=0.95\textheight, height=\textwidth, keepaspectratio, angle=270]{imgs/top-level-module.png}
+  \includegraphics*[viewport={1900 0 2850 600}, height=\textwidth, width=2\textheight, keepaspectratio]{imgs/top-level-module.png}
   \caption{Top Level Module Overview - 3}
   \label{fig:top-level-design}
 \end{figure}
-
-Figure \ref{fig:top-level-design} shows the implemented top-level design of the FPGA. As a streamlined packet processing system, the components are connected linearly as the packet flows from the incoming PHY receiver to the outgoing PHY transmitter.
+\end{landscape}
 
 \begin{lstlisting}[language=VHDL, caption=Snippet of Clock Divider \code{clock.vhd}, label={lst:clock-vhd}]
 ARCHITECTURE rtl OF clock IS
@@ -605,7 +608,7 @@ The main receiving and transmitting signals on the interface includes:
     \item \code{RX\_ER}, \code{TX\_ER}: Receive / Transmit Error (VCC on this signal means the PHY has received undecodable data / was unable to transmit data, possibly due to broken connections or unsuccessful negotiations)
 \end{itemize}
 
-Using the FSM sequential logic, we implemented our Receiver FSM as shown in Figure XXFIGUREHERE!
+Using the FSM sequential logic, we implemented our Receiver FSM as shown in Figure XX. When ...
 
 
 \newpage
