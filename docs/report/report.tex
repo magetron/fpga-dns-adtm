@@ -617,7 +617,7 @@ The main receiving and transmitting signals on the interface includes:
   \label{fig:rcv-fsm}
 \end{figure}
 
-Using the FSM sequential logic, we implemented our Receiver FSM as shown in Figure \ref{fig:rcv-fsm}. When \code{RX\_DV} is at VCC level, the receiver will start listening for Ethernet-II preambles at state \code{Preamble} and proceed with state transitions accordingly. During the parsing states, the receiver will analyse the packet as nibbles (4 bits) comes in from \code{RXD}, forms a \code{rcv\_data\_t} and checks for packet correctness at numerous checkpoints, including \code{ethertype}, \code{ipChecksum} and etc. As mentioned previously in design Section \ref{section:design-system-design-hardware}, the \code{dnsPkt} struct is limited to $1024$ bits (128 bytes) for the ease of signal transfer across components under strict timing requirements at the \code{Notify} state. Once the all verification passes and the sturct \code{rcv\_data\_t} is properly constructed, the component would notify its predecessor by setting \code{EL\_DV} to high and return to the state \code{Preamble(Idle)}, ready for the next packet.
+Using the FSM sequential logic, we implemented our Receiver FSM as shown in Figure \ref{fig:rcv-fsm}. When \code{RX\_DV} is at VCC level, the receiver will start listening for Ethernet-II preambles at state \code{Preamble} and proceed with state transitions accordingly. During the parsing states, the receiver will analyse the packet as nibbles (4 bits) comes in from \code{RXD}, forms a \code{rcv\_data\_t} and checks for packet correctness at numerous checkpoints, including \code{ethertype}, \code{ipChecksum} and etc. As mentioned previously in design Section \ref{section:design-system-design-hardware}, the \code{dnsPkt} struct is limited to $1024$ bits (128 bytes) for the ease of signal transfer across components under strict timing requirements at the \code{Notify} state. Therefore, all bytes above this limit will be cut off and discarded beyond the receiver. Once the all input verification passes and the sturct \code{rcv\_data\_t} is properly constructed, the component would notify its predecessor by setting \code{EL\_DV} to high and return to the state \code{Preamble(Idle)}, ready for the next packet.
 
 \begin{figure}[h!]
   \makebox[\textwidth][c]{\includegraphics[width=0.8\textwidth]{imgs/snd-fsm.png}}
@@ -684,26 +684,34 @@ For a normal network packet received, it will be filtered / checked in the areas
 
 Once a probe packet is logged, the FPGA will pack the current filter configurations and logger metrics by bits in a compact packet and pass on to the core output constructor for checksum calculations in less than 20 clock cycles (400 ns), relatively quick and straightforward.
 
-Since an attacker can potentially disable the FPGA system via an admin packet, it requires extra authentication for the FPGA to recognise it as an legitimate administration update. The FPGA uses SipHash\footnote{See Section \ref{section:implementation-hardware-implementation-siphash} for more information about SipHash authentication} to validate the 64-bit MAC appended to the admin payload. Once it is verified, the FPGA will then update filter configurations and reset loggers and the system as instructed. Given the enhanced security on this section of the sequential circuit, it is expected to cost around 400 clock cycles (8000 ns) for a full filter update and a logger reset. This is acceptable even for latency sensitive use cases as updating filters could be rather rare and there is no reply actions needed afterwards
+Since an attacker can potentially disable the FPGA system via an admin packet, it requires extra authentication for the FPGA to recognise it as an legitimate administration update. The FPGA uses SipHash\footnote{See Section \ref{section:implementation-hardware-implementation-siphash} for more information about SipHash authentication} to validate the 64-bit MAC appended to the admin payload. Once it is verified, the FPGA will then update filter configurations and reset loggers and the system as instructed. Given the enhanced security on this section of the sequential circuit, it is expected to cost around 400 clock cycles (8000 ns) for a full filter update and a logger reset. This is acceptable even for latency sensitive use cases as updating filters could be rather rare and there is no reply actions needed afterwards.
+
+If a packet needs to sent after the procedure, the processor shall pull up \code{snd\_en} and the Core Output Constructor will be notified to deal with the heavy lifting of checksums and size calculations.
 
 \subsection{SipHash Authentication Component}
 \label{section:implementation-hardware-implementation-siphash}
 
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=0.5\textwidth]{imgs/siphasher-fsm.png}}
+\centering
+\begin{minipage}{.5\textwidth}
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/siphasher-fsm.png}}
   \caption{\code{siphasher.vhd} Module FSM Overview}
   \label{fig:siphasher-fsm}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \makebox[\textwidth][c]{\includegraphics[width=0.6\textwidth]{imgs/coreout-fsm.png}}
+  \caption{\code{o.vhd} Module FSM Overview}
+  \label{fig:coreout-fsm}
+\end{minipage}
 \end{figure}
 
 Given the complexity of SipHash calculations, we implemented a separate hardware component for its sole purpose. Across multiple variants of hash algorithms in the SipHash family, we adopted SipHash 2-4 due to its balance in security and computation complexity. With reference to the paper written by Jean-Philippe Aumasson \cite{aumasson-bernstein-2012}, SipHash 2-4 process is comprised of a key round, 2 compression rounds on every 64 bits of the payload, 2 compression rounds on the payload length and 4 finalising rounds. Each round involves the same set of obfuscation calculations named SipRound.
 
-Given the steps, we therefore implemented the \code{siphasher} unit with the FSM shown in Figure \ref{fig:siphasher-fsm}. The 1024-bit (128-byte) payload of the admin packet is allocated with 960 bits (120 bytes) of payload and 64 bits (8 bytes) of MAC. Before the admin packet acknowledgement, the output of \code{siphasher} will be checked against the final 64 bits (8 bytes) in the payload to confirm the validity of the admin information. The key used in the algorithm shall be edited in the \proglang{VHDL} module before synthesis and implementation and will be hardcoded into the FPGA core. The admin packet shall  DESCRIBE HOW TO USE IT
-
-
-
+Given the steps, we therefore implemented the \code{siphasher} unit with the FSM shown in Figure \ref{fig:siphasher-fsm}. The 1024-bit (128-byte) payload of the admin packet is allocated with 960 bits (120 bytes) of payload and 64 bits (8 bytes) of MAC. Before the admin packet acknowledgement, the output of \code{siphasher} will be checked against the final 64 bits (8 bytes) in the payload to confirm the validity of the admin information. The SipHash key in hardware shall be edited in the \proglang{VHDL} module before synthesis and implementation and will be hardcoded into the FPGA core. This key shall be identical to the one used in the software control system, otherwise the hardware would deem the admin packet invalid and log the malicious behaviour of faking an administrator.
 
 \subsection{Core Output Packet Constructor}
-Core Output - Packet Constructor, Checksum generator, size checker, DNS header generation
+
+The final key component within the hardware implementation is the Core Output Packet Constructor \code{coreout}. This component is a sequential circuit that handles the struct transition from \code{rcv\_data\_t} to \code{snd\_data\_t}, while populating certain fields including sizes and checksums. The FSM overview containing construction steps can be viewed at Figure \ref{fig:coreout-fsm}. Current version of \code{coreout} would only compute IPv4 checksum and discard UDP checksums by default for latency reasons. The whole streamlined process shall take less than 10 clock cycles (200 ns) and the packet would be on its way to the sender FIFO queuing to be sent to the MII interface.
 
 
 \section{Hardware Debugging}
