@@ -13,6 +13,7 @@
 \usepackage{footmisc}
 \usepackage{xcolor}
 \usepackage{pdflscape}
+\usepackage{textcomp}
 \usepackage[backend=biber,style=numeric,sortcites,sorting=none]{biblatex}
 \usepackage{subfig}
 \addbibresource{report.bib}
@@ -467,6 +468,12 @@ In this chapter, we will be discussing implementation details of the FPGA-based 
 \section{Hardware Implementation}
 \label{section:implementation-hardware-implementation}
 
+\begin{figure}[H]
+  \makebox[\textwidth][c]{\includegraphics[width=0.78\textwidth]{imgs/on-chip-impl.png}}
+  \caption{Final Chip Implementation of the system on Artix-A7 (XC7A35TICSG324-1L)}
+  \label{fig:dns-flood-man-in-the-middle-asic}
+\end{figure}
+
 \subsection{Finite State Machine (FSM) Implementation}
 
 \begin{figure}[h!]
@@ -693,12 +700,12 @@ If a packet needs to sent after the procedure, the processor shall pull up \code
 
 \begin{figure}[h!]
 \centering
-\begin{minipage}{.5\textwidth}
+\begin{minipage}{.45\textwidth}
   \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/siphasher-fsm.png}}
   \caption{\code{siphasher.vhd} Module FSM Overview}
   \label{fig:siphasher-fsm}
-\end{minipage}%
-\begin{minipage}{.5\textwidth}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
   \makebox[\textwidth][c]{\includegraphics[width=0.6\textwidth]{imgs/coreout-fsm.png}}
   \caption{\code{o.vhd} Module FSM Overview}
   \label{fig:coreout-fsm}
@@ -717,24 +724,92 @@ The final key component within the hardware implementation is the Core Output Pa
 \section{Hardware Debugging}
 \label{section:implementation-hardware-debugging}
 
-Although HDL has many similarities with software programming languages like C and Ada, they are fundamentally different as HDL describes electric circuits which is executed in parallel, while programming languages expresses a sequential set of instructions.
+\subsection{Timing and Execution Pitfalls in HDL}
 
-Sequential execution
+\begin{minipage}{.45\textwidth}
+\begin{lstlisting}[language=VHDL, caption=Faulty Signal Update in \proglang{VHDL}, label={lst:faulty-signal-update}]
+SIGNAL s : STD_LOGIC;
+
+proc : PROCESS (clk)
+BEGIN
+  IF (rising_edge(clk)) THEN
+    s <= '1';
+    IF (s = '1') THEN
+    ... ELSE ...
+    END IF;
+  END IF;
+END PROCESS;
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.45\textwidth}
+\begin{lstlisting}[language=VHDL, caption=Correct Signal Update in \proglang{VHDL}, label={lst:correct-signal-update}]
+SIGNAL s, sin : STD_LOGIC;
+
+proc : PROCESS (clk)
+BEGIN
+  IF (rising_edge(clk)) THEN
+    sin <= '1';
+    IF (s = '1') THEN
+    ... ELSE ...
+    END IF;
+  END IF;
+END PROCESS;
+
+reg : PROCESS (clk)
+BEGIN
+  IF (falling_edge(clk)) THEN
+    s <= sin;
+  END IF;
+END PROCESS;
+\end{lstlisting}
+\end{minipage}
+
+At first glance, building hardware with HDL seems to be very similar to engineer software with a programming language, not to mention that \proglang{VHDL} has close resemblance to \proglang{Ada} while \proglang{Verilog} and \proglang{C} are pretty much alike. However, they are fundamentally different as HDL aims at describing static computing models with the explicit notion of concept "time", albeit concurrent or sequential, while software languages aims at producing list of instructions which executes in order. That is why HDLs resembles certain concurrent programming languages in their ability to model parallel processes that executes continuously independent of one another.
+
+It is crucial to understand the timing model and promises of a HDL before we program a component. We initially implemented the faulty signal update logic as shown in Listing \ref{lst:faulty-signal-update}. From a software perspective, it would be perfectly valid to update \code{s} and reading it later on in a sequential statement. However, \code{VHDL}'s time model assumes that a signal happen would not happen immediately, but are scheduled at the end of the current process delta cycle. That is to say, this signal \code{s} will not be updated until all executing process have happened. This is a common pitfall when implementing hardware in \proglang{VHDL} and can be very hard to spot in complicated branching statements. Thus, as shown in Listing \ref{lst:correct-signal-update} and previous FSM Listing \ref{lst:one-hot-fsm-minimal}, we would design a current state signal \code{s} to read from and a next state signal \code{sin} to write to within a process, and explicitly updating \code{s} \textleftarrow \code{sin} after delay upon a falling clock edge. 
+
+\begin{lstlisting}[language=VHDL, caption=Faulty Unrolled Loop Sample in \proglang{VHDL}, label={lst:unrolled-loop}]
+proc : PROCESS (clk)
+VARIABLE d : STD_LOGIC_VECTOR(255 DOWNTO 0) := (OTHERS => '0');
+VARIABLE c : NATURAL RANGE 0 TO 255;
+BEGIN
+  IF (rising_edge(clk)) THEN
+    FOR i IN 0 TO 255 LOOP
+      IF (d(i) = '1') THEN
+        c := c + 1;
+      END IF;
+    END LOOP;
+    ... 
+  END IF;
+END PROCESS;
+\end{lstlisting}
+
+To allow direct usage after assignment within the same clock cycle / single activation, we can introduce variables in \proglang{VHDL} that would have a different timing promise according to the model. While signals are usually actual flip flops with persistent data stored, variables can be seen as temporary design objects that stores middle states. Hence, we made another mistake of abusing loops and variables usages in a single clock cycle, listed in Listing \ref{lst:unrolled-loop}. From a software perspective, it would be common to believe that the loop would execute one iteration per clock cycle. Instead, the synthesizer would unroll the loop completely and generate enough hardware to execute all iterations in parallel. Hence, we are effectively producing a circuit where the variable \code{c} gets incremented $0$-$255$ times at the same clock cycle within $20$ns. The implementation could only be possible when the data width of \code{d} is very small and the branches are extremely short. Otherwise, it would be impossible for the router to find an implementation within the timing constraint\footnote{See Section \ref{section:implementation-hardware-implementation-timing} for more information about timing constraints}.
+
+\subsection{Hardware Verification Subset vs. Hardware Description Subset}
+
+Besides the aforementioned pitfalls, HDLs themselves 
+
+\subsection{Signal Meta-stability}
 
 Clock domain crossing
 
-Timing Constraint
+Driving too many signals at once
 
-Signal Meta-stability
+Clock fast path \& skew
 
-Variable length comparison in HDL
+\subsection{Timing Constraint}
+\label{section:implementation-hardware-implementation-timing}
 
-AND SOMETHING WORKS in SIMULATOR doesn't mena it works?
-behavioural simulation and synthesised netlist simulation
+\subsection{Resource Constraint}
+
+\subsection{Debug Methodologies}
+
+Simulator
 
 Chipscope and LED
 
-.. better read the process.txt
+\newpage
 
 \section{Software Control System}
 
