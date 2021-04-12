@@ -554,6 +554,7 @@ Listing \ref{lst:one-hot-fsm-minimal} is a minimal example of One-Hot Encoded FS
 FSM is implemented in most components within the FPGA-based system, as parsing, processing and constructing network packets are all sequential logic and fits nicely with the stateful design of FSM.
 
 \subsection{Top Level Module and Clock Divider}
+\label{section:implementation-hardware-implementation-top-level-clock-divdier}
 
 Figure \ref{fig:top-level-design} shows the implemented top-level design of the FPGA. As a streamlined packet processing system, the components are connected linearly as the packet flows from the incoming PHY receiver to the outgoing PHY transmitter.
 
@@ -721,10 +722,10 @@ Given the steps, we therefore implemented the \code{siphasher} unit with the FSM
 The final key component within the hardware implementation is the Core Output Packet Constructor \code{coreout}. This component is a sequential circuit that handles the struct transition from \code{rcv\_data\_t} to \code{snd\_data\_t}, while populating certain fields including sizes and checksums. The FSM overview containing construction steps can be viewed at Figure \ref{fig:coreout-fsm}. Current version of \code{coreout} would only compute IPv4 checksum and discard UDP checksums by default for latency reasons. The whole streamlined process shall take less than 10 clock cycles (200 ns) and the packet would be on its way to the sender FIFO queuing to be sent to the MII interface.
 
 
-\section{Hardware Debugging}
+\section{Hardware Pitfalls \& Debugging}
 \label{section:implementation-hardware-debugging}
 
-\subsection{Timing and Execution Pitfalls in HDL}
+\subsection{HDL Pitfalls - Timing and Execution Models}
 
 \begin{minipage}{.45\textwidth}
 \begin{lstlisting}[language=VHDL, caption=Faulty Signal Update in \proglang{VHDL}, label={lst:faulty-signal-update}]
@@ -786,22 +787,87 @@ END PROCESS;
 
 To allow direct usage after assignment within the same clock cycle / single activation, we can introduce variables in \proglang{VHDL} that would have a different timing promise according to the model. While signals are usually actual flip flops with persistent data stored, variables can be seen as temporary design objects that stores middle states. Hence, we made another mistake of abusing loops and variables usages in a single clock cycle, listed in Listing \ref{lst:unrolled-loop}. From a software perspective, it would be common to believe that the loop would execute one iteration per clock cycle. Instead, the synthesizer would unroll the loop completely and generate enough hardware to execute all iterations in parallel. Hence, we are effectively producing a circuit where the variable \code{c} gets incremented $0$-$255$ times at the same clock cycle within $20$ns. The implementation could only be possible when the data width of \code{d} is very small and the branches are extremely short. Otherwise, it would be impossible for the router to find an implementation within the timing constraint\footnote{See Section \ref{section:implementation-hardware-implementation-timing} for more information about timing constraints}.
 
-\subsection{Hardware Verification Subset vs. Hardware Description Subset}
+\subsection{HDL Pitfalls - Simulation and Implementation Difference}
 
-Besides the aforementioned pitfalls, HDLs themselves 
+\begin{lstlisting}[language=VHDL, caption=Faulty \code{STD\_LOGIC\_VECTOR} comparison in \proglang{VHDL}, label={lst:faulty-comparison}]
+IF (rd.dnsPkt(DOMAIN_LENGTH + OFFSET DOWNTO OFFSET)
+  = f.dnsList(FILTER_INDEX)(DOMAIN_LENGTH DOWNTO 0)) THEN
+  ...
+END IF;
+\end{lstlisting}
 
-\subsection{Signal Meta-stability}
+Besides the aforementioned pitfalls, HDLs themselves includes certain subsets within the language that is aimed at writing verification code (i.e. test benches) instead of circuit in hardware. One very subtle error we countered during the development can be attributed to this cause. When comparing domain names with DNS payload in hardware, we designed our component to follow the HDL shown in Listing \ref{lst:faulty-comparison}. The code simply compares a portion in the DNS payload from \code{OFFSET} TO \code{DOMAIN\_LENGTH + OFFSET}, with the No. \code{FILTER\_INDEX} string in the filter of the same width.
 
-Clock domain crossing
+This piece of code works well within the \code{xsim} simulator and produced correct results when the domain names matches with an item in the filter list on behavioural simulation. However, when we later implement the design to hardware, none of the packets can be recognised and filtered out successfully. Yet the synthesizer, router and bitstream generator produces no warning nor error related to this component, which seems unreasonable. Upon further investigation and reading language specs, we realised that the synthesizer would not be able to produce the electric component for a variable width comparison in hardware. Instead, it would simply resort to the longest possible comparison that's viable for both sides. In this case, as the \code{dnsPkt} is longer than \code{f.dnsList(FILTER\_INDEX)}, it would compare the packet payload with the entire \code{f.dnsList}, regardless of the later specified range.
 
-Driving too many signals at once
+\begin{lstlisting}[language=VHDL, caption=Dynamic width \code{STD\_LOGIC\_VECTOR} comparison in \proglang{VHDL}, label={lst:correct-comparison}]
+  IF (s.fpktc >= 32) THEN       -- 4 bytes
+    IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 32))
+      = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 32))) THEN
+    ... ELSE ...
+    END IF;
+  ELSIF (s.fpktc >= 24) THEN    -- 3 bytes
+    IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 24))
+      = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 24))) THEN
+    ... ELSE ...
+    END IF;          
+  ELSIF (s.fpktc >= 16) THEN    -- 2 bytes    
+    IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 16))
+      = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 16))) THEN
+    ... ELSE ...
+    END IF;                 
+  ELSIF (s.fpktc >= 8) THEN     -- 1 byte
+    IF (rd.dnsPkt((s.fpktsc + s.fpktc - 1) DOWNTO (s.fpktsc + s.fpktc - 8))
+      = f.dnsList(s.fdnsc)((s.fpktc - 1) DOWNTO (s.fpktc - 8))) THEN
+    ... ELSE ...
+    END IF;
+  ELSE
+    ...
+  END IF; 
+\end{lstlisting}
 
-Clock fast path \& skew
+Hence to work around this issue, we will have to eliminate all dynamic width comparison within the code. One alternative is to compare $n$ bytes at a time, until there is less than $n$ bytes left. At the later clock cycle, we would need to generate all $0..n-1$ byte comparison to deal with the modulus. The minimised code structure can been seen at Listing \ref{correct-comparsion}. With that approach we would be able pass both behavioural simulation and post-implementation hardware simulation. However, as it finally turns out, this solution would impose too strict timing on the wire placement and substantial load on the driving signals to cause metastability and fail timing constraints\footnote{See Section \ref{section:implementation-hardware-implementation-metastability} and \ref{section:implementation-hardware-implementation-timing} for more information on signal metastability and timing constraints}. Further pipeling would be required to make the filter work properly in hardware.
 
-\subsection{Timing Constraint}
+\subsection{Timing Pitfalls - Clock Domain Crossing and Signal Metastability}
+\label{section:implementation-hardware-implementation-metastability}
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth, height=0.45\textwidth]{imgs/metastability-clock.png}}
+  \caption{Metastable sample signal graph \cite{stephenson-2009}}
+  \label{fig:metastability-clock}
+\end{figure}
+
+Metastability describes a phenomenon where an electronic element persists for an unbounded amount of time in an unstable (meta stable) state \cite{chaney-1973}. It causes digital systems to fail and exhibit indeterminate behaviour, which is troublesome to debug and fix. To explain why metastability happens, we would have to elaborate on how a signal transverse throughout a digital system. All components in FPGA have defined timing requirements that allow each register to receive input and produce output signals. To guarantee reliable operation, it is required to hold the input for a minimum register setup time $t_{SU}$ before the clock edge, and a minimum hold time after the clock edge $t_{H}$. The register output shall later be available after a clock-to-output delay $t_{CO}$. If either $t_{SU}$ or $t_{H}$ is violated, we will then receive output signals in so-called a meta stable state. To elaborate, the output signal could hover at any instant between VCC and GND for a random amount of time even after the previously guaranteed $t_{CO}$, as shown in Figure \ref{fig:metastability-clock}. At the end, the signal can either resolve to high or low, or even keep in the middle as an undefined signal. The signal transition through register is analogous to balancing a ball at the top of hill, as demonstrated in Figure \ref{fig:metastability-analogy}.
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth, height=0.3\textwidth]{imgs/metastability-analogy.png}}
+  \caption{Metastable signal analogy \cite{stephenson-2009}}
+  \label{fig:metastability-analogy}
+\end{figure}
+
+As mentioned previously in Section \ref{section:implementation-hardware-implementation-top-level-clock-divdier}, the design features two clock domains, one for the PHY and MAC sender and receiver peripheral, and the other one for the FPGA core processor. As packet signals are crossing clock boundaries, the transition can happen at any point relative to the receiving clock edge of the capturing unit. Hence, the designer would be unable to predict the sequence of signals transmitted or the number of destination clock edges until the data finishes transmitting. As a result, the received values could very likely be incorrect and result in unexpected behaviour within the circuit. 
+ 
+We were originally unaware of the CDC metastability issue and experienced unpredictable cases of packet losing and disappearing in the middle of the process. The issue was later relieved when we throttle the processing core down to $25$ MHz and use the same reference clock as the PHY peripherals. This is not ideal as we could have archived much 2 times faster speed with the processing.
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=0.8\textwidth]{imgs/clock-skew.png}}
+  \caption{Clock Skew graph on clock divider}
+  \label{fig:clock-skew}
+\end{figure}
+
+One might argue that the PHY reference clock is generated by the clock divider within the design, as specified in Section \ref{section:implementation-hardware-implementation-top-level-clock-divdier}; hence the design shall be synchronous and the timing requirements shall be predictable. However, this is unfortunately not the case. Although the clock division shall be fairly straightforward, it still takes a tiny portion of time and imposes a $\Delta t$ delay (skew) on the generated clocks, demonstrated in Figure \ref{fig:clock-skew}. The reference clock would then be provided to the PHY chip peripheral, while the design operates on the PHY feedback clock \code{E\_RX\_CLK} and \code{E\_TX\_CLK}. Thus, the PHY chip would also append an unknown amount of skew to the \code{E\_REF\_CLK}. In total, there shall be a 2-skew delay and 1:4 division from the original oscillator clock. Moreover, internal clocks goes through an isolated fast path named the clock path, which is hyper-sensitive to delays and skews. Thus, routing the significantly skewed PHY clock through the fast clock paths in FPGA is unfeasible, as it would cause substantial amount of timing errors across the core circuit. Consequently, it is a hardware-implementation decision to make the system an asynchronous design; hence making it vulnerable to CDC and metastability issues.
+ 
+As explained in design Section \ref{section:design-system-design-hardware}: dual-clock FIFO (DCFIFO) is later designed and implemented in hardware for storing the middle signal states and guaranteeing timing requirements. Also, multiple handshaking logic signals including \code{DV}, \code{EN} and \code{ACK} are in place to further assure successful recognition of these CDC signals.
+
+\newpage
+
+\subsection{Timing Pitfalls - Inferred Latches}
+
+\subsection{Timing Pitfalls - Pipelining and strict timing constraints}
 \label{section:implementation-hardware-implementation-timing}
 
-\subsection{Resource Constraint}
+
+\subsection{Resource Pitfalls - FPGA Resource Constraint}
 
 \subsection{Debug Methodologies}
 
