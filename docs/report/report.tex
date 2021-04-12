@@ -850,8 +850,8 @@ As mentioned previously in Section \ref{section:implementation-hardware-implemen
 We were originally unaware of the CDC metastability issue and experienced unpredictable cases of packet losing and disappearing in the middle of the process. The issue was later relieved when we throttle the processing core down to $25$ MHz and use the same reference clock as the PHY peripherals. This is not ideal as we could have archived much 2 times faster speed with the processing.
 
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=0.8\textwidth]{imgs/clock-skew.png}}
-  \caption{Clock Skew graph on clock divider}
+  \makebox[\textwidth][c]{\includegraphics[width=0.6\textwidth]{imgs/clock-skew.png}}
+  \caption{Clock Skew demonstration \cite{arar-2018}}
   \label{fig:clock-skew}
 \end{figure}
 
