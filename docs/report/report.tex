@@ -1041,7 +1041,7 @@ BEGIN
 
 \subsection{Resource Pitfalls - FPGA Placement Constraint}
 
-As mentioned in Section \ref{section:introduction-tools-hardware}, we initially started with the Spartan 3E Starter Kit board, which was released back in 2006. The board consists of a \code{XC3S500E} core with $10,476$ logic cells and a SMSC \code{LAN83C185} $10/100$ Mbps Ethernet PHY chip with a separate $25$ MHz crystal oscillator. However, once we have implemented the MAC peripherals on the PHY interface, as specified in Section \ref{section:implementation-hardware-implementation-phy-mac-peripheral}, the LUT usage is already around $9500$ ($90\%$). Moreover, as the utilisation is very high, the placer and router are having difficulties in making the design to meet the timing requirements due to space limitations. Hence, we would need to optimise the resource usage, otherwise the system would not be able to work properly, no to mention the to-be-designed core processing unit would simply be running out of logic slices. 
+As mentioned in Section \ref{section:introduction-tools-hardware}, we initially started with the Spartan 3E Starter Kit board, which was released back in 2006. The board consists of a \code{XC3S500E} core with $10,476$ logic cells \cite{xilinx-documentation-2011-core} and a SMSC \code{LAN83C185} $10/100$ Mbps Ethernet PHY chip. However, once we have implemented the MAC peripherals on the PHY interface, as specified in Section \ref{section:implementation-hardware-implementation-phy-mac-peripheral}, the LUT usage is already around $9500$ ($90\%$). Moreover, as the utilisation is very high, the placer and router are having difficulties in making the design to meet the timing requirements due to space limitations. Hence, we would need to optimise the resource usage, otherwise the system would not be able to work properly, no to mention the to-be-designed core processing unit would simply be running out of logic slices. 
 
 One key issue we have identified in the design is that we are using distributed RAM (LUTRAM) in lots of the places, instead of Block RAM (BRAM). Typically, if chunks of \code{STD\_LOGIC\_VECTOR} are declared in HDL with various types of access patterns, the synthesizer would infer a distributed RAM made up of LUT for you. Although distributed RAMs are more flexible and faster, they are made up of logic units within the FPGA. On the other hand, implementing BRAM requires the designer to follow a given synchronous data access pattern by addresses, with the same amount of bits retrieved in each clock cycle. Hence, the synthesizer could then realise the designer's intent and activate the FPGA's BRAM. BRAM is usually much larger but less flexible and can be slower than LUTRAM at times. 
 
@@ -1051,11 +1051,7 @@ One key issue we have identified in the design is that we are using distributed 
   \label{fig:utilisation-fpga}
 \end{figure}
 
-However, as the parsing of a packet goes on, the packet array would get fragmented as different pieces of information would be required by separated components. As an experiment of using BRAMs has turned out, the access to BRAM would be heavily congested upon packet arrival as each component gets the signal to fetch fragments of the new packet. Hence, we would also need a FIFO at input and a dispatch unit at output to organise all BRAM accesses. This is considered to be inefficient as we are wasting more LUT to regulate BRAM access, and the amount used could be larger than simply using distributed RAM. Hence, we made the decision to purchase a newer board, the Digilent Arty-A735T with a \code{XC7A35T} FPGA boasting $33,280$ logic cells. As the final utilisation statistics turns out (Figure \ref{fig:utilisation-fpga}), the system would utilise $12,034 + 1704 = 13738$ logic units, surpassing the total amount available on the Spartan 3E Starter Kit.
-
-
-\newpage
-
+However, as the parsing of a packet goes on, the packet array would get fragmented as different pieces of information would be required by separated components. As an experiment of using BRAMs has turned out, the access to BRAM would be heavily congested upon packet arrival as each component gets the signal to fetch fragments of the new packet. Hence, we would also need a FIFO at input and a dispatch unit at output to organise all BRAM accesses. This is considered to be inefficient as we are wasting more LUT to regulate BRAM access, and the amount used could be larger than simply using distributed RAM. Hence, we made the decision to purchase a newer board, the Digilent Arty-A735T with a \code{XC7A35T} FPGA boasting $33,280$ logic cells\cite{xilinx-documentation-artix}. As the final utilisation statistics turns out (Figure \ref{fig:utilisation-fpga}), the system would utilise $12,034 + 1704 = 13738$ logic units, surpassing the total amount available on the Spartan 3E Starter Kit.
 
 \subsection{Debug Methodologies}
 
@@ -1065,7 +1061,16 @@ Chipscope and LED
 
 \newpage
 
+
 \section{Software Control System}
+
+The software system implementation can be 
+
+\subsection{CLI interface}
+
+
+
+\newpage
 
 CLI parser / command execution structure, function pointers
 
