@@ -475,7 +475,7 @@ In this chapter, we will be discussing implementation details of the FPGA-based 
 \label{section:implementation-hardware-implementation}
 
 \begin{figure}[H]
-  \makebox[\textwidth][c]{\includegraphics[width=0.6\textwidth]{imgs/on-chip-impl.png}}
+  \makebox[\textwidth][c]{\includegraphics[angle = 90, width=0.8\textwidth]{imgs/on-chip-impl.png}}
   \caption{Final Chip Implementation of the system on Artix-A7 (XC7A35TICSG324-1L)}
   \label{fig:on-chip-impl}
 \end{figure}
@@ -1053,14 +1053,21 @@ One key issue we have identified in the design is that we are using distributed 
 
 However, as the parsing of a packet goes on, the packet array would get fragmented as different pieces of information would be required by separated components. As an experiment of using BRAMs has turned out, the access to BRAM would be heavily congested upon packet arrival as each component gets the signal to fetch fragments of the new packet. Hence, we would also need a FIFO at input and a dispatch unit at output to organise all BRAM accesses. This is considered to be inefficient as we are wasting more LUT to regulate BRAM access, and the amount used could be larger than simply using distributed RAM. Hence, we made the decision to purchase a newer board, the Digilent Arty-A735T with a \code{XC7A35T} FPGA boasting $33,280$ logic cells\cite{xilinx-documentation-artix}. As the final utilisation statistics turns out (Figure \ref{fig:utilisation-fpga}), the system would utilise $12,034 + 1704 = 13738$ logic units, surpassing the total amount available on the Spartan 3E Starter Kit.
 
-\subsection{Debug Methodologies}
+\subsection{Hardware Debugging Methodologies}
 
-Simulator
+As described in multiple sections above, debugging hardware is notoriously hard given its undeterministic results and limitations in tools. Before we deal with any debugging in hardware, it is crucial that we make sure simulation results behaves as expected, as it at least guarantees some level of correctness in the HDL code\footnote{See Section \ref{section:validation-simulation} for more information on HDL simulation}. 
 
-Chipscope and LED
+In most cases, getting it right in simulator would not mean getting it to work in hardware. There could be various timing errors that cannot be reflected in the STA simulation which breaks the system. One of the most frequently used tools is the 4 LED lights on the board. As this represents 16 different states, we can put \code{LED <\null= x"6";} statements in the design to speculate the execution state. The placement of such statements needs to be placed deliberately as to make sure the LEDs would actually light up and hold instead of flashing quickly as the circuit executes on a nanosecond level.
 
-\newpage
+One might ask, as a network project, we can utilise network packets to observe the internal states. This is partially true as we can retrieve certain information (i.e. packet missing, duplicate packets) from the network behaviour. However, most NIC nowadays would offload Ethernet, IP checksums and sizes calculations. In other words, the operating system network stack wouldn't even receive the packet if any of the payload is incoherent with checksums or size fields. In some cases, the FPGA would be faulty and keep sending packets at an 10us interval non-stop. These packets floods the testing machine, spikes the CPU usage and kills \code{Wireshark} as a result. Hence, it is feasible to debug the hardware during later stages of the development, but it is simply not possible to do so when we were still developing MACs and packet constructors.
 
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/ila.png}}
+  \caption{ILA debugging trigger sample with \code{Vivado 2020.2}}
+  \label{fig:ila-debug-fpga}
+\end{figure}
+
+Xilinx development environment provides a tool named ChipScope Integrate Logic Analyser (ILA) that can be synthesised into the hardware. It provides a IP core that reports to \code{Vivado} of the next several clock cycles (typically $1024$) of hardware internal states once triggered by a preset condition. In Figure \ref{fig:ila-debug-fpga}, we are showing an example of ILA debugging in progress. The bottom left corner shows that the ILA is triggered when \code{E\_TXD} reaches Preamble $\mathtt{0x5}$. Then, 1024 clock cycles worth of internal states on the \code{E\_TXD} signal is captured for further review. However, there are timing and resource limitations to ILA as in how much states to capture and how many signals can be captured at the same time. If violated, the system will exhibit unexpected behaviour and uploaded waveform from the FPGA will not be decodable.
 
 \section{Software Control System}
 
@@ -1126,6 +1133,7 @@ Throughout the development process, we also developed several utilities that was
 Power consumption low, performance high
 
 \section{Simulation Unit Test-bench}
+\label{section:validation-simulation}
 
 \section{Hardware Integration Testing via Software}
 
