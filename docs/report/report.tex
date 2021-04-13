@@ -151,7 +151,7 @@ Hence, we took an incremental approach when developing the project. It is consid
 \section{Tools and Utilities}
 
 \subsection{Hardware}
-\ref{section:introduction-tools-hardware}
+\label{section:introduction-tools-hardware}
 
 We choose Xilinx FPGA instead of ASIC as our hardware development target platform due to budget constraint and our concerns for future-proof re-programmability.
 
@@ -174,14 +174,14 @@ Hence, we moved new development platform:
 We choose \proglang{VHDL-2008} \cite{ieee-vhdl} as our main Hardware-Description Language (HDL) for the design. Also, \proglang{Verilog} \cite{ieee-verilog} is used for timing simulation of synthesised net-list designs. \code{Xilinx Vivado xsim} \cite{xilinx-documentation-vivado} is used for hardware design simulation. The \code{Easics CRC Generation Tool} is used for generating \proglang{VHDL} \code{Ethernet-II CRC32} processing component \cite{easics-crc}.
 
 \subsection{Software}
-\ref{section:introduction-tools-software}
+\label{section:introduction-tools-software}
 
 As of the software, the control system and various tool-sets are written in \proglang{C11} \cite{iso-c} and \proglang{C++17} \cite{iso-cc}, using \code{libedit} \cite{thrysoee-2004} for Command Line Interface (CLI) and the raw socket programming interfaces (APIs) provided with the \code{Linux kernel 5.10.23} \cite{kroah-hartman-2021} for communication with the FPGA.
 
 Also, \code{SipHash} \cite{aumasson-bernstein-2012} is used in both hardware and software for packet authentication and admin verification purposes.
 
 \subsection{Debugging}
-\ref{section:introduction-tools-debugging}
+\label{section:introduction-tools-debugging}
 
 When debugging on and above the data link layer, we used \code{Wireshark 3.4.4} \cite{wireshark-2021}, \code{tcpdump 4.99.0}
  \cite{tcpdump-2020}, \code{ethtool 5.10} \cite{kroah-hartman-2021} and the Linux \code{ip} command. \code{Ethernet-CRC32-Checker} \cite{jwbensley-2020} is used for Ethernet CRC debugging in FPGA on the PHY level.
@@ -730,6 +730,8 @@ The final key component within the hardware implementation is the Core Output Pa
 
 \section{Hardware Pitfalls \& Debugging}
 \label{section:implementation-hardware-debugging}
+
+This section describes all the pitfalls and challenges we met, investigated and eventually overcame during the project development process. This was a tirelessly grinding process with more than 600 hours spent. Hence, very likely this is going to be the longest section within the report. All code listings below are minimised real code snippets from HDL source files within the project. 
 
 \subsection{HDL Pitfalls - Timing and Execution Models}
 
