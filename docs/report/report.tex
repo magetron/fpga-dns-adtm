@@ -151,6 +151,8 @@ Hence, we took an incremental approach when developing the project. It is consid
 \section{Tools and Utilities}
 
 \subsection{Hardware}
+\ref{section:introduction-tools-hardware}
+
 We choose Xilinx FPGA instead of ASIC as our hardware development target platform due to budget constraint and our concerns for future-proof re-programmability.
 
 We started the development with:
@@ -172,11 +174,15 @@ Hence, we moved new development platform:
 We choose \proglang{VHDL-2008} \cite{ieee-vhdl} as our main Hardware-Description Language (HDL) for the design. Also, \proglang{Verilog} \cite{ieee-verilog} is used for timing simulation of synthesised net-list designs. \code{Xilinx Vivado xsim} \cite{xilinx-documentation-vivado} is used for hardware design simulation. The \code{Easics CRC Generation Tool} is used for generating \proglang{VHDL} \code{Ethernet-II CRC32} processing component \cite{easics-crc}.
 
 \subsection{Software}
+\ref{section:introduction-tools-software}
+
 As of the software, the control system and various tool-sets are written in \proglang{C11} \cite{iso-c} and \proglang{C++17} \cite{iso-cc}, using \code{libedit} \cite{thrysoee-2004} for Command Line Interface (CLI) and the raw socket programming interfaces (APIs) provided with the \code{Linux kernel 5.10.23} \cite{kroah-hartman-2021} for communication with the FPGA.
 
 Also, \code{SipHash} \cite{aumasson-bernstein-2012} is used in both hardware and software for packet authentication and admin verification purposes.
 
 \subsection{Debugging}
+\ref{section:introduction-tools-debugging}
+
 When debugging on and above the data link layer, we used \code{Wireshark 3.4.4} \cite{wireshark-2021}, \code{tcpdump 4.99.0}
  \cite{tcpdump-2020}, \code{ethtool 5.10} \cite{kroah-hartman-2021} and the Linux \code{ip} command. \code{Ethernet-CRC32-Checker} \cite{jwbensley-2020} is used for Ethernet CRC debugging in FPGA on the PHY level.
 
@@ -471,7 +477,7 @@ In this chapter, we will be discussing implementation details of the FPGA-based 
 \begin{figure}[H]
   \makebox[\textwidth][c]{\includegraphics[width=0.78\textwidth]{imgs/on-chip-impl.png}}
   \caption{Final Chip Implementation of the system on Artix-A7 (XC7A35TICSG324-1L)}
-  \label{fig:dns-flood-man-in-the-middle-asic}
+  \label{fig:on-chip-impl}
 \end{figure}
 
 \subsection{Finite State Machine (FSM) Implementation}
@@ -630,10 +636,10 @@ Using the FSM sequential logic, we implemented our Receiver FSM as shown in Figu
 \begin{figure}[h!]
   \makebox[\textwidth][c]{\includegraphics[width=0.8\textwidth]{imgs/snd-fsm.png}}
   \caption{\code{mac\_snd.vhd} Module FSM Overview}
-  \label{fig:rcv-fsm}
+  \label{fig:snd-fsm}
 \end{figure}
 
-Similarly, we also implemented the Sender interfacing with the PHY transmitter with a FSM shown in Figure \ref{fig:rcv-fsm}. While the internal logic is in reverse order, sending signals to the interfaces rather than receiving, the general states of the FSM are alike. Note that the Sender operates based on a sending struct named \code{snd\_data\_t} with checksums and TTLs calculated and metadata imported from previous steps at state \code{Read}. As the sender pulls up \code{TX\_EN} and sends nibble streams to the \code{TXD} interface, the CRC32 calculator would also receive the stream and calculates the next-state FSM within the clock cycle. When all DNS payload has been transmitted, the 32-bit (8 byte) CRC sequence will be emitted by the calculator component and appended to the packet. Lastly but easily forgotten, Ethernet-II requires a interframe gap of 12 octets (24 nibbles) of \code{TX\_EN} at GND before a new packet can be transmitted. Not following the procedure properly would cause the next packet to be discarded by the intended recipients.
+Similarly, we also implemented the Sender interfacing with the PHY transmitter with a FSM shown in Figure \ref{fig:snd-fsm}. While the internal logic is in reverse order, sending signals to the interfaces rather than receiving, the general states of the FSM are alike. Note that the Sender operates based on a sending struct named \code{snd\_data\_t} with checksums and TTLs calculated and metadata imported from previous steps at state \code{Read}. As the sender pulls up \code{TX\_EN} and sends nibble streams to the \code{TXD} interface, the CRC32 calculator would also receive the stream and calculates the next-state FSM within the clock cycle. When all DNS payload has been transmitted, the 32-bit (8 byte) CRC sequence will be emitted by the calculator component and appended to the packet. Lastly but easily forgotten, Ethernet-II requires a interframe gap of 12 octets (24 nibbles) of \code{TX\_EN} at GND before a new packet can be transmitted. Not following the procedure properly would cause the next packet to be discarded by the intended recipients.
 
 \subsection{Clock-Domain-Crossing FIFO}
 
@@ -788,6 +794,7 @@ END PROCESS;
 To allow direct usage after assignment within the same clock cycle / single activation, we can introduce variables in \proglang{VHDL} that would have a different timing promise according to the model. While signals are usually actual flip flops with persistent data stored, variables can be seen as temporary design objects that stores middle states. Hence, we made another mistake of abusing loops and variables usages in a single clock cycle, listed in Listing \ref{lst:unrolled-loop}. From a software perspective, it would be common to believe that the loop would execute one iteration per clock cycle. Instead, the synthesizer would unroll the loop completely and generate enough hardware to execute all iterations in parallel. Hence, we are effectively producing a circuit where the variable \code{c} gets incremented $0$-$255$ times at the same clock cycle within $20$ns. The implementation could only be possible when the data width of \code{d} is very small and the branches are extremely short. Otherwise, it would be impossible for the router to find an implementation within the timing constraint\footnote{See Section \ref{section:implementation-hardware-implementation-timing} for more information about timing constraints}.
 
 \subsection{HDL Pitfalls - Simulation and Implementation Difference}
+\label{section:implementation-hardware-debugging-hdl-pitfalls-simulation-and-implementation}
 
 \begin{lstlisting}[language=VHDL, caption=Faulty \code{STD\_LOGIC\_VECTOR} comparison in \proglang{VHDL}, label={lst:faulty-comparison}]
 IF (rd.dnsPkt(DOMAIN_LENGTH + OFFSET DOWNTO OFFSET)
@@ -826,7 +833,7 @@ This piece of code works well within the \code{xsim} simulator and produced corr
   END IF; 
 \end{lstlisting}
 
-Hence to work around this issue, we will have to eliminate all dynamic width comparison within the code. One alternative is to compare $n$ bytes at a time, until there is less than $n$ bytes left. At the later clock cycle, we would need to generate all $0..n-1$ byte comparison to deal with the modulus. The minimised code structure can been seen at Listing \ref{correct-comparsion}. With that approach we would be able pass both behavioural simulation and post-implementation hardware simulation. However, as it finally turns out, this solution would impose too strict timing on the wire placement and substantial load on the driving signals to cause metastability and fail timing constraints\footnote{See Section \ref{section:implementation-hardware-implementation-metastability} and \ref{section:implementation-hardware-implementation-timing} for more information on signal metastability and timing constraints}. Further pipeling would be required to make the filter work properly in hardware.
+Hence to work around this issue, we will have to eliminate all dynamic width comparison within the code. One alternative is to compare $n$ bytes at a time, until there is less than $n$ bytes left. At the later clock cycle, we would need to generate all $0 \;...\;n-1$ byte comparison to deal with the modulus. The minimised code structure can been seen at Listing \ref{lst:correct-comparison}. With that approach we would be able pass both behavioural simulation and post-implementation hardware simulation. However, as it finally turns out, this solution would impose too strict timing on the wire placement and substantial load on the driving signals to cause metastability and fail timing constraints\footnote{See Section \ref{section:implementation-hardware-implementation-metastability} and \ref{section:implementation-hardware-implementation-timing} for more information on signal metastability and timing constraints}. Further pipeling would be required to make the filter work properly in hardware.
 
 \subsection{Timing Pitfalls - Clock Domain Crossing and Signal Metastability}
 \label{section:implementation-hardware-implementation-metastability}
@@ -850,7 +857,7 @@ As mentioned previously in Section \ref{section:implementation-hardware-implemen
 We were originally unaware of the CDC metastability issue and experienced unpredictable cases of packet losing and disappearing in the middle of the process. The issue was later relieved when we throttle the processing core down to $25$ MHz and use the same reference clock as the PHY peripherals. This is not ideal as we could have archived much 2 times faster speed with the processing.
 
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=0.6\textwidth]{imgs/clock-skew.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=0.36\textwidth]{imgs/clock-skew.png}}
   \caption{Clock Skew demonstration \cite{arar-2018}}
   \label{fig:clock-skew}
 \end{figure}
@@ -859,15 +866,175 @@ One might argue that the PHY reference clock is generated by the clock divider w
  
 As explained in design Section \ref{section:design-system-design-hardware}: dual-clock FIFO (DCFIFO) is later designed and implemented in hardware for storing the middle signal states and guaranteeing timing requirements. Also, multiple handshaking logic signals including \code{DV}, \code{EN} and \code{ACK} are in place to further assure successful recognition of these CDC signals.
 
-\newpage
+\subsection{Timing Pitfalls - Unintended Inferred Latches}
 
-\subsection{Timing Pitfalls - Inferred Latches}
+In this section, we will be referring to FFs exclusively as edge-triggered (synchronous) flip flops. Those level-triggered (asynchronous) storage units are referred to as latches for clarification.
+
+In most FPGA designs, FFs are used commonly across most FPGA designs as the basic storage unit. Latches, on the other hand, are rare in FPGA designs but more common in ASICs suited in mainframes and supercomputers \cite{vasumathi-2018}. Latches deployed properly can improve machine cycle time in systems where the clock skew is a substantial fraction of the total clock cycle time \cite{vasumathi-2018}. However, in FPGAs, latch is a very poor match as its main benefit is almost non-existent in such a small chip where its clock distribution skew is effectively zero.
+
+\begin{minipage}{.45\textwidth}
+\begin{lstlisting}[language=VHDL, caption=Inferred Latch with missing branch in \proglang{VHDL}, label={lst:inferred-latch-missing-branch}]
+IF (R_EN = '1') THEN
+  out_d <= in_d;
+END IF;
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.45\textwidth}
+\begin{lstlisting}[language=VHDL, caption=Inferred Latch with incomplete assignment, label={lst:non-inferred-latch}]
+-- default assignment 
+out_d <= (OTHERS => '0');
+IF (R_EN = '1') THEN
+  out_d <= in_d;
+END IF;
+
+-- ELSE statement
+IF (R_EN = '1') THEN
+  out_d <= in_d;
+ELSE
+  out_d <= (OTHERS => '0');
+END IF;
+\end{lstlisting}
+\end{minipage}
+
+Latches are inferred in \proglang{VHDL} code primarily due to the language's guarantee when encountering unassigned signals. As shown in Listing \ref{lst:inferred-latch-missing-branch}, the \code{IF} statement sets \code{out\_d} to \code{in\_d} on branch, but doesn't specify what it shall be when not enabled. In this case, \proglang{VHDL} guarantees that the original value of \code{out\_d} would remain unchanged, hence a latch is inferred to preserve the original \code{out\_d} value. To avoid inferring a latch here, we shall append an \code{ELSE} statement before the \code{END IF} statement or specify a default assignment before the \code{IF} statement, as shown in Listing \ref{lst:non-inferred-latch}.
+
+\begin{lstlisting}[language=VHDL, caption=An sample latch set on packet counter reaching $\mathtt{0x100}$, label={lst:sample-latch-issue}]
+latch_en <= '1' WHEN packet_count = x"100" ELSE '0';
+\end{lstlisting}
+
+Given the asynchronous nature of latches, it can cause not only metastability issues as detailed in the previous Section \ref{section:implementation-hardware-implementation-metastability}, but also worse failures based on hardware implementation details. For example, we can infer a latch that is enabled every time upon packet counter reaching $\mathtt{0x100}$, regardless of the clock, with the code shown in Listing \ref{lst:sample-latch-issue}. This is seems fine as a purely combinatorial logic comprised of several gates and LUTs. However, the signal paths from \code{packet\_count} to \code{latch\_en} would never be perfect and there could be occassional glitches on it. For instance, imagine \code{packet\_count} is has not yet reached $\mathtt{0x100}$, but due to a signal path to \code{latch\_en} being marginally longer than the other route at an XOR-gate, \code{latch\_en} can go to VCC for an instant before settling down to GND, within its clock-to-output delay $t_{co}$. If it were an FF here, no issue will be caused as the FF would be clocked to wait for the next rising edge to update its internal value which is far away at this point in time. Unfortunately, given a latch here, the unintended value in will be set mistakenly. Making it worse, if the logic paths for the \code{latch\_en} signal was just routed differently (with different amount of delays), then the glitch behaviour would also change. It might work just fine in the design until something else completely unrelated changes and the fitter routes the whole design differently on the FPGA causing the failure to happen. This brings great uncertainty to the development and its corresponding fails would seem completely random. During the project, this happened in several occasions where weeks were spent just to figure out a single unneeded latch causing these types of problems.
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=0.6\textwidth]{imgs/latch-timing.png}}
+  \caption{Latch strict timing requirements \cite{jensen-2020}}
+  \label{fig:latch-timing}
+\end{figure}
+
+Last but not least, using latches also imposes stricter timing requirements on the placer and router. As shown in Figure \ref{fig:latch-timing}, the left hand side of the Figure illustrates a signal traversing from a latch to a FF. Since the latch only guarantees stability during the lower half of the cycle, the logic depth is heavily restricted as we could waste the entire clock VCC period waiting for a latch to be stable. Instead, when traversing from a FF to another one, the router can utilise the full clock period as FFs would only change upon a rising clock edge.
+
+In all, we have thoroughly analysed the timing pitfalls caused by implicitly inferring latches within the design. The main takeaway that we had throughout the debugging process is the in-depth understanding of why all sorts of issues happen with latches in the FPGA, and to avoid latches unless strictly necessary in all future designs.
 
 \subsection{Timing Pitfalls - Pipelining and strict timing constraints}
 \label{section:implementation-hardware-implementation-timing}
 
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/timing-path.png}}
+  \caption{Signal Propagation paths within a clock cycle from a source FF to a destination FF}
+  \label{fig:timing-path}
+\end{figure}
 
-\subsection{Resource Pitfalls - FPGA Resource Constraint}
+As hardware circuits execute, electric signals would be required to traverse through multiple logic gates within a clock cycle from a source register to a destination register. Upon traversing through each logic gate, there is a tiny portion of time taken for it to produce a stable output, called the gate delay. In a synchronous digital system, signals are regulated to move in lockstep, advancing one stage on each tick of the clock. This is usually enforced by synchronising end point registers (FFs), which forwards the input signal to output upon a rising edge. The number of gates throughout a specific path is called its logic depth. Due to technical limitations, most circuit designs cannot guarantee that all paths are created with the exact same logic depth, as demonstrated in Figure \ref{fig:timing-path}. This creates a very much undesired timing difference in the propagation delays across different paths, which is the major contributor to various glitches as a result of race conditions. In synchronous circuits specifically, the propagation time difference might also cause register timing violations in two different ways:
+
+\begin{itemize}
+    \item Maximum time violation: when the path logic is too deep that the signal would arrive too late on the receiving FF and misses the setup time of the register $t_{SU}$.
+    \item Minimum time violation: when the path logic is not long enough so the signal changes too soon after the clock's state transition. The receive FF would not have enough hold time $t_{H}$ for the input signal to register properly.
+\end{itemize}
+
+The exact of signal arrival can vary due to numerous (Power, Voltage, Temperature) PVT reasons. In an attempt to minimise the error caused in a complex system and ensure proper circuit operation, FPGA design tools like \code{Vivado} includes Static Timing Analysis (STA) as part of the place and route implementation process. SHOW A PICTURE OF TIMING ANALYSIS IN ACTION.
+
+Typically as the system gets more complex, there is higher chance that the design would trigger some maximum time violations. This is usually the result of having several logic paths being too deep within a clock cycle, or designing a signal that is required to drive too many other signals throughout the circuit. When implementing the DNS payload filter, as shown in Listing \ref{lst:correct-comparison}. Section \ref{section:implementation-hardware-debugging-hdl-pitfalls-simulation-and-implementation}, all the code within the listing describes the circuit behaviour within the same clock cycle. Essentially, we are attempting to put both packet size comparison (\code{s.fpktc} to bits count) and packet content comparison (\code{rd.dnsPkt} segment to \code{f.dnsList(s.fdnsc) segment}) logic circuits between two registers, which could be too depth for this board's timing requirements. Therefore, we need to pipeline the single task into various clock cycles to reduce the logic depth. As laid out in Listing \ref{lst:pipelined-design-dns-comparison}, multiple extra states are introduced to minimise the amount of logic within the same clock cycle. Although this is would surely increase the overall computation time and latency as it now takes four times more of clock cycles to process the same amount of information, we are strictly constrained by the overall chip capability with regards to timing and is unable to compress the logic even further.
+
+\begin{minipage}{.45\textwidth}
+\begin{lstlisting}[language=VHDL, caption=Pipelined design from Listing \ref{lst:correct-comparison}, label={lst:pipelined-design-dns-comparison}]
+WHEN CmpPktCheck =>
+  ...
+  IF (s.fpktc >= 32) THEN
+    sin.s <= CmpPktArea32;
+  ELSIF (s.fpktc >= 24) THEN
+    sin.s <= CmpPktArea24;
+  ELSIF (s.fpktc >= 16) THEN
+    sin.s <= CmpPktArea16;
+  ELSIF (s.fpktc >= 8) THEN
+    sin.s <= CmpPktArea8;
+  ELSE
+    ...
+  END IF;
+
+WHEN CmpPktArea32 =>
+  IF COMPARE_32_BITS THEN
+  ... ELSE ...
+  END IF;
+
+WHEN CmpPktArea24 =>
+  IF COMPARE_24_BITS THEN
+  ... ELSE ...
+  END IF;
+
+WHEN CmpPktArea16 =>
+  IF COMPARE_16_BITS THEN
+  ... ELSE ...
+  END IF;
+
+WHEN CmpPktArea8 =>
+  IF COMPARE_8_BITS THEN
+  ... ELSE ...
+  END IF;
+
+WHEN CmpPktDone =>
+  IF (s.fpktmf = '1') THEN
+    -- there's a match
+  ELSIF ... THEN
+    -- all check done
+  ELSE
+    -- increment pkt counter
+  END IF;
+
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.45\textwidth}
+\begin{lstlisting}[language=VHDL, caption=Minimal Example in \proglang{VHDL} of a signal driving too many other signals, label={lst:signal-driving-abuse}]
+TYPE rcv_t IS RECORD
+s : state_t; -- Parse State
+c : NATURAL RANGE 0 TO 65535; -- Count
+END RECORD;
+SIGNAL r, rin : rcv_t
+:= rcv_t'(
+  s => Preamble,
+  c => 0,
+);
+BEGIN
+  rcv_nsl : PROCESS (E_RX_CLK)
+  BEGIN
+  ...
+    CASE r.s IS
+      WHEN Preamble =>
+        IF r.c = 15 THEN 
+          rin.c <= r.c ...; ELSE ...;
+        END IF;        
+      WHEN StartOfFrame =>
+        IF r.c = 1 THEN 
+          rin.c <= r.c ...; ELSE ...;
+        END IF;
+      WHEN EtherMACDST =>
+        IF r.c = 5 THEN 
+          rin.c <= r.c ...; ELSE ...;
+        END IF;
+      WHEN EtherMACSRC =>
+        IF r.c = 5 THEN 
+          rin.c <= r.c ...; ELSE ...;
+        END IF;
+      WHEN EtherType =>
+        IF r.c = 1 THEN 
+          rin.c <= r.c ...; ELSE ...;
+        END IF;
+      WHEN IPIHL => ... -- Uses r.c
+      WHEN IPVersion => ... -- Uses r.c
+      WHEN IPDSCPECN => ... -- Uses r.c
+      WHEN IPLength => ... -- Uses r.c
+      WHEN IPID => ... -- Uses r.c
+      ...
+\end{lstlisting}
+\end{minipage}
+
+Another example of timing constraint violation occurs when we abuse counter \code{c} in multiple occasions. Also, as seen in a minimal example from Listing \ref{lst:signal-driving-abuse}, we are using the same counter \code{c} in all cases across the parsing states. This would give router more difficulty when placing the registers storing \code{c} as the signals it drives are scatter around the chip. Signal traverse time is lower bounded by the speed of light and the distance would matter quite substantially on a picosecond level. As the designer, we would need to declare multiple signal counters (i.e. \code{r.ipc} and \code{r.udpc}) for different stages to make sure the placement is more localised and alleviate the drive load on each of the counters. 
+
+Unlike software compilers which could make optimisations as long as the logic remains intact, the hardware synthesizer would not actively optimise the timing by allocating more registers or introduce more pipeline. Compared to software engineering, it is surely much more complex but we do gain much more complete control over the exact steps of computation when implementing a hardware based system.
+
+\subsection{Resource Pitfalls - FPGA Placement Constraint}
+
+As mentioned in Section \ref{section:introduction-tools-hardware}, we initially started with the Spartan 3E Starter Kit board, which was released back in 2006. 
+
+WE NOW NEED BETTER ONES
 
 \subsection{Debug Methodologies}
 
