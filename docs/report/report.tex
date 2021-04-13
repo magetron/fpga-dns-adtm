@@ -381,7 +381,7 @@ The receiver socket operates like a daemon thread that is listening to all netwo
 
 The sender socket, on the other side of the spectrum, is only called when necessary. When an command is issued by the controller logic, the corresponding packet builder would build an administrative, test or probe packet that will be sent to the FPGA. A response might later be received and then coordinated by the receiver as discussed above.
 
-With the aim to provide a future proof system, we also designed Application Programming Interfaces (APIs) for more complex algorithms such as entropy-based anomaly detectors to fetch and analyse the metrics captured by the FPGA. After the analysis, the algorithms can proactively re-configure the FPGA with several simple function calls. The APIs are designed as an extension, enabling developers to engineer complex algorithms making smarter decisions and push operational changes to FPGA instantaneously.
+With the aim to provide a future proof system, we also designed APIs for more complex algorithms such as entropy-based anomaly detectors to fetch and analyse the metrics captured by the FPGA. After the analysis, the algorithms can proactively re-configure the FPGA with several simple function calls. The APIs are designed as an extension, enabling developers to engineer complex algorithms making smarter decisions and push operational changes to FPGA instantaneously.
 
 \section{System Usage Sample Topology}
 
@@ -1064,9 +1064,13 @@ Chipscope and LED
 
 \section{Software Control System}
 
-The software system implementation can be 
+The software system implementation can be mainly divided into three parts, namely the CLI interface (front-end), the FPGA utilities (middleware) and communication infrastructure with the FPGA (back-end).
 
 \subsection{CLI interface}
+
+The front-end functionalities are built based on the Edit line Library \code{libedit} that provides extensive CLI APIs. Hence, our application can have application history, auto-completion infrastructure out of the box.
+
+When receiving an string input from the user, the parser will parser the string on space, and query the function pointer table with regards to which function to be called.
 
 
 
