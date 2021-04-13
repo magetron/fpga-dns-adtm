@@ -475,7 +475,7 @@ In this chapter, we will be discussing implementation details of the FPGA-based 
 \label{section:implementation-hardware-implementation}
 
 \begin{figure}[H]
-  \makebox[\textwidth][c]{\includegraphics[width=0.78\textwidth]{imgs/on-chip-impl.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=0.6\textwidth]{imgs/on-chip-impl.png}}
   \caption{Final Chip Implementation of the system on Artix-A7 (XC7A35TICSG324-1L)}
   \label{fig:on-chip-impl}
 \end{figure}
@@ -1070,17 +1070,56 @@ The software system implementation can be mainly divided into three parts, namel
 
 The front-end functionalities are built based on the Edit line Library \code{libedit} that provides extensive CLI APIs. Hence, our application can have application history, auto-completion infrastructure out of the box.
 
-When receiving an string input from the user, the parser will parser the string on space, and query the function pointer table with regards to which function to be called.
+\begin{lstlisting}[language=C++, caption=\code{COMMAND} structure,  label={lst:command-structure}]
+typedef struct {
+   const char *name;    /* User printable name of the function. */
+   rl_icpfunc_t *func;  /* Function to call to do the job. */
+   const char *doc;     /* Documentation for this function.  */
+} COMMAND;
 
+COMMAND commands[] = {
+  { "admin", com_admin, "FPGA filter administrator utilities" },
+  { "stats", com_stats, "FPGA filter stats utilities"},
+  { "test", com_test, "FPGA test utilities"},
+  ...
+  { (char *)nullptr, (rl_icpfunc_t *)nullptr, (char *)nullptr }
+};
 
+COMMAND admin_commands[] = {
+  { "show", com_admin_show, "show current / on-FPGA admin configurations [fpga/curr]" },
+  { "edit", com_admin_edit, "edit current admin configurations" },
+  ...
+  { (char *)nullptr, (rl_icpfunc_t *)nullptr, (char *)nullptr }
+};
+\end{lstlisting}
 
-\newpage
+When receiving an string input from the user, the parser will parser the string on space, and query the function pointer table named the \code{COMMAND} struct (shown in Listing \ref{lst:command-structure}), with regards to which function to be called. Designed with the delegation pattern in mind \cite{gamma-1995}, each higher-level command would query their own table and delegate the task to a lower-level command recursively  until a final utility function has been called. For example, when user types in \code{admin show fpga}, the command look up process will be delegated to \code{execute()}, \code{com\_admin()} and \code{com\_admin\_show()} respectively. Function \code{com\_admin\_show()} would receive the stripped down parameter \code{fpga} and call relevant middleware function to complete the task. 
 
-CLI parser / command execution structure, function pointers
+\subsection{FPGA Utilities}
 
-bit manipulation in C/C++, endianess
+Functions in this layer handles the transition from FPGA messages to software understandable structures. In particular, it includes SipHash software implementation, bit compress and decompress functions and bit/byte-endianness correction utilities. There are also several temporary states / caches stored within this layer including the current admin configuration in edit, waiting to be applied, the last queried FPGA status and metrics and etc. Several notable functions in this layer are:
+\begin{itemize}
+    \item \code{parse\_probe\_pkt} that uses bit manipulation functions to parse the bit-compressed FPGA probe response and validate its integrity.
+    \item \code{write\_admin\_pkt} that writes administration payload and compress into FPGA-recognisable bit format, and append SipHash verification MAC to the payload.
+    \item \code{test\_dns\_filters}, \code{test\_reply\_filters}, ... that generates random packets and validates the hardware correctness.
+    \item \code{print\_fpga\_stats}, \code{print\_fpga\_configurations}, ... that aligns and prints the messages to \code{stdout} for users to examine.
+\end{itemize}
 
-Other tools developed to streamline software development process
+\subsection{FPGA Communication Infrastructure}
+
+In the bottom layer, there are two main threads that handles sending and receiving packets respectively to and from the FPGA. Since sending packets is only a function call, we integrate this behaviour within the main thread. However, receiving reports and metrics from the FPGA require constant listening that may block the main thread. Hence, we utilised another thread to do the receiving asynchronously. When the thread receives a packet on the raw socket that belongs to the FPGA and is of interest, it would record the packet, call the parser and store the parsed structure in the cache.
+
+\subsection{Other tools and utilities developed in the project}
+
+Throughout the development process, we also developed several utilities that was particularly useful. 
+
+\begin{itemize}
+    \item \code{admin\_builder}: a command line tool that builds a desired administration packet based on command line arguments, saves and loads admin configurations to and from files. It was later integrated into the system as command \code{admin}.
+    \item \code{crc32\_checker}: a command line tool that generates/checks Ethernet CRC32 FCS from binary / text files. It was particularly useful at early stages of debugging to compare its result with the hardware simulator.
+    \item \code{siphash\_checker}: a command line tool that generates/checks SipHash MAC checksum from binary / text files. It was adapted based on the software reference implementation \cite{aumasson-bernstein-2012} to validate implementation in hardware.
+    \item \code{pkt\_recevier/pkt\_sender}: a command line tool that interacts with raw socket (Linux) / BPF (BSD-based systems) to send and receive packets to and from the FPGA. It takes input from command line arguments and adapts to lower level OS accordingly. It was later integrated into the back-end of the software system.
+\end{itemize}
+
 
 \chapter{Validation and Evaluation}
 
