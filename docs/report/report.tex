@@ -1062,7 +1062,7 @@ In most cases, getting it right in simulator would not mean getting it to work i
 One might ask, as a network project, we can utilise network packets to observe the internal states. This is partially true as we can retrieve certain information (i.e. packet missing, duplicate packets) from the network behaviour. However, most NIC nowadays would offload Ethernet, IP checksums and sizes calculations. In other words, the operating system network stack wouldn't even receive the packet if any of the payload is incoherent with checksums or size fields. In some cases, the FPGA would be faulty and keep sending packets at an 10us interval non-stop. These packets floods the testing machine, spikes the CPU usage and kills \code{Wireshark} as a result. Hence, it is feasible to debug the hardware during later stages of the development, but it is simply not possible to do so when we were still developing MACs and packet constructors.
 
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{imgs/ila.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/ila.png}}
   \caption{ILA debugging trigger sample with \code{Vivado 2020.2}}
   \label{fig:ila-debug-fpga}
 \end{figure}
@@ -1116,7 +1116,7 @@ Functions in this layer handles the transition from FPGA messages to software un
 
 In the bottom layer, there are two main threads that handles sending and receiving packets respectively to and from the FPGA. Since sending packets is only a function call, we integrate this behaviour within the main thread. However, receiving reports and metrics from the FPGA require constant listening that may block the main thread. Hence, we utilised another thread to do the receiving asynchronously. When the thread receives a packet on the raw socket that belongs to the FPGA and is of interest, it would record the packet, call the parser and store the parsed structure in the cache.
 
-\subsection{Other tools and utilities developed in the project}
+\subsection{Other software tools and utilities}
 
 Throughout the development process, we also developed several utilities that was particularly useful. 
 
@@ -1127,17 +1127,100 @@ Throughout the development process, we also developed several utilities that was
     \item \code{pkt\_recevier/pkt\_sender}: a command line tool that interacts with raw socket (Linux) / BPF (BSD-based systems) to send and receive packets to and from the FPGA. It takes input from command line arguments and adapts to lower level OS accordingly. It was later integrated into the back-end of the software system.
 \end{itemize}
 
-
 \chapter{Validation and Evaluation}
 
-Power consumption low, performance high
+In this section, we will be elaborating on our tests and validations in place to ensure the FPGA-based system's correctness. Also, we will be measuring the system's performance and evaluating its usability in large scale networks. 
 
-\section{Simulation Unit Test-bench}
+\section{Simulation Testbenches}
 \label{section:validation-simulation}
 
-\section{Hardware Integration Testing via Software}
+We first validate the HDL design's correctness via constructing test benches in \proglang{VHDL}. The testbench is comprised of several components listed below:
 
-\section{Performance Evaluation}
+\begin{itemize}
+    \item \code{test\_main.vhd}: The top-level test unit instantiates the \code{main} component and defines clock signals simulating the oscillators. Tests are called in the simulation main function of the unit.
+    \item \code{test\_dns\_pkts.vhd}, \code{test\_srcip\_pkts.vhd} ... : These units include test cases for each hardware features, compiled by calling infrastructural packet functions in a given sequence. 
+    \item \code{test\_pkt\_infra.vhd}: This unit contains infrastructural test functions simulating fragments of packets sent to the MII interface. Basic package functions such as \code{receive\_preamble()} and \code{receive\_admin\_config()} are provided for higher level test cases.
+\end{itemize}
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{docs/report/imgs/simulation.png}}
+  \caption{Behavioural Simulation of the system in \code{Vivado 2020.2}}
+  \label{fig:behavioural-simulation-fpga}
+\end{figure}
+
+Within the behavioural simulation of test benches, HDL object states are transparent for review, similar to single-stepping with a software debugger. Breakpoints can be set in HDL code to monitor signal states at a given instant. This step confirms the general logic correctness independent of the actual implementation. An example of behavioural testbench simulation is shown in Figure \ref{fig:behavioural-simulation-fpga}. Zooming in on the waveform would enable us to view the anticipated HDL state at each instant on a picosecond level.
+
+After synthesis and netlist generation, we can instruct \code{Vivado} to simulate on a netlist level, or even on a chip level after implementation. The simulation results can be more accurate and closer to hardware. However, we would not be able to set breakpoints or view the HDL objects anymore. Instead, we will be provided with hardware netlists information at each instant.
+
+Our system has passed all test cases simulations at behavioural, netlist and chip levels, with a $100\%$ simulation coverage.
+
+\section{Hardware Integration Testing via the Software System}
+
+With reference to the aforementioned issues in Section \ref{section:implementation-hardware-debugging}, we constantly faced regressions in functionalities upon completely unrelated changes in HDL. Hence, we developed a hardware verification utility in software to conduct integration testing, so as to spot any function regression at the earliest notion. The system was later integrated into the software control system as the \code{test} command. 
+
+When testing the hardware, the system would first generate pseudo-random admin configurations with MAC/IP addresses, UDP ports and DNS domains. It will then be applied to FPGA and instantly probed and read back to validate the deployment and probe functionality. Then, the system would stress test the FPGA via flooding packets with random patterns as fast as the software is capable of to validate the checkers in FPGA. The same procedure will be repeated with emphasis on different parts of the filters, operations modes and packet constructors, each with 3 runs, to make sure the correctness of the hardware circuit. In total, roughly 1200 packets will be communicated on the wire throughout the tests. 
+
+SCREENSHOT OF TESTS in action.
+
+As shown in Figure \ref{}, the submission candidate version of the system passes all integration and stress tests.
+
+\section{Evaluation}
+
+We further evaluate the FPGA-based design and system in terms of performance, power consumption and scalability.
+
+The performance is evaluated by executing the aforementioned software stress tests with a Raspberry Pi 4i (Broadcom BCM2711 with Integrated Gigabit Ethernet Controller), and measuring the reply latency. Given the equipment limitations, we are unable to accurately measure the exact latency induced by the Raspberry Pi NIC and the signal travelling on the Ethernet cable. Hence we are estimating the extra latency according to publicly available data sheets and standards. According to IEEE 802.3 \cite{ieee802.3ethernet-2018}, the propagation delay on an standard Cat5 Ethernet cable would be around $5.30 \; ns/m$. Thus we calculate the round trip latency on the $2.5m$ cable as  
+$$
+t_r = 2.5\; m \times 2 \times 5.30\; ns /m = 0.0265 \; \mu s
+$$ 
+A gigabit NIC encoding and decoding a packet for the twisted pair Cat 5 cable is estimated to take around $5 \; \mu s$ \cite{texas-instruments-dp83848x}, including system bus and Interrupt Request (IRQ) latency of $5 \; \mu s$. Hence, we are estimating the total extra latency of one decode, one encode and one interrupt to be around $15.00\; \mu s$.
+
+Wireshark records the packet communications throughout the test cases and we calculated the trimmed Round Trip Time (RTT) mean (95\%) as follows:
+\begin{itemize}[noitemsep]
+    \item Network Packets passing all checkers: $27.238\; \mu s$
+    \item Spoofed DNS Reply Packets: $28.753\; \mu s$
+    \item Probe Packets: $67.586\; \mu s$
+\end{itemize}
+See Table \ref{table:performance-test} for RTT measurements of each test case.
+
+\begin{table}[h!]
+\begin{tabular}{ll|ll|ll|ll}
+\hline
+testcase  & avg ($\mu s$) & testcase & avg ($\mu s$) & testcase   & avg ($\mu s$) & testcase  & avg ($\mu s$) \\ \hline
+srcmac-b0 & 32.276   & srcip-b0 & 31.942   & srcport-b0 & 39.743   & dns-b0      & 24.766   \\
+srcmac-b1 & 29.612   & srcip-b1 & 29.412   & srcport-b1 & 36.372   & dns-b1      & 33.065   \\
+srcmac-b2 & 29.466   & srcip-b2 & 22.334   & srcport-b2 & 26.45    & dns-b2      & 27.856   \\
+srcmac-w1 & 45.432   & srcip-w1 & 23.285   & srcport-w1 & 34.242   & dns-w1      & 18.767   \\
+srcmac-w2 & 27.282   & srcip-w2 & 17.747   & srcport-w2 & 17.174   & dns-w2      & 18.876   \\
+dstmac-b0 & 15.761   & dstip-b0 & 31.013   & dstport-b0 & 15.83    & spoof-reply & 28.753   \\
+dstmac-b1 & 23.267   & dstip-b1 & 36.306   & dstport-b1 & 29.067   & probe       & 34.679   \\
+dstmac-b2 & 20.942   & dstip-b2 & 16.31    & dstport-b2 & 30.15    &             &          \\
+dstmac-w1 & 22.123   & dstip-w1 & 17.205   & dstport-w1 & 17.565   &             &          \\
+dstmac-w2 & 18.568   & dstip-w2 & 52.721   & dstport-w2 & 40.405   &             &          \\ \hline
+\end{tabular}
+\caption{RTT measures of all test cases on Raspberry Pi 4B}
+\label{table:performance-test}
+\end{table}
+
+Therefore, we estimate the processing latency of the FPGA as:
+\begin{itemize}[noitemsep]
+    \item Network Packets passing all checkers: $27.238\; \mu s - 15\mu s = 12.238\; \mu s$
+    \item Spoofed DNS Reply Packets: $28.753\; \mu s - 15\; \mu s = 13.753\; \mu s$
+    \item Probe Packets: $34.679\; \mu - 15\; \mu s = 19.679\; \mu s$
+\end{itemize}
+If we count in the PHY encoding / decoding time taken on the FPGA board, we estimate the processing latency of the FPGA design as 
+\begin{itemize}[noitemsep]
+    \item Network Packets passing all checkers: $12.238\; \mu s - 10\; \mu s= 2238\; ns$
+    \item Spoofed DNS Reply Packets: $13.753\; \mu s - 10\; \mu s = 3753\; ns$
+    \item Probe Packets: $19.679\; \mu - 10 \mu s = 9679\; ns$
+\end{itemize}
+The experiment results are largely coherent with the estimates we made during implementation in Section \ref{section:implementation-hardware-implementation}.
+
+WRITE ABOUT POWER CONSUMPTION AND SCALABILITY IN PERFORMANCE AND POWER
+
+\newpage
+
+
+Power Consumption, Performance
 
 \chapter{Conclusions and Future Work}
 
