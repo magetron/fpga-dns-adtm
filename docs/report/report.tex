@@ -14,6 +14,7 @@
 \usepackage{xcolor}
 \usepackage{pdflscape}
 \usepackage{textcomp}
+\usepackage{titlesec}
 \usepackage[backend=biber,style=numeric,sortcites,sorting=none]{biblatex}
 \usepackage{subfig}
 \addbibresource{report.bib}
@@ -384,6 +385,7 @@ The sender socket, on the other side of the spectrum, is only called when necess
 With the aim to provide a future proof system, we also designed APIs for more complex algorithms such as entropy-based anomaly detectors to fetch and analyse the metrics captured by the FPGA. After the analysis, the algorithms can proactively re-configure the FPGA with several simple function calls. The APIs are designed as an extension, enabling developers to engineer complex algorithms making smarter decisions and push operational changes to FPGA instantaneously.
 
 \section{System Usage Sample Topology}
+\label{section:design-system-usage-sample}
 
 \subsection{DNS Data Exfiltration}
 
@@ -1109,8 +1111,14 @@ Functions in this layer handles the transition from FPGA messages to software un
     \item \code{parse\_probe\_pkt} that uses bit manipulation functions to parse the bit-compressed FPGA probe response and validate its integrity.
     \item \code{write\_admin\_pkt} that writes administration payload and compress into FPGA-recognisable bit format, and append SipHash verification MAC to the payload.
     \item \code{test\_dns\_filters}, \code{test\_reply\_filters}, ... that generates random packets and validates the hardware correctness.
-    \item \code{print\_fpga\_stats}, \code{print\_fpga\_configurations}, ... that aligns and prints the messages to \code{stdout} for users to examine.
+    \item \code{print\_fpga\_stats}, \code{print\_fpga\_configurations}, ... that aligns and prints the messages to \code{stdout} for users to examine, see Figure \ref{fig:console-screenshot} for a CLI print example.
 \end{itemize}
+
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=0.56\textwidth]{imgs/console-sample.png}}
+  \caption{Configuration and Metrics Captured on the FPGA shown to user}
+  \label{fig:console-screenshot}
+\end{figure}
 
 \subsection{FPGA Communication Infrastructure}
 
@@ -1129,7 +1137,7 @@ Throughout the development process, we also developed several utilities that was
 
 \chapter{Validation and Evaluation}
 
-In this section, we will be elaborating on our tests and validations in place to ensure the FPGA-based system's correctness. Also, we will be measuring the system's performance and evaluating its usability in large scale networks. 
+In this chapter, we will be elaborating on our tests and validations in place to ensure the FPGA-based system's correctness. Also, we will be measuring the system's performance and evaluating its usability and scalability. 
 
 \section{Simulation Testbenches}
 \label{section:validation-simulation}
@@ -1158,11 +1166,15 @@ Our system has passed all test cases simulations at behavioural, netlist and chi
 
 With reference to the aforementioned issues in Section \ref{section:implementation-hardware-debugging}, we constantly faced regressions in functionalities upon completely unrelated changes in HDL. Hence, we developed a hardware verification utility in software to conduct integration testing, so as to spot any function regression at the earliest notion. The system was later integrated into the software control system as the \code{test} command. 
 
-When testing the hardware, the system would first generate pseudo-random admin configurations with MAC/IP addresses, UDP ports and DNS domains. It will then be applied to FPGA and instantly probed and read back to validate the deployment and probe functionality. Then, the system would stress test the FPGA via flooding packets with random patterns as fast as the software is capable of to validate the checkers in FPGA. The same procedure will be repeated with emphasis on different parts of the filters, operations modes and packet constructors, each with 3 runs, to make sure the correctness of the hardware circuit. In total, roughly 1200 packets will be communicated on the wire throughout the tests. 
+When testing the hardware, the system would first generate pseudo-random admin configurations with MAC/IP addresses, UDP ports and DNS domains. It will then be applied to FPGA and instantly probed and read back to validate the deployment and probe functionality. Then, the system would stress test the FPGA via flooding packets with random patterns as fast as the software is capable of to validate the checkers in FPGA. The same procedure will be repeated with emphasis on different parts of the filters, operation modes and packet constructors, each with 3 runs, to make sure the correctness of the hardware circuit. In total, roughly 1200 packets will be communicated on the wire throughout the tests. 
 
-SCREENSHOT OF TESTS in action.
+\begin{figure}[H]
+  \makebox[\textwidth][c]{\includegraphics[width=0.72\textwidth]{imgs/test-screenshot.png}}
+  \caption{Hardware validation results via the Software System}
+  \label{fig:hardware-validation-results}
+\end{figure}
 
-As shown in Figure \ref{}, the submission candidate version of the system passes all integration and stress tests.
+As shown in Figure \ref{fig:hardware-validation-results}, the submission candidate version of the system passes all integration and stress tests.
 
 \section{Evaluation}
 
@@ -1214,12 +1226,15 @@ If we count in the PHY encoding / decoding time taken on the FPGA board, we esti
     \item Spoofed DNS Reply Packets: $13.753\; \mu s - 10\; \mu s = 3753\; ns$
     \item Probe Packets: $19.679\; \mu - 10 \mu s = 9679\; ns$
 \end{itemize}
-We are rather confident with our approximations, as the experiment results are largely coherent with the estimates we made during implementation in Section \ref{section:implementation-hardware-implementation}. For a low-end FPGA board at the cost of just $£96$, the network processing speed and capability it brings is quite impressive. Comparatively, the fastest DNS server powered by Unikernel Mirage OS has a process latency of around $500 \mu s$, regardless of the latency on wire \cite{briggs-2014, madhavapeddy-2013}. Moreover, as we have measured, a typical DNS query to a Cloudflare DNS server through the Internet takes roughly $40\;ms - 60\;ms$. Thus, we can observe that the main latency in a DNS transaction actually lies in the transmission time through the wires, which is inevitable. Hence, it is safe to say that the extra latency overhead of less than $30\; \mu s$ introduced by the system is minimal and almost negligible.
+
+We are rather confident with our approximations, as the experiment results are largely coherent with the estimates we made during implementation in Section \ref{section:implementation-hardware-implementation}. For a low-end FPGA board at the cost of just $£96$, the network processing speed and capability it brings is quite impressive. Comparatively, the fastest DNS server powered by Unikernel Mirage OS has a process latency of around $500 \mu s$, regardless of the latency on wire \cite{briggs-2014, madhavapeddy-2013}.  As we have measured, a typical DNS query to a Cloudflare DNS server through the Internet takes roughly $40\;ms - 60\;ms$. Thus, we can observe that the main latency in a DNS transaction actually lies in the transmission time through the wires, which is inevitable. Hence, it is safe to say that the extra latency overhead of less than $30\; \mu s$ introduced by the system is minimal and almost negligible.
+
+On a side note, with regards to the FPGA system also aimed at detecting malicious DNS traffic built by Brennon et al.\cite{thomas-2011}, we were able to retrieve its performance or latency data, hence not comparable in this section.
 
 \subsection{Power}
 
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/power-consumption.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=0.8\textwidth]{imgs/power-consumption.png}}
   \caption{Power Consumption Analysis of the system in\code{Vivado 2020.2}}
   \label{fig:power-consumption-analysis}
 \end{figure}
@@ -1239,7 +1254,20 @@ The HDL design and hardware implementation is scalable in multiple ways:
 
 \chapter{Conclusions and Future Work}
 
+This chapter rounds off the project and lays out future works that can be done potentially with a higher budget.
+
 \section{Conclusions}
+In this project, we have designed, implemented and evaluated an innovative FPGA-based system aiming that detecting DNS flood and DNS exfiltration attacks at scale and mitigating them in real-time. 
+
+As the first item of the deliverable, we showed that the FPGA-based system capable of detecting and mitigating DNS exfiltration and flood attacks. The network administrator would be able to tune the FPGA configurations so as to quickly adapt to various attacking scenarios. Most notably, the FPGA processor incorporates two operations modes, namely Man-on-the-Side DNS spoof mode, and Man-in-the-Middle Payload filter mode, to detect and mitigate DNS exfiltration and DNS flood attacks respectively. The implemented hardware has been thoroughly tested through simulation and integration tests to ensure its correctness.
+
+Moreover, we also illustrated the performance-to-power and performance-to-cost efficiency of the proposed hardware system. The latency tests and power analysis shows that a budget FPGA (Digilent Arty-A7 35T costing $£96$) can perform the aforementioned network tasks and operations with blazing fast speed (minimal RTT latency of only $12\; \mu s$, packet process latency of $2500\; ns$), and ultra low power consumption (maximum power consumption of only $0.136\; W$). 
+
+Additionally, our hardware solution comes with a CLI software that enables network administrators to easily apply new configurations, block/allow lists, and to instantaneously retrieve FPGA metrics and status. The configurability in hardware also allows higher level algorithms to analyse the traffic and update FPGA settings simultaneously to the FPGA so as to couple with more complex attacking scenarios.
+
+Lastly, our scalability analysis demonstrated the considerations in our HDL design that makes it future-proof when adapting to larger boards with higher-end FPGA cores. As the simulator suggests, our hardware layout would be able to adapt to $1$ Gbps link speed, higher filter depth and $200$ MHz clock frequency in more advanced implementations.
+
+In conclusion, we have built a novel FPGA-based system archiving DNS threat detection and mitigation in real-time. This system is magnitude more performant than traditional solutions against deceitful attacks that relies on the enormous amount of normal DNS traffic, such as DNS data exfiltration and DNS flood attacks. In the long run, this project illustrates the research potential in utilising hardware to monitor large scale networks and block potential attacks on the spot.
 
 \section{Future Work}
 
