@@ -13,6 +13,7 @@
 \usepackage{footmisc}
 \usepackage{xcolor}
 \usepackage{pdflscape}
+\usepackage{pdfpages}
 \usepackage{textcomp}
 \usepackage{titlesec}
 \usepackage[backend=biber,style=numeric,sortcites,sorting=none]{biblatex}
@@ -88,7 +89,7 @@ $\Box$ \end{quotation}}
 {{\Huge High-performance network anomaly detection and threat mitigation via hardware accelerated DNS spoofing and traffic filtering}} \\
 {\large}}
 
-\date{Submission date: 27 March 2021}
+\date{Submission date: 15 Apr 2021}
 \author{Patrick (Daiqi) Wu\thanks{
 {\bf Disclaimer:}
 This report is submitted as part requirement for Patrick (Daiqi) Wu's BSc Computer Science degree at University College London (UCL). It is
@@ -114,7 +115,7 @@ My heartfelt thanks goes to my second supervisor, Phil Demetriou. Thank you for 
 
 My thanks also goes to Dr. Stefano Vissicchio and Prof. Bard Karp for patiently answering my questions throughout the learning process of computer systems and networks.
 
-Finally and most importantly, huge thank you to Monica and my parents. It is your continuous support and encouragement that enables me to be who I am today.
+Finally and most importantly, huge thank you to Monica and my parents, John and Joanna. It is your continuous support and encouragement that enables me to be who I am today.
 \end{abstract}
 
 \tableofcontents
@@ -1284,7 +1285,7 @@ Additionally, our hardware solution comes with a CLI software that enables netwo
 
 Lastly, our scalability analysis demonstrated the considerations in our HDL design that makes it future-proof when adapting to larger boards with higher-end FPGA cores. As the simulator suggests, our hardware layout would be able to adapt to $1$ Gbps link speed, higher filter depth and $200$ MHz clock frequency in more advanced implementations.
 
-In conclusion, we have built a novel FPGA-based system archiving DNS threat detection and mitigation in real-time. This system is magnitude more performant than traditional solutions against deceitful attacks that relies on the enormous amount of normal DNS traffic, such as DNS data exfiltration and DNS flood attacks. In the long run, this project illustrates the research potential in utilising hardware to monitor large scale networks and block potential attacks on the spot.
+In conclusion, we have built a novel FPGA-based system archiving DNS threat detection and mitigation in real-time. This system is vastly more performant than traditional solutions against deceitful attacks that relies on the enormous amount of normal DNS traffic, such as DNS data exfiltration and DNS flood attacks. In the long run, this project illustrates the research potential in utilising hardware to monitor large scale networks and block potential attacks on the spot.
 
 \addcontentsline{toc}{chapter}{References}
 \printbibliography[title=References]
@@ -1293,10 +1294,18 @@ In conclusion, we have built a novel FPGA-based system archiving DNS threat dete
 
 \chapter{Project Demo}
 
-\chapter{Code Listing}
+TBD. A youtube video maybe.
 
-URL \url{https://github.com/magetron/cpu-fpga-nwofle}
+\chapter{Project Manual}
 
-\chapter{Original Project Proposal}
+TBD. Write a Markdown Manual on GitHub.
 
+\chapter{Code Repository}
+
+The full project, including \proglang{VHDL} source code for hardware, and \proglang{C/C++} source code for software, is open sourced at  \url{https://github.com/magetron/cpu-fpga-nwofle}, under Apache License 2.0. A copy of the license can be obtained at \url{https://www.apache.org/licenses/LICENSE-2.0}.
+
+This document and the \TeX   source code of this document shall be shared under Creative Commons – Attribution 4.0 International License. A copy of the license can be obtained at \url{https://creativecommons.org/licenses/by/4.0/legalcode}.
+
+\includepdf[pages=-,addtotoc={
+     1,chapter,1,Project Proposal,p1}]{appedix-proposal.pdf}
 \end{document}

@@ -11,6 +11,8 @@
 \usepackage{mathpazo}
 \usepackage{booktabs}
 \usepackage{hyperref}
+\usepackage[backend=biber,style=numeric,sortcites,sorting=none]{biblatex}
+\addbibresource{proposal.bib}
 
 \newcommand{\ie}{i.e.}
 \newcommand{\eg}{e.g.}
@@ -83,6 +85,7 @@ In this project, the main goal is to build an offload engine that handles Ethern
 \end{itemize}
 
 \bibliographystyle{unsrt}
-\bibliography{proposal}
+
+\printbibliography[title=References]
 
 \end{document}
