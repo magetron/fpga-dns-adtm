@@ -292,7 +292,7 @@ FPGA is a type of integrated circuit designed to be customised by a designer aft
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\textwidth]{docs/report/imgs/fpga-arch.png}
+  \includegraphics[width=0.3\textwidth]{imgs/fpga-arch.png}
   \caption{FPGA Architecture \cite{xilinx-fpga}}
   \label{fig:fpga-arch}
 \end{figure}
@@ -774,9 +774,9 @@ END PROCESS;
 \end{lstlisting}
 \end{minipage}
 
-At first glance, building hardware with HDL seems to be very similar to engineer software with a programming language, not to mention that \proglang{VHDL} has close resemblance to \proglang{Ada} while \proglang{Verilog} and \proglang{C} are pretty much alike. However, they are fundamentally different as HDL aims at describing static computing models with the explicit notion of concept "time", albeit concurrent or sequential, while software languages aims at producing list of instructions which executes in order. That is why HDLs resembles certain concurrent programming languages in their ability to model parallel processes that executes continuously independent of one another.
+At first glance, building hardware with HDL seems to be very similar to engineer software with a programming language, not to mention that \proglang{VHDL} has close resemblance to \proglang{Ada} while \proglang{Verilog} and \proglang{C} are pretty much alike. However, they are fundamentally different as HDL aims at describing static computing models with the explicit notion of concept ``time", albeit concurrent or sequential, while software languages aims at producing list of instructions which executes in order. That is why HDLs resembles certain concurrent programming languages in their ability to model parallel processes that executes continuously independent of one another.
 
-It is crucial to understand the timing model and promises of a HDL before we program a component. We initially implemented the faulty signal update logic as shown in Listing \ref{lst:faulty-signal-update}. From a software perspective, it would be perfectly valid to update \code{s} and reading it later on in a sequential statement. However, \code{VHDL}'s time model assumes that a signal happen would not happen immediately, but are scheduled at the end of the current process delta cycle. That is to say, this signal \code{s} will not be updated until all executing process have happened. This is a common pitfall when implementing hardware in \proglang{VHDL} and can be very hard to spot in complicated branching statements. Thus, as shown in Listing \ref{lst:correct-signal-update} and previous FSM Listing \ref{lst:one-hot-fsm-minimal}, we would design a current state signal \code{s} to read from and a next state signal \code{sin} to write to within a process, and explicitly updating \code{s} \textleftarrow \code{sin} after delay upon a falling clock edge. 
+It is crucial to understand the timing model and promises of a HDL before we program a component. We initially implemented the faulty signal update logic as shown in Listing \ref{lst:faulty-signal-update}. From a software perspective, it would be perfectly valid to update \code{s} and reading it later on in a sequential statement. However, \code{VHDL}'s time model assumes that a signal change would not happen immediately, but are scheduled at the end of the current process delta cycle. That is to say, this signal \code{s} will not be updated until all executing process have happened. This is a common pitfall when implementing hardware in \proglang{VHDL} and can be very hard to spot in complicated branching statements. Thus, as shown in Listing \ref{lst:correct-signal-update} and previous FSM Listing \ref{lst:one-hot-fsm-minimal}, we would design a current state signal \code{s} to read from and a next state signal \code{sin} to write to within a process, and explicitly updating \code{s} \textleftarrow \code{sin} after delay upon a falling clock edge. 
 
 \begin{lstlisting}[language=VHDL, caption=Faulty Unrolled Loop Sample in \proglang{VHDL}, label={lst:unrolled-loop}]
 proc : PROCESS (clk)
@@ -917,7 +917,7 @@ Last but not least, using latches also imposes stricter timing requirements on t
 
 In all, we have thoroughly analysed the timing pitfalls caused by implicitly inferring latches within the design. The main takeaway that we had throughout the debugging process is the in-depth understanding of why all sorts of issues happen with latches in the FPGA, and to avoid latches unless strictly necessary in all future designs.
 
-\subsection{Timing Pitfalls - Pipelining and strict timing constraints}
+\subsection{Timing Pitfalls - Pipelining and Strict Timing Constraints}
 \label{section:implementation-hardware-implementation-timing}
 
 \begin{figure}[h!]
@@ -1039,7 +1039,7 @@ BEGIN
 \end{lstlisting}
 \end{minipage}
 
-\subsection{Resource Pitfalls - FPGA Placement Constraint}
+\subsection{Resource Pitfalls - FPGA Placement Constraints}
 
 As mentioned in Section \ref{section:introduction-tools-hardware}, we initially started with the Spartan 3E Starter Kit board, which was released back in 2006. The board consists of a \code{XC3S500E} core with $10,476$ logic cells \cite{xilinx-documentation-2011-core} and a SMSC \code{LAN83C185} $10/100$ Mbps Ethernet PHY chip. However, once we have implemented the MAC peripherals on the PHY interface, as specified in Section \ref{section:implementation-hardware-implementation-phy-mac-peripheral}, the LUT usage is already around $9500$ ($90\%$). Moreover, as the utilisation is very high, the placer and router are having difficulties in making the design to meet the timing requirements due to space limitations. Hence, we would need to optimise the resource usage, otherwise the system would not be able to work properly, no to mention the to-be-designed core processing unit would simply be running out of logic slices. 
 
@@ -1143,7 +1143,7 @@ We first validate the HDL design's correctness via constructing test benches in 
 \end{itemize}
 
 \begin{figure}[h!]
-  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{docs/report/imgs/simulation.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/simulation.png}}
   \caption{Behavioural Simulation of the system in \code{Vivado 2020.2}}
   \label{fig:behavioural-simulation-fpga}
 \end{figure}
@@ -1166,7 +1166,9 @@ As shown in Figure \ref{}, the submission candidate version of the system passes
 
 \section{Evaluation}
 
-We further evaluate the FPGA-based design and system in terms of performance, power consumption and scalability.
+We further evaluate the FPGA-based design and system in terms of performance, power consumption and design scalability.
+
+\subsection{Performance}
 
 The performance is evaluated by executing the aforementioned software stress tests with a Raspberry Pi 4i (Broadcom BCM2711 with Integrated Gigabit Ethernet Controller), and measuring the reply latency. Given the equipment limitations, we are unable to accurately measure the exact latency induced by the Raspberry Pi NIC and the signal travelling on the Ethernet cable. Hence we are estimating the extra latency according to publicly available data sheets and standards. According to IEEE 802.3 \cite{ieee802.3ethernet-2018}, the propagation delay on an standard Cat5 Ethernet cable would be around $5.30 \; ns/m$. Thus we calculate the round trip latency on the $2.5m$ cable as  
 $$
@@ -1200,7 +1202,6 @@ dstmac-w2 & 18.568   & dstip-w2 & 52.721   & dstport-w2 & 40.405   &            
 \caption{RTT measures of all test cases on Raspberry Pi 4B}
 \label{table:performance-test}
 \end{table}
-
 Therefore, we estimate the processing latency of the FPGA as:
 \begin{itemize}[noitemsep]
     \item Network Packets passing all checkers: $27.238\; \mu s - 15\mu s = 12.238\; \mu s$
@@ -1213,21 +1214,43 @@ If we count in the PHY encoding / decoding time taken on the FPGA board, we esti
     \item Spoofed DNS Reply Packets: $13.753\; \mu s - 10\; \mu s = 3753\; ns$
     \item Probe Packets: $19.679\; \mu - 10 \mu s = 9679\; ns$
 \end{itemize}
-The experiment results are largely coherent with the estimates we made during implementation in Section \ref{section:implementation-hardware-implementation}.
+We are rather confident with our approximations, as the experiment results are largely coherent with the estimates we made during implementation in Section \ref{section:implementation-hardware-implementation}. For a low-end FPGA board at the cost of just $£96$, the network processing speed and capability it brings is quite impressive. Comparatively, the fastest DNS server powered by Unikernel Mirage OS has a process latency of around $500 \mu s$, regardless of the latency on wire \cite{briggs-2014, madhavapeddy-2013}. Moreover, as we have measured, a typical DNS query to a Cloudflare DNS server through the Internet takes roughly $40\;ms - 60\;ms$. Thus, we can observe that the main latency in a DNS transaction actually lies in the transmission time through the wires, which is inevitable. Hence, it is safe to say that the extra latency overhead of less than $30\; \mu s$ introduced by the system is minimal and almost negligible.
 
-WRITE ABOUT POWER CONSUMPTION AND SCALABILITY IN PERFORMANCE AND POWER
+\subsection{Power}
 
-\newpage
+\begin{figure}[h!]
+  \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{imgs/power-consumption.png}}
+  \caption{Power Consumption Analysis of the system in\code{Vivado 2020.2}}
+  \label{fig:power-consumption-analysis}
+\end{figure}
 
+Figure \ref{fig:power-consumption-analysis} shows the power consumption analysis of the FPGA. The system is estimated to consume $0.062\;W - 0.136\;W$ depending on the working payload at a core frequency of $50$ MHz and a PHY frequency of $25$ MHz. By comparison, a much-slower software firewall \code{firewalld} on a Raspberry Pi 4B would consume around $2.7 \; W$, while an enterprise software-based firewall server would consume more than $150 \; W$ of power to archive similar speed. Hence, for the packet processing capability it offers, the power efficiency gain on the FPGA is also quite notable.
 
-Power Consumption, Performance
+\subsection{Design Scalability}
+
+The HDL design and hardware implementation is scalable in multiple ways:
+
+\begin{itemize}
+    \item Filter Item Limit: Due to distributed RAM and timing constraints, we are limiting each type of filter to 2 items maximum. However, we have tested in simulation that the HDL code shall be extensible by simply changing the constant \code{filter\_depth}.
+    \item Link Speed: Due to board PHY hardware constraints, we are only able to establish a 100 Mbps Ethernet link. Nonetheless, the design can scale to \code{RGMII} interface with minimal changes and support Gigabit Ethernet link speed.
+    \item Clock Frequency: Due to board placement constraints, we are only to set the clock speed to $50$ MHz. With a higher-end FPGA core, the clock frequency can be further increased to $200$ MHz, as tested through the simulator.
+    \item Processing Bandwidth: Although a single FPGA unit is limited by the link speed of $100$ Mbps (roughly $83000$ DNS packets per second), we can increment the number of FPGAs executing in parallel to increase the packet processing capability linearly, since the FPGA core can processes packets at full link speed.
+\end{itemize}
 
 \chapter{Conclusions and Future Work}
 
 \section{Conclusions}
 
 \section{Future Work}
-How the project might be continued, but do not give the impression you ran out of time!
+
+As a final year student project, we are constrained by a strict budget on the FPGA boards and relevant test equipments. The main hardware component, Digilent Arty-A7 35T is a low-end starter board that costs only $£96$, with a limited number of logic slices and less optimal semiconductors. Therefore, the design is fairly limited in complexity and operation frequency, which is crucial to the system's performance and usability.  
+
+
+Segmentation in Packets, FIFO
+
+acceleration with softcore
+
+better string comparison / Trie-based
 
 \addcontentsline{toc}{chapter}{References}
 \printbibliography[title=References]
