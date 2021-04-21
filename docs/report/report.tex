@@ -86,7 +86,7 @@ $\Box$ \end{quotation}}
 
 
 \title{{\vspace{-14em}}
-{{\Huge High-performance network anomaly detection and threat mitigation via hardware accelerated DNS spoofing and traffic filtering}} \\
+{{\Huge High-performance network anomaly detection and threat mitigation via hardware-accelerated DNS spoofing and traffic filtering}} \\
 {\large}}
 
 \date{Submission date: \today \; DRAFT}
@@ -104,7 +104,7 @@ Supervisors: Professor Stephen Hailes, Phil Demetriou}
 \onehalfspacing
 \maketitle
 \begin{abstract}
-DNS has been at the heart of the Internet infrastructure since 1985. All internet operations nowadays, except for IP-static/link-local transactions, rely on DNS to communicate with one another. Given the crucial nature of DNS and the enormous amount of traffic through the network, DNS traffic filtering and monitoring is usually done fairly conservatively, even in highly-secured enterprise networks. Unfortunately, many attackers seize this opportunity to exploit the DNS protocol, aiming to exfiltrate sensitive data, establish backdoors and perform Denial-of-Service attacks on networks. In this project, we present a novel hardware-based system that aims to detect and mitigate DNS-based data-exfiltration and flood attacks in real-time. Our FPGA system is capable of monitoring vast amounts of traffic, extracting DNS payload and checking it against a configurable block/allow list. Upon recognising a match, the hardware will perform a series of actions to mitigate the attack and log the event for future analysis. Our final FPGA-based solution demonstrated both great processing capacity under saturated network load and considerable versatility and scalability against varying DNS attacks. The system boasts an impressive processing latency of just $20\; \mu s$, while consuming only $0.136 \; W$ of power. Along with the hardware, we built a software control toolkit with APIs for network administrators and higher-level algorithms to instantaneously retrieve metrics and configure the FPGA for more complex use cases. This proof-of-concept system illustrates a promising future of using hardware against malicious transactions hiding in massive network traffic.
+DNS has been at the heart of the Internet infrastructure since 1985. All internet operations nowadays, except for IP-static/link-local transactions, rely on DNS to communicate with one another. Given the crucial nature of DNS and the enormous amount of traffic through the network, DNS traffic filtering and monitoring is usually done fairly conservatively, even in highly-secured enterprise networks. Unfortunately, many attackers seize this opportunity to exploit the DNS protocol, aiming to exfiltrate sensitive data, establish backdoors and perform Denial-of-Service attacks on networks. In this project, we present a novel hardware-based system that aims to detect and mitigate DNS-based data-exfiltration and flood attacks in real-time. Our FPGA system is capable of monitoring vast amounts of traffic, extracting DNS payload and checking it against a configurable block/allow list. Upon recognising a match, the hardware will perform a series of actions to mitigate the attack and log the event for future analysis. Our final FPGA-based solution demonstrated both great processing capacity under saturated network load and considerable versatility and scalability against varying DNS attacks. The system boasts an remarkable processing latency of just $20\; \mu s$, while consuming only $0.136 \; W$ of power. Along with the hardware, we built a software control toolkit with APIs for network administrators and higher-level algorithms to instantaneously retrieve metrics and configure the FPGA for more complex use cases. This proof-of-concept system illustrates a promising future of using hardware against malicious transactions hiding in massive network traffic.
 \end{abstract}
 
 \renewcommand{\abstractname}{Acknowledgements}
@@ -476,7 +476,7 @@ When it comes to multi-purposed networks that serve not only DNS queries, the af
 
 \section{Design Summary}
 
-As shown in the discussions above, we designed our hardware and software with performance as the top priority, without any substantial loss of scalability and flexibility. The topology samples demonstrates the FPGA-based system's capability to adapt to networks of all sizes and provide an extra level of DNS security and defence in real-time with minimal latency overhead.
+As shown in the discussions above, we designed our hardware and software with performance as the top priority, without any substantial loss of scalability and flexibility. The topology samples demonstrate the FPGA-based system's capability to adapt to networks of all sizes and provide an extra level of DNS security and defence in real-time with minimal latency overhead.
 
 \chapter{Implementation}
 
@@ -1147,7 +1147,7 @@ Throughout the development process, we also developed several utilities that wer
 
 \section{Implementation Summary}
 
-The implementation details of the hardware and the software are laid out thoroughly above. We first described each component's implementation and layout in hardware. In particular, we discussed in depth the difficulties faced during the hardware development process. Overcoming these challenges requires an in-depth understanding of the HDL, the hardware architecture, the interfacing PHY ASIC and the available debugging toolsets. Lastly, we showed the modular implementation of the control system software, as well as several additional toolsets built as part of the development process.
+The implementation details of the hardware and the software are laid out thoroughly above. We first described each component's implementation and layout in hardware. In particular, we discussed in depth the difficulties faced during the hardware development process. Overcoming these challenges requires an in-depth understanding of the HDL, the hardware architecture, the FPGA timing models, the interfacing PHY ASIC and the available debugging toolsets. Lastly, we showed the modular implementation of the control system software and several additional toolsets built as part of the development process.
 
 \chapter{Validation and Evaluation}
 
@@ -1268,7 +1268,7 @@ The HDL design and hardware implementation are scalable in multiple ways:
 
 \section{Validation and Evaluation Summary}
 
-In this chapter, we discussed in depth our test methodologies in preventing regressions and validating the correctness of the FPGA-based system. From the evaluation results, we are confident that our FPGA-based solution is capable of archiving blazing-fast processing speed and minimal latency while keeping its power usage ultra-low at the same time. Meanwhile, the design is proven through chip-level simulations to be adaptable on larger-scale hardware platforms with faster Ethernet link speeds and higher clock frequencies.
+In this chapter, we discussed in depth our test methodologies in preventing regressions and validating the correctness of the FPGA-based system. From the evaluation results, we are confident that our FPGA-based solution is capable of archiving blazing-fast packet processing speed and minimal latency while keeping its power usage ultra-low at the same time. Meanwhile, the design is proven through chip-level simulations to be adaptable on larger-scale hardware platforms with faster Ethernet link speeds and higher clock frequencies.
 
 \chapter{Conclusions and Future Work}
 
@@ -1276,7 +1276,7 @@ This chapter provides a conclusive review of the project and lays out future wor
 
 \section{Future Work}
 
-As a final year student project during COVID-19, we were constrained by a strict budget on the FPGA boards and the lack of access to network test equipment. The main hardware component, Digilent Arty-A7 35T is a low-end starter board that costs only $£96$, with a limited number of logic slices and less optimal semiconductors. Therefore, the design is fairly limited in complexity and operation frequency, which is crucial to the system's performance and usability. Given more budget and time, the design can be improved in areas including:
+As a final year student project during COVID-19, we were constrained by a strict budget on the FPGA boards and the lack of access to network test equipment. The main hardware component, Digilent Arty-A7 35T is a low-end starter board that costs only $£96$, with a limited number of logic slices and suboptimal semiconductors. Therefore, the design is fairly limited in complexity and operation frequency, which is crucial to the system's performance and usability. Given more budget and time, the design can be improved in areas including:
 
 \begin{itemize}
     \item Eliminating packet segment limit of $128$ bytes. We can take a streamlined approach when communicating with the PHY peripherals. FIFOs can be implemented to store larger packet payload in segments.
@@ -1286,9 +1286,9 @@ As a final year student project during COVID-19, we were constrained by a strict
 \end{itemize}
 
 \section{Conclusions}
-In this project, we have designed, implemented and evaluated an innovative FPGA-based system that detects and mitigates DNS flood and DNS exfiltration attacks at scale in real-time.
+In this project, we have designed, implemented and evaluated an innovative FPGA-based system that detects and mitigates DNS flood and DNS exfiltration attacks at scale in real-time. We managed to undertake the challenges presented in hardware and high-speed network peripheral development during the development process and gained a more rigorous understanding of the FPGA architecture and electrical timing models.
 
-As the first item of the deliverable, we showed that the FPGA-based system is capable of detecting and mitigating DNS exfiltration and flood attacks. The network administrator would be able to tune the FPGA configurations so as to adapt to various attacking scenarios quickly. Most notably, the FPGA processor incorporates two operations modes, namely Man-on-the-Side DNS spoof mode and Man-in-the-Middle Payload filter mode, to detect and mitigate DNS exfiltration and DNS flood attacks, respectively. The implemented hardware has been thoroughly tested through simulation and integration tests to ensure its correctness.
+As the first item of the deliverable, we showed that our FPGA-based system is capable of detecting and mitigating DNS exfiltration and flood attacks. The network administrator would be able to tune the FPGA configurations so as to adapt to various attacking scenarios quickly. Most notably, the FPGA processor incorporates two operations modes, namely Man-on-the-Side DNS spoof mode and Man-in-the-Middle Payload filter mode, to detect and mitigate DNS exfiltration and DNS flood attacks, respectively. The implemented hardware has been thoroughly tested through simulation and integration tests to ensure its correctness.
 
 Moreover, we also illustrated the performance-to-power and performance-to-cost efficiency of the proposed hardware system. The latency tests and power analysis shows that a budget FPGA (Digilent Arty-A7 35T costing $£96$) can perform the aforementioned network tasks and operations extremely quickly (minimal RTT latency of only $12\; \mu s$, packet process latency of $2500\; ns$), and with ultra-low power consumption (maximum power consumption of only $0.136\; W$). 
 
@@ -1296,7 +1296,7 @@ Additionally, our hardware solution comes with CLI software that enables network
 
 Lastly, our scalability analysis demonstrated our HDL design considerations that make it future-proof when adapting to larger boards with higher-end FPGA cores. As the simulator suggests, our hardware layout would be able to adapt to $1$ Gbps link speed, higher filter depth and $200$ MHz clock frequency in more advanced implementations.
 
-In conclusion, we have built a novel FPGA-based system capable of DNS threat detection and mitigation in real-time. This system is vastly more performant than traditional solutions against deceitful attacks that rely on the enormous amount of legitimate DNS traffic, such as DNS data exfiltration and DNS flood attacks. This project illustrates the research potential in utilising hardware to monitor large scale networks and block potential attacks on the spot in the long run.
+In conclusion, we have built a novel FPGA-based system that detects and blocks malicious DNS transactions in real-time. This system is vastly more performant than traditional solutions against deceitful attacks that rely on the enormous amount of legitimate DNS traffic, such as DNS data exfiltration and DNS flood attacks. Moreover, this solution is truly unique in its scalability across networks of different sizes, its adaptability to various types of DNS-based attacks, and its ability to mitigate these threats simultaneously. This project further illustrates a massive research potential in utilising hardware to monitor large scale networks and block potential attacks on the spot in the long run.
 
 \addcontentsline{toc}{chapter}{References}
 \printbibliography[title=References]
