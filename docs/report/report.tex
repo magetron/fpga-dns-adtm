@@ -1196,7 +1196,7 @@ We further evaluate the FPGA-based design and system in terms of performance, po
 
 \subsection{Performance}
 
-The performance is evaluated by executing the software stress tests mentioned above with a Raspberry Pi 4i (Broadcom BCM2711 with Integrated Gigabit Ethernet Controller) and measuring the reply latency. Given the equipment limitations, we are unable to accurately measure the exact latency induced by the Raspberry Pi NIC and the signal travelling on the Ethernet cable. Hence we are estimating the extra latency according to publicly available data sheets and standards. According to IEEE 802.3 \cite{ieee802.3ethernet-2018}, the propagation delay on an standard Cat5 Ethernet cable would be around $5.30 \; ns/m$. Thus we calculate the round trip latency on the $2.5m$ cable as  
+The performance is evaluated by executing the software stress tests mentioned above with a Raspberry Pi 4i (Broadcom BCM2711 with Integrated Gigabit Ethernet Controller) and measuring the reply latency. Given the equipment limitations, we are unable to accurately measure the exact latency induced by the Raspberry Pi NIC and the signal travelling on the Ethernet cable. Hence we are estimating the extra latency according to publicly available data sheets and standards. According to IEEE 802.3 \cite{ieee802.3ethernet-2018}, the propagation delay on an standard Cat5 Ethernet cable would be around $5.30 \; ns/m$. Thus we calculate the round trip latency on the $2.5 \; m$ cable as  
 $$
 t_r = 2.5\; m \times 2 \times 5.30\; ns /m = 0.0265 \; \mu s
 $$ 
@@ -1206,7 +1206,7 @@ Wireshark records the packet communications throughout the test cases, and we ca
 \begin{itemize}[noitemsep]
     \item Network Packets passing all checkers: $27.238\; \mu s$
     \item Spoofed DNS Reply Packets: $28.753\; \mu s$
-    \item Probe Packets: $67.586\; \mu s$
+    \item Probe Packets: $34.679\; \mu s$
 \end{itemize}
 See Table \ref{table:performance-test} for RTT measurements of each test case.
 
@@ -1230,7 +1230,7 @@ dstmac-w2 & 18.568   & dstip-w2 & 52.721   & dstport-w2 & 40.405   &            
 \end{table}
 Therefore, we estimate the processing latency of the FPGA as:
 \begin{itemize}[noitemsep]
-    \item Network Packets passing all checkers: $27.238\; \mu s - 15\mu s = 12.238\; \mu s$
+    \item Network Packets passing all checkers: $27.238\; \mu s - 15\; \mu s = 12.238\; \mu s$
     \item Spoofed DNS Reply Packets: $28.753\; \mu s - 15\; \mu s = 13.753\; \mu s$
     \item Probe Packets: $34.679\; \mu - 15\; \mu s = 19.679\; \mu s$
 \end{itemize}
@@ -1238,10 +1238,10 @@ If we count in the PHY encoding / decoding time taken on the FPGA board, we esti
 \begin{itemize}[noitemsep]
     \item Network Packets passing all checkers: $12.238\; \mu s - 10\; \mu s= 2238\; ns$
     \item Spoofed DNS Reply Packets: $13.753\; \mu s - 10\; \mu s = 3753\; ns$
-    \item Probe Packets: $19.679\; \mu - 10 \mu s = 9679\; ns$
+    \item Probe Packets: $19.679\; \mu - 10\; \mu s = 9679\; ns$
 \end{itemize}
 
-We are relatively confident with our approximations, as the experiment results are mainly coherent with the estimates we made during implementation in Section \ref{section:implementation-hardware-implementation}. For a low-end FPGA board at the cost of just $£96$, the network processing speed and capability it brings is quite impressive. Comparatively, the fastest DNS server powered by Unikernel Mirage OS, running on a Dell PowerEdge R710 Server with 2 Xeon E5530 processors, costing around $\$700$, has a processing latency of around $500 \mu s$, regardless of the latency on wire \cite{briggs-2014, madhavapeddy-2013}. Thus, our solution's performance per $£/\$$ far outweighs any known DNS processors. As we have measured, a typical DNS query to a Cloudflare DNS server through the Internet takes roughly $40\;ms - 60\;ms$. Thus, we can observe that the main latency in a DNS transaction actually lies in the transmission time through the wires, which is inevitable. Hence, it is safe to say that the extra latency overhead of less than $30\; \mu s$ introduced by the system is minimal and almost negligible.
+We are relatively confident with our approximations, as the experiment results are mainly coherent with the estimates we made during implementation in Section \ref{section:implementation-hardware-implementation}. For a low-end FPGA board at the cost of just $£96$, the network processing speed and capability it brings is quite impressive. Comparatively, the fastest DNS server powered by Unikernel Mirage OS, running on a Dell PowerEdge R710 Server with 2 Xeon E5530 processors, costing around $\$700$, has a processing latency of around $500\; \mu s$, regardless of the latency on wire \cite{briggs-2014, madhavapeddy-2013}. Thus, our solution's performance per $£/\$$ far outweighs any known DNS processors. As we have measured, a typical DNS query to a Cloudflare DNS server through the Internet takes roughly $40\;ms - 60\;ms$. Thus, we can observe that the main latency in a DNS transaction actually lies in the transmission time through the wires, which is inevitable. Hence, it is safe to say that the extra latency overhead of less than $30\; \mu s$ introduced by the system is minimal and almost negligible.
 
 On a side note, with regards to the FPGA system also aimed at detecting malicious DNS traffic built by Brennon et al.\cite{thomas-2011}, we were unable to retrieve its performance or latency data, hence there is no comparison to this in this section.
 
@@ -1268,7 +1268,7 @@ The HDL design and hardware implementation are scalable in multiple ways:
 
 \section{Validation and Evaluation Summary}
 
-In this chapter, we discussed in depth our test methodologies in preventing regressions and validating the correctness of the FPGA-based system. From the evaluation results, we are confident that our FPGA-based solution is capable of achieving state-of-the-art packet processing speed and minimal latency while keeping its power usage ultra-low at the same time. Considering its cost, our solution provides an unparalleled price-to-performance ratio even when compared to state-of-the-art software solutions. Moreover, the design is proven through chip-level simulations to be adaptable on larger-scale hardware platforms with faster Ethernet link speeds and higher clock frequencies.
+In this chapter, we discussed in depth our test methodologies in preventing regressions and validating the correctness of the FPGA-based system. From the evaluation results, we are confident that our FPGA-based solution is capable of achieving state-of-the-art packet processing speed and minimal latency while keeping its power usage ultra-low at the same time. Considering its cost, our solution provides an unparalleled price-to-performance ratio even when compared to the latest software solutions. Moreover, the design is proven through chip-level simulations to be adaptable on larger-scale hardware platforms with faster Ethernet link speeds and higher clock frequencies.
 
 \chapter{Conclusions and Future Work}
 
@@ -1281,19 +1281,19 @@ As a final year student project during COVID-19, we were constrained by a strict
 \begin{itemize}
     \item Eliminating packet segment limit of $128$ bytes. We can take a streamlined approach when communicating with the PHY peripherals. FIFOs can be implemented to store larger packet payload in segments.
     \item Achieving lower latency, higher clock frequency and greater filter depth. Network processing low-latency FPGAs are mostly PCI-E boards with multiple 10 Gigabit Ethernet links, costing more than $\$6000$ \cite{netfpga-sume-digilent}. This would substantially improve the design's usability and latency with more logic slices, better timing requirements, faster PHY connection speeds, and much higher clock frequency.
-    \item Performing more accurate performance measurements. Due to COVID-19, we lacked access to computing equipment to stress test the FPGA to its limit (Raspberry Pi 4B is not sufficient) and measure the accurate latency at each stage of the packet transaction process.
+    \item Conducting more accurate performance measurements. Due to COVID-19, we lacked access to computing equipment to stress test the FPGA to its limit (Raspberry Pi 4B is not sufficient) and measure the accurate latency at each stage of the packet transaction process.
     \item Handling complex string algorithms through an ARM softcore on the higher-end Xilinx Zynq FPGA board \cite{zynq-7000-xilinx}. We are currently doing DNS domain checking with the naive string comparison algorithm in pure hardware logic. We can potentially utilise the software processor to handle such task with a more complex and efficient algorithm such as a Trie or a Hashmap.
-    \item Implementing stateful administrator packet authentications to mitigate malicious replay attack. The system in its current state is vulnerable to man-in-the-middle packet replay attacks targetting the FPGA. We can mitigate this by enforcing state counters during admin packet transactions.
+    \item Implementing stateful administrator packet authentications to mitigate malicious replay attacks. The system in its current state is vulnerable to man-in-the-middle packet replay attacks targetting the FPGA. We can mitigate this by enforcing state counters during admin packet transactions.
 \end{itemize}
 
 \section{Conclusions}
-In this project, we have designed, implemented and evaluated an innovative FPGA-based system that detects and mitigates DNS flood and DNS exfiltration attacks at scale in real-time. We managed to undertake the challenges presented in hardware and high-speed network peripheral development during the development process and gained a more rigorous understanding of the FPGA architecture and electrical timing models.
+In this project, we have designed, implemented and evaluated an innovative FPGA-based system that detects and mitigates DNS flood and DNS exfiltration attacks at scale in real-time. We managed to undertake the challenges presented in hardware and high-speed network peripheral development during the process and gained a more rigorous understanding of the FPGA architecture and electrical timing models.
 
 As the first item of the deliverable, we showed that our FPGA-based system is capable of detecting and mitigating DNS exfiltration and flood attacks. The network administrator would be able to tune the FPGA configurations so as to adapt to various attacking scenarios quickly. Most notably, the FPGA processor incorporates two operations modes, namely Man-on-the-Side DNS spoof mode and Man-in-the-Middle Payload filter mode, to detect and mitigate DNS exfiltration and DNS flood attacks, respectively. The implemented hardware has been thoroughly tested through simulation and integration tests to ensure its correctness.
 
 Moreover, we also illustrated the performance-to-power and performance-to-cost efficiency of the proposed hardware system. The latency tests and power analysis shows that a budget FPGA (Digilent Arty-A7 35T costing $£96$) can perform the aforementioned network tasks and operations extremely quickly (minimal RTT latency of only $12\; \mu s$, packet process latency of $2500\; ns$), and with ultra-low power consumption (maximum power consumption of only $0.136\; W$). 
 
-Additionally, our hardware solution comes with CLI software that enables network administrators to quickly apply new configurations, block/allow lists, and instantaneously retrieve FPGA metrics and status. The reconfigurability in hardware also allows higher-level algorithms to analyse the traffic and update FPGA settings simultaneously to the FPGA so as to couple with more complex attacking scenarios.
+Additionally, our hardware solution comes with CLI software that enables network administrators to quickly apply new configurations, block/allow lists, and instantaneously retrieve FPGA metrics and status. The reconfigurability in hardware also allows higher-level algorithms to analyse the traffic and update settings simultaneously to the FPGA so as to cope with more complex attacking scenarios.
 
 Lastly, our scalability analysis demonstrated our HDL design considerations that make it future-proof when adapting to larger boards with higher-end FPGA cores. As the simulator suggests, our hardware layout would be able to adapt to $1$ Gbps link speed, higher filter depth and $200$ MHz clock frequency in more advanced implementations.
 
