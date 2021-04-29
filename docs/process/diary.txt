@@ -163,9 +163,12 @@ If you buffer a in buf_a, and say if (a = 1) b = buf_a, the capacitance gets ref
 Update to last line, buf_a = a; (first clock cycle) if (a = 1) b = buf_a; (second clock cycle)
 "
 
+Siphash done
 
+Testing done
 
-TODO:
+Verification done
 
-Impl test bench for each of the moduels, and have integrated testing
-Auth for admin packet
+ALL DONE
+
+..dissertation done
